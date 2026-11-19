@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { PageHead } from '@/components/bits'
 import { confirmBox } from '@/components/sheet'
-import { update, useS } from '@/lib/store'
+import { undoable, update, useS } from '@/lib/store'
 import { addD, diffD, fmt, today } from '@/lib/date'
 import { go, type View } from '@/lib/ui'
 import { cn } from '@/lib/utils'
@@ -50,7 +50,10 @@ export function ResetPage() {
               )
             })}
           </div>
-          <Button variant="link" className="mt-3 text-[13.5px]" onClick={() => confirmBox('Start the 7-day reset again from today?', start, 'Start again')}>Start again from today</Button>
+          <div className="mt-3 flex flex-wrap gap-4">
+            <Button variant="link" className="text-[13.5px]" onClick={() => confirmBox('Start the 7-day reset again from today?', start, 'Start again')}>Start again from today</Button>
+            <Button variant="link" className="text-[13.5px] text-mute" onClick={() => undoable('Reset stopped', (d) => { d.reset = { start: '', done: {} } })}>Stop the reset</Button>
+          </div>
         </>
       )}
     </div>
