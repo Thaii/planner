@@ -1,7 +1,11 @@
 import { waterForm } from '@/components/water-form'
 import { ml } from '@/lib/water'
 import * as React from 'react'
-import { ArrowDown, ArrowUp, X } from 'lucide-react'
+import { GripVertical, X } from 'lucide-react'
+import { DndContext, KeyboardSensor, PointerSensor, closestCenter, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core'
+import { SortableContext, arrayMove, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
+import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifiers'
+import { CSS } from '@dnd-kit/utilities'
 import { toast } from 'sonner'
 import { Card, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -26,23 +30,46 @@ import { cn, uid } from '@/lib/utils'
 const setS = (fn: (s: Settings) => void) => update((d) => fn(d.settings))
 const hours = (from: number, to: number) => Array.from({ length: to - from + 1 }, (_, i) => from + i)
 
+/** One draggable card row: drag by the grip (mouse, finger, or Space + arrow keys). */
+function CardRow({ id, on, i }: { id: string; on: boolean; i: number }) {
+  const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, transition, isDragging } = useSortable({ id })
+  const name = (CARDS_DEF.find((x) => x[0] === id) || [id, id])[1]
+  return (
+    <div ref={setNodeRef} style={{ transform: CSS.Transform.toString(transform), transition }}
+      className={cn('row relative bg-card', !on && 'opacity-60', isDragging && 'z-10 rounded-xl shadow-[0_8px_24px_rgba(0,0,0,.14)] opacity-100')}>
+      <button ref={setActivatorNodeRef} {...attributes} {...listeners} aria-label={'Drag to reorder ' + name}
+        className="-ml-1 grid size-8 cursor-grab touch-none place-items-center rounded-lg text-mute active:cursor-grabbing"><GripVertical className="size-4" /></button>
+      <Check on={on} label={'Show ' + name} onClick={() => setS((st) => { st.cards[i].on = !st.cards[i].on })} />
+      <div className="tt flex-1">{name}</div>
+    </div>
+  )
+}
+
 function YourDay() {
   const s = useS().settings
-  const move = (i: number, n: number) => setS((st) => { const a = st.cards, j = i + n; if (j < 0 || j >= a.length) return; [a[i], a[j]] = [a[j], a[i]] })
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  )
+  const onEnd = (e: DragEndEvent) => {
+    const { active, over } = e
+    if (!over || active.id === over.id) return
+    setS((st) => {
+      const from = st.cards.findIndex((c) => c.id === active.id), to = st.cards.findIndex((c) => c.id === over.id)
+      st.cards = arrayMove(st.cards, from, to)
+    })
+  }
   return (
     <Card>
       <CardHeader title="Your day" />
-      <p className="mt-0 text-[13.5px] text-mute">Switch off what you don't use and move the rest into the order you want to read them. Hiding a card never deletes what's in it.</p>
-      <div className="rows">
-        {s.cards.map((c, i) => (
-          <div key={c.id} className={cn('row', !c.on && 'opacity-60')}>
-            <Check on={c.on} label={'Show ' + c.id} onClick={() => setS((st) => { st.cards[i].on = !st.cards[i].on })} />
-            <div className="tt flex-1">{(CARDS_DEF.find((x) => x[0] === c.id) || [c.id, c.id])[1]}</div>
-            <Button size="icon" className="size-8" aria-label="Move up" disabled={i === 0} onClick={() => move(i, -1)}><ArrowUp className="size-3.5" /></Button>
-            <Button size="icon" className="size-8" aria-label="Move down" disabled={i === s.cards.length - 1} onClick={() => move(i, 1)}><ArrowDown className="size-3.5" /></Button>
+      <p className="mt-0 text-[13.5px] text-mute">Switch off what you don't use, and drag by the grip to put the rest in the order you want to read them. Hiding a card never deletes what's in it.</p>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} modifiers={[restrictToVerticalAxis, restrictToParentElement]} onDragEnd={onEnd}>
+        <SortableContext items={s.cards.map((c) => c.id)} strategy={verticalListSortingStrategy}>
+          <div className="rows">
+            {s.cards.map((c, i) => <CardRow key={c.id} id={c.id} on={c.on} i={i} />)}
           </div>
-        ))}
-      </div>
+        </SortableContext>
+      </DndContext>
       <Button variant="link" className="mt-2 text-[13px]" onClick={() => undoable('Dashboard reset', (d) => { d.settings.cards = defaults().settings.cards })}>Reset the dashboard</Button>
     </Card>
   )
