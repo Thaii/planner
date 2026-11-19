@@ -1,3 +1,4 @@
+import { InstallButton } from './install'
 import * as React from 'react'
 import { Toaster } from 'sonner'
 import { Search, Settings, Sun, Rows3, CalendarDays, CheckCheck, Menu, Plus } from 'lucide-react'
@@ -37,7 +38,8 @@ export function AppShell({ children, dark }: { children: React.ReactNode; dark: 
       <main className="mx-auto w-full max-w-[1180px] min-w-0 flex-1 px-3.5 pt-[calc(14px+var(--sat))] pb-[calc(100px+var(--sab))] min-[900px]:px-7 min-[900px]:pt-6 min-[900px]:pb-15">
         <div className="mb-3.5 flex items-center gap-2">
           <div className="flex-1 truncate font-serif text-xl min-[900px]:invisible">{brand} <span className="text-accent">{brand2}</span></div>
-          <span className="flex items-center gap-1.5 rounded-full border border-line bg-card px-2.5 py-1 text-[11px] text-mute"><i className="size-[7px] rounded-full bg-[#5aa36a]" />Saved on this device</span>
+          <InstallButton />
+          <span className="flex items-center gap-1.5 rounded-full max-[480px]:hidden border border-line bg-card px-2.5 py-1 text-[11px] text-mute"><i className="size-[7px] rounded-full bg-[#5aa36a]" />Saved on this device</span>
           <button className="grid size-9 place-items-center rounded-[11px] border border-line bg-card" onClick={() => useUI.setState({ cmdOpen: true })} aria-label="Search (Ctrl K)" title="Search · Ctrl/⌘ K"><Search className="size-4" /></button>
           <button className="grid size-9 place-items-center rounded-[11px] border border-line bg-card" onClick={() => go('settings')} aria-label="Customise"><Settings className="size-4" /></button>
         </div>
