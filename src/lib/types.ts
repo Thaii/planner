@@ -44,6 +44,8 @@ export interface ListItem {
   price?: number | ''; link?: string; date?: DateStr; where?: string; extra?: string
 }
 
+export type DayPart = 'morning' | 'afternoon' | 'evening'
+
 export interface Settings {
   theme: ThemeMode; accent: string; paper: string; cards: { id: string; on: boolean }[]; labels: Label[]; water: number
   /** Daily water goal in ml, and how much one drop (a glass/bottle) holds. `water` = number of drops. */
@@ -54,6 +56,12 @@ export interface Settings {
   nightFrom: number; nightTo: number; themeAccent: boolean; taskIdentity?: string
   /** Show "<Name>'s Planner" (true) or "Life Planner" (false). */
   nameInTitle: boolean
+  /** Title shown at the top: "Thai's Planner", "Life Planner" or one they type. */
+  titleMode?: 'name' | 'life' | 'custom'; customTitle?: string
+  /** Greetings to pick from at random in each part of the day; empty = the standard one. */
+  greetings?: Record<DayPart, string[]>
+  /** Hour each part of the day starts (evening runs until morning). */
+  dayParts?: Record<DayPart, number>
   /** Custom greeting shown instead of Good morning/afternoon/evening. Blank = time-based. */
   greeting: string
   /** The first-run name card has been answered or skipped. */

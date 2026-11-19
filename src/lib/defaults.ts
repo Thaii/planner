@@ -11,7 +11,7 @@ export function defaults(): State {
         { id: 'money', name: 'Money', color: '#cf9c3f' }, { id: 'friends', name: 'Friends', color: '#9f88c8' },
       ],
       water: 8, waterGoal: 2000, glass: 250, name: '', weekStart: 1, dayStart: 6, dayEnd: 22, goalAreas: ['Personal', 'Career', 'Health', 'Learning'],
-      dayTheme: 'linen', nightTheme: 'ember', nightFrom: 19, nightTo: 6, themeAccent: true, nameInTitle: true, greeting: '', nameAsked: false, schedView: 'timeline',
+      dayTheme: 'linen', nightTheme: 'ember', nightFrom: 19, nightTo: 6, themeAccent: true, nameInTitle: true, greeting: '', nameAsked: false, titleMode: 'name', customTitle: '', greetings: { morning: [], afternoon: [], evening: [] }, dayParts: { morning: 5, afternoon: 12, evening: 17 }, schedView: 'timeline',
     },
     tasks: [], events: [], ics: {}, prio: {}, habits: [], goals: [], projects: [],
     identities: [
@@ -63,6 +63,12 @@ export function migrate(raw: Partial<State>): State {
       else s.settings.cards.push({ id, on: true })
     }
   })
+  // Older planners had one custom greeting for all day and a yes/no for the name in the title.
+  if (!raw.settings?.greetings) {
+    const g = (s.settings.greeting || '').trim()
+    s.settings.greetings = { morning: g ? [g] : [], afternoon: g ? [g] : [], evening: g ? [g] : [] }
+  }
+  if (!raw.settings?.titleMode) s.settings.titleMode = s.settings.nameInTitle === false ? 'life' : 'name'
   // Older planners only had a number of drops; treat each one as a 250 ml glass.
   if (!raw.settings?.waterGoal) { s.settings.glass = 250; s.settings.waterGoal = (s.settings.water || 8) * 250 }
   // The Notes list in Lists & collections was folded into the Notebook: move any items to a "Notes" page.

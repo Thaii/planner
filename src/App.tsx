@@ -37,7 +37,7 @@ export default function App() {
     mq.addEventListener?.('change', onMq)
     return () => { clearInterval(iv); mq.removeEventListener?.('change', onMq) }
   }, [s.settings])
-  useEffect(() => { document.title = plannerTitle(s.settings).join(' ') }, [s.settings])
+  useEffect(() => { document.title = plannerTitle(s.settings).filter(Boolean).join(' ') }, [s.settings])
   useEffect(() => { window.addEventListener('hashchange', viewFromHash); return () => window.removeEventListener('hashchange', viewFromHash) }, [])
 
   let page

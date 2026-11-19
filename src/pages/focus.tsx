@@ -17,7 +17,7 @@ interface F { len: number; left: number; run: boolean; end: number; task: string
 const useF = create<F>(() => ({ len: 25, left: 25 * 60, run: false, end: 0, task: '' }))
 let iv: ReturnType<typeof setInterval> | undefined
 const clock = (n: number) => Math.floor(n / 60) + ':' + pad(n % 60)
-const resetTitle = () => { document.title = plannerTitle(getS().settings).join(' ') }
+const resetTitle = () => { document.title = plannerTitle(getS().settings).filter(Boolean).join(' ') }
 
 function tick() {
   const f = useF.getState()

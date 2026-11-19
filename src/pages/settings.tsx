@@ -82,10 +82,10 @@ function Pages() {
       <Card>
         <CardHeader title="You" />
         <div className="rows">
-          <div className="row"><div className="flex-1"><div className="text-[12.5px] text-mute">Planner title</div><div className="font-serif text-lg">{plannerTitle(s).join(' ')}</div></div></div>
+          <div className="row"><div className="flex-1"><div className="text-[12.5px] text-mute">Planner title</div><div className="font-serif text-lg">{plannerTitle(s).filter(Boolean).join(' ')}</div></div></div>
           <div className="row"><div className="flex-1"><div className="text-[12.5px] text-mute">Greeting</div><div className="font-serif text-lg">{greeting(s)}</div></div></div>
         </div>
-        <Button className="mt-2" onClick={personaliseForm}>Change name and greeting</Button>
+        <Button className="mt-2" onClick={personaliseForm}>Change name, title and greetings</Button>
       </Card>
       <Card>
         <CardHeader title="Calendar" />
