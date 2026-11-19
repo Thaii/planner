@@ -57,7 +57,8 @@ function FormBody({ spec }: { spec: FormSpec }) {
   return (
     <form onSubmit={(e) => {
       e.preventDefault()
-      const out: Values = {}
+      // Start from everything (including values set by `extra`), then tidy the declared fields.
+      const out: Values = { ...vals }
       spec.fields.forEach((f) => { const v = vals[f.k]; out[f.k] = f.t === 'number' ? (v === '' ? '' : +v) : typeof v === 'string' ? v.trim() : v })
       if (spec.onSave(out) !== false) closeSheet()
     }}>
