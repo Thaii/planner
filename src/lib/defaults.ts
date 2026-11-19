@@ -15,7 +15,6 @@ export function defaults(): State {
     },
     tasks: [], events: [], ics: {}, prio: {}, habits: [], goals: [], projects: [],
     identities: [
-      { id: 'i1', name: 'a fit person', does: 'Moves every day and drinks their water' },
       { id: 'i2', name: 'someone who follows through', does: 'Does the small thing now instead of later' },
     ],
     inbox: [],
