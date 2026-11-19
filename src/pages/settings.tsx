@@ -14,7 +14,7 @@ import { personaliseForm } from '@/components/personalise'
 import { exportBackup, getS, importBackup, replaceState, update, useS } from '@/lib/store'
 import { defaults } from '@/lib/defaults'
 import { ACCENTS, CARDS_DEF, DAY_THEMES, NIGHT_THEMES, PAPERS, type Palette } from '@/lib/constants'
-import { isNight } from '@/lib/theme'
+import { accentColor, isNight } from '@/lib/theme'
 import { pad, today } from '@/lib/date'
 import { parseICS } from '@/lib/ics'
 import { greeting, plannerTitle } from '@/lib/greeting'
@@ -94,7 +94,7 @@ function Pages() {
 
 function ThemeGrid({ themes, k }: { themes: Record<string, Palette>; k: 'dayTheme' | 'nightTheme' }) {
   const s = useS().settings
-  const acc = (ACCENTS[s.accent] || ACCENTS.blush)[1]
+  const acc = accentColor(s)
   return (
     <div className="mb-3.5 grid grid-cols-[repeat(auto-fill,minmax(132px,1fr))] gap-2">
       {Object.entries(themes).map(([id, p]) => (
@@ -113,6 +113,7 @@ function ThemeGrid({ themes, k }: { themes: Record<string, Palette>; k: 'dayThem
 
 function Look() {
   const s = useS().settings
+  const custom = /^#[0-9a-f]{6}$/i.test(s.accent)
   return (
     <Card>
       <CardHeader title="How it looks" />
@@ -133,14 +134,22 @@ function Look() {
       <ThemeGrid themes={NIGHT_THEMES} k="nightTheme" />
       <div className="row border-0">
         <Check on={s.themeAccent} label="Use each theme's own colour" onClick={() => setS((st) => { st.themeAccent = !st.themeAccent })} />
-        <div className="flex-1"><div className="tt">Use each theme's own colour</div><div className="text-[12.5px] text-mute">Off: the colour you pick below is used everywhere. Lamp always keeps its amber.</div></div>
+        <div className="flex-1"><div className="tt">Use each theme's own colour</div><div className="text-[12.5px] text-mute">Off: the colour you pick below is used everywhere. Picking a colour turns this off. Lamp always keeps its amber.</div></div>
       </div>
-      <div className="lbl mt-3 mb-1.5 text-mute">Colour · {(ACCENTS[s.accent] || ACCENTS.blush)[0]}</div>
+      <div className="lbl mt-3 mb-1.5 text-mute">Colour · {custom ? 'Your own ' + s.accent.toUpperCase() : (ACCENTS[s.accent] || ACCENTS.blush)[0]}</div>
       <div className="mb-3.5 flex flex-wrap gap-2">
         {Object.entries(ACCENTS).map(([k, [n, c]]) => (
-          <button key={k} aria-label={n} title={n} aria-pressed={s.accent === k} onClick={() => setS((st) => { st.accent = k })}
+          <button key={k} aria-label={n} title={n} aria-pressed={s.accent === k} onClick={() => setS((st) => { st.accent = k; st.themeAccent = false })}
             className={cn('size-8 rounded-full ring-offset-2 ring-offset-card', s.accent === k && 'ring-2 ring-ink')} style={{ background: c }} />
         ))}
+        {/* Any colour you like: the native colour picker, shown as a rainbow until a custom colour is chosen. */}
+        <label title="Pick any colour" className={cn('relative size-8 cursor-pointer overflow-hidden rounded-full ring-offset-2 ring-offset-card', custom && 'ring-2 ring-ink')}
+          style={{ background: custom ? s.accent : 'conic-gradient(#e57373,#ffb74d,#fff176,#81c784,#64b5f6,#9575cd,#e57373)' }}>
+          <span className="sr-only">Pick any colour</span>
+          <input type="color" className="absolute inset-0 size-full cursor-pointer opacity-0" value={accentColor(s)}
+            onChange={(e) => setS((st) => { st.accent = e.target.value; st.themeAccent = false })} />
+          {!custom && <span className="pointer-events-none absolute inset-0 grid place-items-center text-[15px] font-bold text-white [text-shadow:0_1px_2px_rgba(0,0,0,.4)]">+</span>}
+        </label>
       </div>
       <div className="lbl mb-1.5 text-mute">Paper</div>
       <Segmented value={s.paper} onChange={(v) => setS((st) => { st.paper = v })} options={PAPERS} />

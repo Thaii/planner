@@ -1,7 +1,8 @@
+import { accentColor } from './theme'
 import { openForm } from '@/components/sheet'
 import { getS, update } from './store'
 import { fmt, today, type DateStr } from './date'
-import { REPEATS, ACCENTS } from './constants'
+import { REPEATS } from './constants'
 import { cap, uid } from './utils'
 import type { Repeat } from './types'
 
@@ -72,7 +73,7 @@ export function habitForm(id?: string) {
       { k: 'min', l: 'Minimum for bad days', v: h?.min, ph: 'e.g. 2 pages, 1 glass, 5 minutes' },
       { k: 'cue', l: 'Cue – when you will do it', v: h?.cue, ph: 'e.g. after lunch' },
       { k: 'identity', l: 'Builds who you are becoming', t: 'select', o: [['', 'None'], ...s.identities.map((x) => [x.id, cap(x.name)] as [string, string])], v: h?.identity || '', half: true },
-      { k: 'color', l: 'Colour', t: 'color', v: h?.color || ACCENTS[s.settings.accent]?.[1], half: true },
+      { k: 'color', l: 'Colour', t: 'color', v: h?.color || accentColor(s.settings), half: true },
     ],
     onSave: (v) => {
       if (!v.name) return false
