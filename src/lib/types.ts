@@ -30,6 +30,14 @@ export interface Meals { breakfast?: string; lunch?: string; dinner?: string; sn
 export interface WeekPlan { prio: string[]; pdone: boolean[]; goals: Item[]; todo: Item[] }
 export interface MonthPlan { todo: Item[]; refl: Record<string, string>; colors: Record<DateStr, string> }
 
+export interface Trip {
+  id: string; name: string; dest?: string; start?: DateStr; end?: DateStr; currency?: string; total?: number | ''
+  todo: { id: string; text: string; status?: 'todo' | 'booked' }[]; itin: { id: string; day?: string; text: string }[]
+  pack: { id: string; text: string; done: boolean }[]; places: { id: string; text: string }[]
+  book: { id: string; what: string; ref?: string }[]; budget: { id: string; item: string; amount: number | string }[]
+  journal: { id: string; date?: DateStr; text: string }[]
+}
+
 export interface Settings {
   theme: ThemeMode; accent: string; paper: string; cards: { id: string; on: boolean }[]; labels: Label[]; water: number; name: string
   weekStart: 0 | 1; dayStart: number; dayEnd: number; goalAreas: string[]; dayTheme: string; nightTheme: string
@@ -62,7 +70,7 @@ export interface State {
   workouts: Workout[]
   lists: Record<string, { id: string; title: string; stage?: string; rating?: number; by?: string; notes?: string }[]>
   customLists: { key: string; name: string; icon?: string; desc?: string; stages: string[] }[]
-  trips: unknown[]; notes: { id: string; title: string; style: string; body: string; upd: number }[]
+  trips: Trip[]; notes: { id: string; title: string; style: string; body: string; upd: number }[]
   daynotes: Record<DateStr, string>; focus: Record<DateStr, number>
   weeks: Record<DateStr, WeekPlan>; months: Record<string, MonthPlan>
   years: Record<string, { word?: string; review: Record<string, string> }>

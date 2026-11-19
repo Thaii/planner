@@ -14,7 +14,9 @@ interface Five { open: boolean; kind: string; id: string; d: DateStr; occ?: Date
 const useFive = create<Five>(() => ({ open: false, kind: '', id: '', d: '', title: '', lead: '', mins: 5, end: 0, left: 300, run: false, ended: false }))
 
 let audio: AudioContext | null = null
-function chime() {
+/** Browsers only allow sound after a tap, so call this from the button that starts a timer. */
+export function unlockAudio() { try { audio = audio || new AudioContext(); audio.resume() } catch { /* no audio */ } }
+export function chime() {
   try {
     if (!audio) return
     ;[0, 0.25, 0.5].forEach((d, i) => {

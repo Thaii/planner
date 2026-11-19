@@ -15,6 +15,14 @@ import { GoalsPage } from './pages/goals'
 import { ProjectsPage } from './pages/projects'
 import { WellnessPage } from './pages/wellness'
 import { DopaminePage } from './pages/dopamine'
+import { FoodPage } from './pages/food'
+import { HomePage } from './pages/home'
+import { ListsPage } from './pages/lists'
+import { TravelPage } from './pages/travel'
+import { NotebookPage } from './pages/notebook'
+import { ResetPage } from './pages/reset'
+import { FocusPage } from './pages/focus'
+import { SettingsPage } from './pages/settings'
 
 export default function App() {
   const s = useS()
@@ -44,6 +52,14 @@ export default function App() {
     case 'projects': page = <ProjectsPage />; break
     case 'wellness': page = <WellnessPage />; break
     case 'dopamine': page = <DopaminePage />; break
+    case 'food': page = <FoodPage />; break
+    case 'home': page = <HomePage />; break
+    case 'lists': page = <ListsPage />; break
+    case 'trips': page = <TravelPage />; break
+    case 'notes': page = <NotebookPage />; break
+    case 'reset': page = <ResetPage />; break
+    case 'focus': page = <FocusPage />; break
+    case 'settings': page = <SettingsPage />; break
     case 'more': page = <MorePage />; break
     default: page = <ComingSoon view={view} />
   }
