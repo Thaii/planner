@@ -9,6 +9,12 @@ import { TodayPage } from './pages/today'
 import { WeeklyPage } from './pages/weekly'
 import { MonthlyPage } from './pages/monthly'
 import { MorePage, ComingSoon } from './pages/more'
+import { YearlyPage } from './pages/yearly'
+import { HabitsPage } from './pages/habits'
+import { GoalsPage } from './pages/goals'
+import { ProjectsPage } from './pages/projects'
+import { WellnessPage } from './pages/wellness'
+import { DopaminePage } from './pages/dopamine'
 
 export default function App() {
   const s = useS()
@@ -32,6 +38,12 @@ export default function App() {
     case 'day': page = <TodayPage d={date} />; break
     case 'weekly': page = <WeeklyPage />; break
     case 'monthly': page = <MonthlyPage />; break
+    case 'yearly': page = <YearlyPage />; break
+    case 'habits': page = <HabitsPage />; break
+    case 'goals': page = <GoalsPage />; break
+    case 'projects': page = <ProjectsPage />; break
+    case 'wellness': page = <WellnessPage />; break
+    case 'dopamine': page = <DopaminePage />; break
     case 'more': page = <MorePage />; break
     default: page = <ComingSoon view={view} />
   }

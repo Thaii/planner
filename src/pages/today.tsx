@@ -22,6 +22,7 @@ import { showDopa, scPick, logSelf } from '@/lib/menus'
 import type { State } from '@/lib/types'
 import { cap, uid, cn } from '@/lib/utils'
 import { greeting } from '@/lib/greeting'
+import { fmtSleep, parseSleep } from '@/lib/sleep'
 import { personaliseForm } from '@/components/personalise'
 
 const L = ({ children }: { children: React.ReactNode }) => <div className="lbl mt-3 mb-1 text-mute">{children}</div>
@@ -275,19 +276,6 @@ const CARDS: Record<string, CardFn> = {
   note: ({ d, s }) => <Card><CardHeader title="Notebook" action={<Button variant="link" className="text-[12.5px]" onClick={() => go('notes')}>Notebook</Button>} />
     <AutoTextarea rows={3} className="min-h-[70px] bg-transparent" placeholder="Notes for the day…" value={s.daynotes[d] || ''}
       onSave={(v) => update((st) => { if (v.trim()) st.daynotes[d] = v; else delete st.daynotes[d] })} /></Card>,
-}
-
-/* ---------- Sleep text helpers ---------- */
-export const fmtSleep = (h?: number) => { if (h == null) return ''; const m = Math.round(h * 60); return Math.floor(m / 60) + 'h ' + pad(m % 60) + 'm' }
-export function parseSleep(v: string): number | undefined {
-  const s = v.trim().toLowerCase()
-  if (!s) return undefined
-  let m = s.match(/^(\d+)\s*h(?:ours?)?\s*(\d+)?\s*m?/)
-  if (m) return +m[1] + (+m[2] || 0) / 60
-  m = s.match(/^(\d+):(\d{1,2})$/)
-  if (m) return +m[1] + +m[2] / 60
-  const n = parseFloat(s)
-  return isNaN(n) ? undefined : n
 }
 
 /* ---------- Banners: don't miss twice, low energy, self-care nudge ---------- */
