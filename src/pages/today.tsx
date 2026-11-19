@@ -21,6 +21,7 @@ import { PERIOD_WORD } from '@/lib/constants'
 import { showDopa, scPick, logSelf } from '@/lib/menus'
 import type { State } from '@/lib/types'
 import { cap, uid, cn } from '@/lib/utils'
+import { greeting } from '@/lib/greeting'
 
 const L = ({ children }: { children: React.ReactNode }) => <div className="lbl mt-3 mb-1 text-mute">{children}</div>
 
@@ -316,11 +317,23 @@ function Banners({ d, s }: { d: DateStr; s: State }) {
   )
 }
 
-/* ---------- Page ---------- */
-function greet(name: string) {
-  const h = new Date().getHours()
-  return (h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening') + (name ? ', ' + name : '') + '.'
+/* ---------- First-run: ask for a name ---------- */
+function NameCard() {
+  const [v, setV] = React.useState('')
+  return (
+    <Card className="mb-3 border-accent/50 bg-accent-soft">
+      <div className="lbl text-accent">Welcome</div>
+      <h2 className="mt-1 mb-1 text-[22px]">What should we call you?</h2>
+      <p className="mt-0 mb-2.5 text-[13px] text-mute">It's used for your greeting and your planner's name. It stays on this device.</p>
+      <form className="flex flex-wrap gap-2" onSubmit={(e) => { e.preventDefault(); const n = v.trim(); if (n) update((st) => { st.settings.name = n }) }}>
+        <Input value={v} onChange={(e) => setV(e.target.value)} placeholder="Your first name" className="max-w-[260px] bg-card" aria-label="Your first name" autoComplete="given-name" />
+        <Button variant="primary" type="submit">That's me</Button>
+      </form>
+    </Card>
+  )
 }
+
+/* ---------- Page ---------- */
 const LEFT = ['schedule'], MID = ['priorities', 'meals', 'grocery', 'upcoming', 'intention', 'note']
 
 export function TodayPage({ d, isToday }: { d: DateStr; isToday?: boolean }) {
@@ -347,10 +360,11 @@ export function TodayPage({ d, isToday }: { d: DateStr; isToday?: boolean }) {
         <span className="flex-1" />
         <Button size="mono" onClick={() => go('settings', { setTab: 'day' })}>Customise</Button>
       </div>
-      {isToday && <div className="mt-2.5 mb-1 font-serif text-[34px] leading-tight">{greet(s.settings.name)}</div>}
+      {isToday && <div className="mt-2.5 mb-1 font-serif text-[34px] leading-tight">{greeting(s.settings.name)}</div>}
       <div className="mb-3.5 text-[13.5px] text-mute">
         <Num value={tk.filter((x) => x.done).length} /> of {tk.length} done · <Num value={s.well[d]?.water || 0} /> glass{(s.well[d]?.water || 0) === 1 ? '' : 'es'} · <Num value={hr.pct} suffix="%" /> of habits · momentum <Num value={momentum(s)} />
       </div>
+      {isToday && !s.settings.name && <NameCard />}
       <Banners d={d} s={s} />
       {hero.length > 0 && <div className={cn('mb-3 grid gap-3', hero.length === 2 && 'min-[760px]:grid-cols-[1.4fr_1fr]')}>{hero.map((id) => <div key={id} className="self-start">{CARDS[id]({ d, s })}</div>)}</div>}
       <div className="grid grid-cols-1 gap-3 min-[760px]:grid-cols-2 min-[1100px]:grid-cols-[1.15fr_1fr_1fr]">
