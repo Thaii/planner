@@ -11,7 +11,7 @@ export function defaults(): State {
         { id: 'personal', name: 'Personal', color: '#9f88c8' },
       ],
       water: 8, name: '', weekStart: 1, dayStart: 6, dayEnd: 22, goalAreas: ['Personal', 'Career', 'Health', 'Learning'],
-      dayTheme: 'linen', nightTheme: 'ember', nightFrom: 19, nightTo: 6, themeAccent: true,
+      dayTheme: 'linen', nightTheme: 'ember', nightFrom: 19, nightTo: 6, themeAccent: true, nameInTitle: true, greeting: '', nameAsked: false,
     },
     tasks: [], events: [], ics: {}, prio: {}, habits: [], goals: [], projects: [],
     identities: [

@@ -5,7 +5,7 @@ import { useUI, go, type View } from '@/lib/ui'
 import { NAVGROUPS } from '@/lib/nav'
 import { cn } from '@/lib/utils'
 import { useS } from '@/lib/store'
-import { plannerName } from '@/lib/greeting'
+import { plannerTitle } from '@/lib/greeting'
 import { SheetHost } from './sheet'
 import { CommandMenu } from './command-menu'
 import { FiveTimer } from './five'
@@ -19,11 +19,11 @@ export function AppShell({ children, dark }: { children: React.ReactNode; dark: 
   const view = useUI((u) => u.view)
   const hl: View = view === 'day' ? 'today' : view
   const inMore = !BNAV.some(([v]) => v === hl)
-  const brand = plannerName(useS().settings.name)
+  const [brand, brand2] = plannerTitle(useS().settings)
   return (
     <div className="flex min-h-screen">
       <nav className="sticky top-0 hidden h-screen w-[210px] flex-none flex-col gap-px overflow-auto border-r border-line bg-card px-2.5 py-5.5 min-[900px]:flex" aria-label="Main">
-        <div className="px-2.5 pb-2.5 font-serif text-xl">{brand} <span className="text-accent">Planner</span></div>
+        <div className="px-2.5 pb-2.5 font-serif text-xl">{brand} <span className="text-accent">{brand2}</span></div>
         {NAVGROUPS.map(([g, items]) => (
           <React.Fragment key={g}>
             <div className="px-3 pt-3 pb-1 font-mono text-[10.5px] tracking-[0.1em] text-mute uppercase">{g}</div>
@@ -36,7 +36,7 @@ export function AppShell({ children, dark }: { children: React.ReactNode; dark: 
       </nav>
       <main className="mx-auto w-full max-w-[1180px] min-w-0 flex-1 px-3.5 pt-[calc(14px+var(--sat))] pb-[calc(100px+var(--sab))] min-[900px]:px-7 min-[900px]:pt-6 min-[900px]:pb-15">
         <div className="mb-3.5 flex items-center gap-2">
-          <div className="flex-1 truncate font-serif text-xl min-[900px]:invisible">{brand} <span className="text-accent">Planner</span></div>
+          <div className="flex-1 truncate font-serif text-xl min-[900px]:invisible">{brand} <span className="text-accent">{brand2}</span></div>
           <span className="flex items-center gap-1.5 rounded-full border border-line bg-card px-2.5 py-1 text-[11px] text-mute"><i className="size-[7px] rounded-full bg-[#5aa36a]" />Saved on this device</span>
           <button className="grid size-9 place-items-center rounded-[11px] border border-line bg-card" onClick={() => useUI.setState({ cmdOpen: true })} aria-label="Search (Ctrl K)" title="Search · Ctrl/⌘ K"><Search className="size-4" /></button>
           <button className="grid size-9 place-items-center rounded-[11px] border border-line bg-card" onClick={() => go('settings')} aria-label="Customise"><Settings className="size-4" /></button>

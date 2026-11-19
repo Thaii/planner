@@ -4,7 +4,7 @@ import { useS } from './lib/store'
 import { useUI, viewFromHash } from './lib/ui'
 import { applyTheme } from './lib/theme'
 import { today } from './lib/date'
-import { plannerName } from './lib/greeting'
+import { plannerTitle } from './lib/greeting'
 import { TodayPage } from './pages/today'
 import { WeeklyPage } from './pages/weekly'
 import { MonthlyPage } from './pages/monthly'
@@ -23,7 +23,7 @@ export default function App() {
     mq.addEventListener?.('change', onMq)
     return () => { clearInterval(iv); mq.removeEventListener?.('change', onMq) }
   }, [s.settings])
-  useEffect(() => { document.title = `${plannerName(s.settings.name)} Planner` }, [s.settings.name])
+  useEffect(() => { document.title = plannerTitle(s.settings).join(' ') }, [s.settings])
   useEffect(() => { window.addEventListener('hashchange', viewFromHash); return () => window.removeEventListener('hashchange', viewFromHash) }, [])
 
   let page

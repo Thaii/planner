@@ -34,6 +34,12 @@ export interface Settings {
   theme: ThemeMode; accent: string; paper: string; cards: { id: string; on: boolean }[]; labels: Label[]; water: number; name: string
   weekStart: 0 | 1; dayStart: number; dayEnd: number; goalAreas: string[]; dayTheme: string; nightTheme: string
   nightFrom: number; nightTo: number; themeAccent: boolean; taskIdentity?: string
+  /** Show "<Name>'s Planner" (true) or "Life Planner" (false). */
+  nameInTitle: boolean
+  /** Custom greeting shown instead of Good morning/afternoon/evening. Blank = time-based. */
+  greeting: string
+  /** The first-run name card has been answered or skipped. */
+  nameAsked: boolean
 }
 
 /** Same shape as the Claude-hosted version, so its backups import directly. */
