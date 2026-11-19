@@ -39,7 +39,9 @@ export interface Trip {
 }
 
 export interface Settings {
-  theme: ThemeMode; accent: string; paper: string; cards: { id: string; on: boolean }[]; labels: Label[]; water: number; name: string
+  theme: ThemeMode; accent: string; paper: string; cards: { id: string; on: boolean }[]; labels: Label[]; water: number
+  /** Daily water goal in ml, and how much one drop (a glass/bottle) holds. `water` = number of drops. */
+  waterGoal: number; glass: number; name: string
   weekStart: 0 | 1; dayStart: number; dayEnd: number; goalAreas: string[]; dayTheme: string; nightTheme: string
   nightFrom: number; nightTo: number; themeAccent: boolean; taskIdentity?: string
   /** Show "<Name>'s Planner" (true) or "Life Planner" (false). */

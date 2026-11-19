@@ -1,10 +1,12 @@
+import { waterForm } from '@/components/water-form'
+import { ml } from '@/lib/water'
 import * as React from 'react'
 import { ArrowDown, ArrowUp, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { Card, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Check } from '@/components/ui/check'
-import { CommitInput, InlineAdd, Input, Select, Textarea } from '@/components/ui/field'
+import { CommitInput, InlineAdd, Select, Textarea } from '@/components/ui/field'
 import { Segmented } from '@/components/ui/segmented'
 import { PageHead } from '@/components/bits'
 import { closeSheet, confirmBox, openSheet } from '@/components/sheet'
@@ -65,8 +67,8 @@ function Pages() {
             <Select value={s.dayStart} onChange={(e) => setS((st) => { st.dayStart = +e.target.value })}>{hours(0, 11).map((h) => <option key={h} value={h}>{pad(h)}:00</option>)}</Select></label>
           <label className="w-[calc(50%-5px)]"><span className="mb-1 block text-[12.5px] font-medium text-mute">Schedule ends</span>
             <Select value={s.dayEnd} onChange={(e) => setS((st) => { st.dayEnd = +e.target.value })}>{hours(13, 24).map((h) => <option key={h} value={h}>{pad(h % 24)}:00</option>)}</Select></label>
-          <label className="w-[calc(50%-5px)]"><span className="mb-1 block text-[12.5px] font-medium text-mute">Daily water target (glasses)</span>
-            <Input type="number" min={1} max={20} value={s.water} onChange={(e) => { const n = +e.target.value; if (n >= 1 && n <= 20) setS((st) => { st.water = n }) }} /></label>
+          <div className="w-full"><span className="mb-1 block text-[12.5px] font-medium text-mute">Water goal</span>
+            <div className="flex items-center gap-2"><span className="flex-1 text-[14px]">{ml(s.waterGoal || 2000)} a day · each drop is {ml(s.glass || 250)}</span><Button size="sm" onClick={waterForm}>Change</Button></div></div>
         </div>
       </Card>
       <Card>

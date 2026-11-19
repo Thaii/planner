@@ -1,3 +1,4 @@
+import { glassMl, ml } from '@/lib/water'
 import * as React from 'react'
 import { X, RotateCw, Pencil } from 'lucide-react'
 import { Card, CardHeader, Empty } from '@/components/ui/card'
@@ -353,7 +354,7 @@ export function TodayPage({ d, isToday }: { d: DateStr; isToday?: boolean }) {
       </div>
       {isToday && <div className="group mt-2.5 mb-1 flex items-baseline gap-2"><div className="font-serif text-[34px] leading-tight">{greeting(s.settings)}</div><button className="rounded-md p-1 text-mute opacity-60 hover:opacity-100" aria-label="Change your name and greeting" title="Change your name and greeting" onClick={personaliseForm}><Pencil className="size-4" /></button></div>}
       <div className="mb-3.5 text-[13.5px] text-mute">
-        <Num value={tk.filter((x) => x.done).length} /> of {tk.length} done · <Num value={s.well[d]?.water || 0} /> glass{(s.well[d]?.water || 0) === 1 ? '' : 'es'} · <Num value={hr.pct} suffix="%" /> of habits · momentum <Num value={momentum(s)} />
+        <Num value={tk.filter((x) => x.done).length} /> of {tk.length} done · {ml((s.well[d]?.water || 0) * glassMl(s.settings))} water · <Num value={hr.pct} suffix="%" /> of habits · momentum <Num value={momentum(s)} />
       </div>
       {isToday && !s.settings.name && !s.settings.nameAsked && <NameCard />}
       <Banners d={d} s={s} />

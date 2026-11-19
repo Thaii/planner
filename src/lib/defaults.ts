@@ -10,7 +10,7 @@ export function defaults(): State {
         { id: 'health', name: 'Health', color: '#7f9c7a' }, { id: 'money', name: 'Money', color: '#cf9c3f' },
         { id: 'personal', name: 'Personal', color: '#9f88c8' },
       ],
-      water: 8, name: '', weekStart: 1, dayStart: 6, dayEnd: 22, goalAreas: ['Personal', 'Career', 'Health', 'Learning'],
+      water: 8, waterGoal: 2000, glass: 250, name: '', weekStart: 1, dayStart: 6, dayEnd: 22, goalAreas: ['Personal', 'Career', 'Health', 'Learning'],
       dayTheme: 'linen', nightTheme: 'ember', nightFrom: 19, nightTo: 6, themeAccent: true, nameInTitle: true, greeting: '', nameAsked: false,
     },
     tasks: [], events: [], ics: {}, prio: {}, habits: [], goals: [], projects: [],
@@ -63,6 +63,8 @@ export function migrate(raw: Partial<State>): State {
       else s.settings.cards.push({ id, on: true })
     }
   })
+  // Older planners only had a number of drops; treat each one as a 250 ml glass.
+  if (!raw.settings?.waterGoal) { s.settings.glass = 250; s.settings.waterGoal = (s.settings.water || 8) * 250 }
   s.goals.forEach((g) => { if (!g.area) g.area = s.settings.goalAreas[0] })
   Object.values(s.well).forEach((w) => { if (w && w.energy != null && w.energy <= 5 && !w.e100) { w.energy = w.energy * 20; w.e100 = 1 } })
   return s

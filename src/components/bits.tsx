@@ -1,3 +1,5 @@
+import { waterForm } from './water-form'
+import { dropsFor, glassMl, ml } from '@/lib/water'
 import * as React from 'react'
 import { X, CornerUpRight } from 'lucide-react'
 import { Check } from './ui/check'
@@ -65,13 +67,22 @@ const Drop = ({ on, small }: { on: boolean; small?: boolean }) => (
 )
 export function Drops({ d, small }: { d: DateStr; small?: boolean }) {
   const s = useS()
-  const tgt = s.settings.water || 8, n = s.well[d]?.water || 0
-  return (
-    <div className={cn('flex items-center', small ? 'gap-0.5' : 'flex-wrap gap-[3px]')}>
+  const g = glassMl(s.settings), goal = s.settings.waterGoal || 2000
+  const tgt = dropsFor(goal, g), n = s.well[d]?.water || 0
+  const row = (
+    <div className={cn('flex items-center', small ? 'gap-0.5' : 'flex-wrap gap-[3px]')} title={small ? `${ml(n * g)} of ${ml(goal)}` : undefined}>
       {Array.from({ length: Math.max(tgt, n) }, (_, i) => (
-        <button key={i} aria-label={`${i + 1} glasses`} onClick={() => setWell(d, 'water', n === i + 1 ? i : i + 1)}><Drop on={i < n} small={small} /></button>
+        <button key={i} aria-label={`${ml((i + 1) * g)} of water`} onClick={() => setWell(d, 'water', n === i + 1 ? i : i + 1)}><Drop on={i < n} small={small} /></button>
       ))}
-      {!small && <span className="ml-1.5 text-[12.5px] text-mute">{n} / {tgt}</span>}
+      {/* Past the goal? One more empty drop so you can keep logging. */}
+      {!small && n >= tgt && <button aria-label={`${ml((n + 1) * g)} of water`} className="opacity-45" onClick={() => setWell(d, 'water', n + 1)}><Drop on={false} /></button>}
+    </div>
+  )
+  if (small) return row
+  return (
+    <div>
+      {row}
+      <div className="mt-1 text-[12.5px] text-mute"><b className={n * g >= goal ? 'text-accent' : 'text-ink'}>{ml(n * g)}</b> of {ml(goal)}{n * g >= goal ? ' · goal reached' : ''} · each drop is {ml(g)} · <button className="text-accent underline" onClick={waterForm}>Change</button></div>
     </div>
   )
 }

@@ -1,3 +1,4 @@
+import { glassMl, ml } from '@/lib/water'
 import * as React from 'react'
 import { X, Play } from 'lucide-react'
 import { Card, CardHeader, Empty } from '@/components/ui/card'
@@ -136,7 +137,7 @@ export function WellnessPage() {
         <div className="grid gap-4 min-[760px]:grid-cols-4">
           <Summary s={s} k="mood" label="Mood" max={5} big={(v) => `${MOODW[Math.round(v)]} most days`} small={(v) => `${v} pts`} />
           <Summary s={s} k="energy" label="Energy" max={100} big={(v) => `${Math.round(v)}% on the slider`} small={(v) => `${v}%`} />
-          <Summary s={s} k="water" label="Water" max={Math.max(10, s.settings.water || 8)} big={(v) => `${Math.round(v * 10) / 10} glasses a day`} small={(v) => `${v} glasses`} />
+          <Summary s={s} k="water" label="Water" max={Math.max(1, (s.settings.waterGoal || 2000) / glassMl(s.settings))} big={(v) => `${ml(v * glassMl(s.settings))} a day`} small={(v) => ml(v * glassMl(s.settings))} />
           <Summary s={s} k="sleep" label="Sleep" max={11} big={(v) => `${fmtSleep(v)} a night`} small={(v) => fmtSleep(v)} />
         </div>
       </Card>
@@ -176,7 +177,7 @@ export function WellnessPage() {
       <div className="mt-3 rounded-card bg-accent-soft px-4 py-3.5">
         <span className="lbl text-accent">Week {Math.ceil((diffD(t.slice(0, 4) + '-01-01', t) + 1) / 7)} in numbers</span>
         <div className="mt-1.5 text-[14px]">
-          {hr.pct}% of habits · {water7} glasses of water · {sl.length ? fmtSleep(sl.reduce((a, b) => a + b, 0) / sl.length) + ' average sleep' : 'no sleep logged'} · {d7.filter((d) => (s.journal.grat[d] || []).length).length} days with gratitude · {d7.filter((d) => (s.selfLog[d] || []).length).length} days of self-care
+          {hr.pct}% of habits · {ml(water7 * glassMl(s.settings))} of water · {sl.length ? fmtSleep(sl.reduce((a, b) => a + b, 0) / sl.length) + ' average sleep' : 'no sleep logged'} · {d7.filter((d) => (s.journal.grat[d] || []).length).length} days with gratitude · {d7.filter((d) => (s.selfLog[d] || []).length).length} days of self-care
         </div>
       </div>
     </div>
