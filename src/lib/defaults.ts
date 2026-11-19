@@ -65,6 +65,12 @@ export function migrate(raw: Partial<State>): State {
   })
   // Older planners only had a number of drops; treat each one as a 250 ml glass.
   if (!raw.settings?.waterGoal) { s.settings.glass = 250; s.settings.waterGoal = (s.settings.water || 8) * 250 }
+  // The Notes list in Lists & collections was folded into the Notebook: move any items to a "Notes" page.
+  const old = s.lists.lnotes
+  if (old) {
+    if (old.length) s.notes.push({ id: 'lnotes', title: 'Notes', style: 'lined', upd: Date.now(), body: old.map((i) => '• ' + i.title + (i.notes ? ' – ' + i.notes : '')).join('\n') })
+    s.lists = { ...s.lists }; delete s.lists.lnotes
+  }
   s.goals.forEach((g) => { if (!g.area) g.area = s.settings.goalAreas[0] })
   Object.values(s.well).forEach((w) => { if (w && w.energy != null && w.energy <= 5 && !w.e100) { w.energy = w.energy * 20; w.e100 = 1 } })
   return s

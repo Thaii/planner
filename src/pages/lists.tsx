@@ -40,7 +40,6 @@ const DEFS: Def[] = [
   { key: 'wishlist', name: 'Wishlist', icon: '💫', desc: 'Nice-to-haves', stages: ['Want', 'Saving', 'Bought'], rated: false, title: 'What do you want', full: true, fields: { price: 'Price', link: 'Where to buy (link)', where: 'Or which shop', extra: 'Size, colour, model' } },
   { key: 'favourites', name: 'Favourite things', icon: '⭐', desc: 'Small joys worth keeping', stages: [], rated: true, title: 'Thing', fields: { by: 'Category', extra: 'Why I love it' } },
   { key: 'quotes', name: 'Quotes', icon: '❝', desc: 'Words that stuck', stages: [], rated: false, title: 'Quote', fields: { by: 'Who said it', extra: 'Where it is from' } },
-  { key: 'lnotes', name: 'Notes', icon: '📝', desc: 'Everything else', stages: [], rated: false, title: 'Note', fields: {} },
 ]
 
 /** Fields someone can switch on for a list they make themselves. */
@@ -65,7 +64,7 @@ function itemForm(c: Def, id?: string, title?: string) {
   const fields: Field[] = []
   // "Who is it for" comes first on gift lists – that's how people think about them.
   if (c.group && F.by) fields.push({ k: 'by', l: F.by, v: it?.by, list: people, ph: 'e.g. Mum' })
-  fields.push({ k: 'title', l: c.title, t: c.key === 'quotes' || c.key === 'lnotes' ? 'textarea' : 'text', rows: 3, v: it?.title ?? title, ph: c.ph })
+  fields.push({ k: 'title', l: c.title, t: c.key === 'quotes' ? 'textarea' : 'text', rows: 3, v: it?.title ?? title, ph: c.ph })
   if (!c.group && F.by) fields.push({ k: 'by', l: F.by, v: it?.by, list: c.key === 'favourites' ? people : undefined })
   if (F.date) fields.push({ k: 'date', l: F.date, t: 'date', v: it?.date, half: true })
   if (F.price) fields.push({ k: 'price', l: F.price + ' ($)', t: 'number', step: '0.01', min: 0, v: it?.price, half: true })
