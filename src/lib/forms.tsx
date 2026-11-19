@@ -1,0 +1,123 @@
+import { openForm } from '@/components/sheet'
+import { getS, update } from './store'
+import { fmt, today, type DateStr } from './date'
+import { REPEATS, ACCENTS } from './constants'
+import { cap, uid } from './utils'
+import type { Repeat } from './types'
+
+const del = <T extends { id: string }>(arr: T[], id: string) => { const i = arr.findIndex((x) => x.id === id); if (i >= 0) arr.splice(i, 1) }
+
+export function taskForm(id?: string, date?: DateStr) {
+  const t = id ? getS().tasks.find((x) => x.id === id) : undefined
+  openForm({
+    title: t ? 'Edit to-do' : 'New to-do',
+    fields: [
+      { k: 'title', l: 'To-do', v: t?.title, ph: 'What needs doing?' },
+      { k: 'date', l: 'Date (blank = anytime)', t: 'date', v: t ? t.date : date ?? today(), half: true },
+      { k: 'time', l: 'Time (optional)', t: 'time', v: t?.time, half: true },
+      { k: 'repeat', l: 'Repeat', t: 'select', o: REPEATS, v: t?.repeat || 'none', half: true },
+      { k: 'label', l: 'Colour label', t: 'label', v: t?.label, half: true },
+      { k: 'step', l: 'First physical step', v: t?.step, ph: 'e.g. open the laptop and the expenses folder' },
+      { k: 'notes', l: 'Notes', t: 'textarea', rows: 2, v: t?.notes },
+    ],
+    onSave: (v) => {
+      if (!v.title) return false
+      if (v.repeat !== 'none' && !v.date) v.date = today()
+      update((d) => { const x = id && d.tasks.find((k) => k.id === id); if (x) Object.assign(x, v); else d.tasks.push({ id: uid(), order: Date.now(), ...v } as any) })
+    },
+    onDelete: id ? () => update((d) => del(d.tasks, id)) : undefined,
+  })
+}
+
+export function eventForm(id?: string, date?: DateStr) {
+  const e = id ? getS().events.find((x) => x.id === id) : undefined
+  openForm({
+    title: e ? 'Edit event' : 'New event',
+    fields: [
+      { k: 'title', l: 'Title', v: e?.title, ph: 'Appointment, birthday, catch-up…' },
+      { k: 'date', l: 'Date', t: 'date', v: e?.date || date || today(), half: true },
+      { k: 'repeat', l: 'Repeat', t: 'select', o: REPEATS, v: e?.repeat || 'none', half: true },
+      { k: 'time', l: 'Start', t: 'time', v: e?.time, half: true },
+      { k: 'end', l: 'End', t: 'time', v: e?.end, half: true },
+      { k: 'label', l: 'Colour label', t: 'label', v: e?.label },
+      { k: 'loc', l: 'Where', v: e?.loc },
+      { k: 'notes', l: 'Notes', t: 'textarea', rows: 2, v: e?.notes },
+    ],
+    onSave: (v) => {
+      if (!v.title || !v.date) return false
+      update((d) => { const x = id && d.events.find((k) => k.id === id); if (x) Object.assign(x, v); else d.events.push({ id: uid(), ...v, repeat: v.repeat as Repeat } as any) })
+    },
+    onDelete: id ? () => update((d) => del(d.events, id)) : undefined,
+  })
+}
+
+export function mealForm(date: DateStr) {
+  const s = getS(), m = s.meals[date] || {}, names = s.recipes.map((r) => r.name)
+  openForm({
+    title: 'Meals · ' + fmt(date, { weekday: 'long', day: 'numeric', month: 'short' }),
+    fields: (['breakfast', 'lunch', 'dinner', 'snacks'] as const).map((k) => ({ k, l: cap(k), v: m[k], list: names })),
+    onSave: (v) => update((d) => { d.meals[date] = v }),
+  })
+}
+
+export function habitForm(id?: string) {
+  const s = getS(), h = id ? s.habits.find((x) => x.id === id) : undefined
+  openForm({
+    title: h ? 'Edit habit' : 'New habit',
+    fields: [
+      { k: 'name', l: 'Habit', v: h?.name, ph: 'e.g. Read 20 pages' },
+      { k: 'mode', l: 'How often', t: 'select', o: [['days', 'On set days'], ['weekly', 'A number of times a week']], v: h?.mode || 'days', half: true },
+      { k: 'perWeek', l: 'Times a week', t: 'number', min: 1, max: 7, v: h?.perWeek || 3, half: true },
+      { k: 'days', l: 'Days (for “on set days”)', t: 'days', v: h?.days || [0, 1, 2, 3, 4, 5, 6] },
+      { k: 'min', l: 'Minimum for bad days', v: h?.min, ph: 'e.g. 2 pages, 1 glass, 5 minutes' },
+      { k: 'cue', l: 'Cue – when you will do it', v: h?.cue, ph: 'e.g. after lunch' },
+      { k: 'identity', l: 'Builds who you are becoming', t: 'select', o: [['', 'None'], ...s.identities.map((x) => [x.id, cap(x.name)] as [string, string])], v: h?.identity || '', half: true },
+      { k: 'color', l: 'Colour', t: 'color', v: h?.color || ACCENTS[s.settings.accent]?.[1], half: true },
+    ],
+    onSave: (v) => {
+      if (!v.name) return false
+      v.perWeek = Math.max(1, Math.min(7, +v.perWeek || 1))
+      update((d) => { const x = id && d.habits.find((k) => k.id === id); if (x) Object.assign(x, v); else d.habits.push({ id: uid(), created: today(), log: {}, ...v } as any) })
+    },
+    onDelete: id ? () => update((d) => del(d.habits, id)) : undefined,
+  })
+}
+
+export function goalForm(id?: string, area?: string) {
+  const s = getS(), g = id ? s.goals.find((x) => x.id === id) : undefined, areas = s.settings.goalAreas
+  openForm({
+    title: g ? 'Update goal' : 'New goal',
+    fields: [
+      { k: 'title', l: 'Goal', v: g?.title },
+      { k: 'area', l: 'Area of life', t: 'select', o: areas.map((a) => [a, a]), v: g?.area || area || areas[0], half: true },
+      { k: 'pct', l: 'Progress %', t: 'number', min: 0, max: 100, v: g?.pct || 0, half: true },
+      { k: 'target', l: 'Target date', t: 'date', v: g?.target, half: true },
+      { k: 'next', l: 'Next step', v: g?.next, half: true },
+      { k: 'why', l: 'Why it matters', t: 'textarea', rows: 2, v: g?.why },
+    ],
+    onSave: (v) => {
+      if (!v.title) return false
+      v.pct = Math.max(0, Math.min(100, +v.pct || 0))
+      if (v.pct === 100) v.done = true
+      update((d) => { const x = id && d.goals.find((k) => k.id === id); if (x) Object.assign(x, v); else d.goals.push({ id: uid(), ...v } as any) })
+    },
+    onDelete: id ? () => update((d) => del(d.goals, id)) : undefined,
+  })
+}
+
+export function identityForm(id: string) {
+  const x = getS().identities.find((i) => i.id === id)
+  if (!x) return
+  openForm({
+    title: 'Who you are becoming',
+    fields: [
+      { k: 'name', l: "I'm…", v: x.name, ph: 'a fit person' },
+      { k: 'does', l: 'What this person does', t: 'textarea', rows: 2, v: x.does, ph: 'Walks every day, eats real food' },
+    ],
+    onSave: (v) => {
+      if (!v.name) return false
+      update((d) => { const i = d.identities.find((k) => k.id === id); if (i) { i.name = v.name.replace(/^i'?m\s+/i, ''); i.does = v.does } })
+    },
+    onDelete: () => update((d) => { d.identities = d.identities.filter((i) => i.id !== id); d.habits.forEach((h) => { if (h.identity === id) h.identity = '' }) }),
+  })
+}
