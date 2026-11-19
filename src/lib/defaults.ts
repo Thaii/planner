@@ -6,12 +6,12 @@ export function defaults(): State {
     settings: {
       theme: 'light', accent: 'blush', paper: 'plain', cards: CARD_IDS.map((id) => ({ id, on: true })),
       labels: [
-        { id: 'work', name: 'Work', color: '#6f8fd6' }, { id: 'family', name: 'Family', color: '#d4848f' },
-        { id: 'health', name: 'Health', color: '#7f9c7a' }, { id: 'money', name: 'Money', color: '#cf9c3f' },
-        { id: 'personal', name: 'Personal', color: '#9f88c8' },
+        { id: 'work', name: 'Work', color: '#6f8fd6' }, { id: 'home', name: 'Home', color: '#e09a6b' },
+        { id: 'family', name: 'Family', color: '#e07fa6' }, { id: 'health', name: 'Health', color: '#6fae7a' },
+        { id: 'money', name: 'Money', color: '#cf9c3f' }, { id: 'friends', name: 'Friends', color: '#9f88c8' },
       ],
       water: 8, waterGoal: 2000, glass: 250, name: '', weekStart: 1, dayStart: 6, dayEnd: 22, goalAreas: ['Personal', 'Career', 'Health', 'Learning'],
-      dayTheme: 'linen', nightTheme: 'ember', nightFrom: 19, nightTo: 6, themeAccent: true, nameInTitle: true, greeting: '', nameAsked: false,
+      dayTheme: 'linen', nightTheme: 'ember', nightFrom: 19, nightTo: 6, themeAccent: true, nameInTitle: true, greeting: '', nameAsked: false, schedView: 'timeline',
     },
     tasks: [], events: [], ics: {}, prio: {}, habits: [], goals: [], projects: [],
     identities: [

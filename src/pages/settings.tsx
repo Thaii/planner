@@ -11,7 +11,8 @@ import { Segmented } from '@/components/ui/segmented'
 import { PageHead } from '@/components/bits'
 import { closeSheet, confirmBox, openSheet } from '@/components/sheet'
 import { personaliseForm } from '@/components/personalise'
-import { exportBackup, getS, importBackup, replaceState, update, useS } from '@/lib/store'
+import { exportBackup, getS, importBackup, replaceState, undoable, update, useS } from '@/lib/store'
+import { tint } from '@/lib/logic'
 import { defaults } from '@/lib/defaults'
 import { ACCENTS, CARDS_DEF, DAY_THEMES, NIGHT_THEMES, PAPERS, type Palette } from '@/lib/constants'
 import { accentColor, isNight } from '@/lib/theme'
@@ -42,6 +43,7 @@ function YourDay() {
           </div>
         ))}
       </div>
+      <Button variant="link" className="mt-2 text-[13px]" onClick={() => undoable('Dashboard reset', (d) => { d.settings.cards = defaults().settings.cards })}>Reset the dashboard</Button>
     </Card>
   )
 }
@@ -153,26 +155,58 @@ function Look() {
       </div>
       <div className="lbl mb-1.5 text-mute">Paper</div>
       <Segmented value={s.paper} onChange={(v) => setS((st) => { st.paper = v })} options={PAPERS} />
+      <div className="lbl mb-1.5 text-mute">The day's schedule</div>
+      <Segmented value={s.schedView || 'timeline'} onChange={(v) => setS((st) => { st.schedView = v as 'timeline' | 'list' })} options={[['timeline', 'Timeline'], ['list', 'Simple list']]} />
+      <p className="-mt-1.5 text-[13px] text-mute">{(s.schedView || 'timeline') === 'timeline' ? 'The timeline draws the hours of the day with a line showing where you are in it.' : 'The simple list shows what is on in time order, with past items faded and what is on now marked.'}</p>
+      <Button variant="link" className="text-[13px]" onClick={() => undoable('Look reset', (d) => {
+        const def = defaults().settings
+        ;(['theme', 'accent', 'paper', 'dayTheme', 'nightTheme', 'nightFrom', 'nightTo', 'themeAccent', 'schedView'] as const).forEach((k) => { (d.settings as unknown as Record<string, unknown>)[k] = def[k] })
+      })}>Reset the look</Button>
     </Card>
   )
 }
 
+/** Soft, readable label colours (pink, blush, apricot, honey, sage, seafoam, cornflower, lilac). */
+const LABEL_COLOURS = ['#e07fa6', '#d98c8c', '#e09a6b', '#cf9c3f', '#6fae7a', '#4fa59b', '#6f8fd6', '#9f88c8']
+
 function Colours() {
   const s = useS().settings
   const setL = (id: string, fn: (l: { name: string; color: string }) => void) => setS((st) => { const l = st.labels.find((x) => x.id === id); if (l) fn(l) })
+  const add = () => setS((st) => {
+    const used = new Set(st.labels.map((l) => l.color.toLowerCase()))
+    st.labels.push({ id: uid(), name: 'New colour', color: LABEL_COLOURS.find((c) => !used.has(c)) || LABEL_COLOURS[st.labels.length % 8] })
+  })
   return (
     <Card>
-      <CardHeader title="Colour coding" action={<Button variant="link" className="text-[12.5px]" onClick={() => setS((st) => { st.labels.push({ id: uid(), name: 'New label', color: '#8a8a8a' }) })}>+ Label</Button>} />
-      <p className="mt-0 text-[13.5px] text-mute">Name your own labels and use them on to-dos, appointments, workouts and projects, and to colour days on the month.</p>
+      <CardHeader title="Colour coding" />
+      <p className="mt-0 text-[13.5px] text-mute">Give anything in your calendar a colour and it carries that colour through the day, the week, the month and the year. Rename these to match your own life.</p>
       <div className="rows">
-        {s.labels.map((l) => (
-          <div key={l.id} className="row">
-            <input type="color" aria-label={'Colour for ' + l.name} value={l.color} onChange={(e) => setL(l.id, (x) => { x.color = e.target.value })} className="h-9 w-11 cursor-pointer rounded-lg border border-line bg-card p-0.5" />
-            <CommitInput value={l.name} aria-label="Label name" className="flex-1" onCommit={(v) => v.trim() && setL(l.id, (x) => { x.name = v.trim() })} />
-            <button className="p-1 text-mute" aria-label={'Remove ' + l.name} onClick={() => setS((st) => { st.labels = st.labels.filter((x) => x.id !== l.id) })}><X className="size-4" /></button>
-          </div>
-        ))}
+        {s.labels.map((l) => {
+          const custom = !LABEL_COLOURS.includes(l.color.toLowerCase())
+          return (
+            <div key={l.id} className="row flex-wrap gap-y-2">
+              <span className="lamp-warm w-[76px] flex-none truncate rounded-md px-2 py-1 text-center text-[12px]" style={{ background: tint(l.color, 24), color: `color-mix(in srgb, ${l.color} 60%, var(--ink))` }}>{l.name}</span>
+              <CommitInput value={l.name} aria-label="Colour name" className="min-w-[90px] flex-1 border-0 bg-transparent px-1" onCommit={(v) => v.trim() && setL(l.id, (x) => { x.name = v.trim() })} />
+              <div className="flex items-center gap-1 max-[560px]:order-last max-[560px]:w-full max-[560px]:justify-between">
+                {LABEL_COLOURS.map((c) => (
+                  <button key={c} aria-label={'Use this colour for ' + l.name} aria-pressed={l.color.toLowerCase() === c} onClick={() => setL(l.id, (x) => { x.color = c })}
+                    className={cn('size-7 rounded-full border-2', l.color.toLowerCase() === c ? 'border-ink' : 'border-transparent')}
+                    style={{ background: tint(c, 30), boxShadow: `inset 0 0 0 1.5px ${c}` }} />
+                ))}
+                <label title="Any colour" className={cn('relative size-7 cursor-pointer overflow-hidden rounded-full border-2', custom ? 'border-ink' : 'border-transparent')}
+                  style={{ background: custom ? l.color : 'conic-gradient(#e57373,#ffb74d,#fff176,#81c784,#64b5f6,#9575cd,#e57373)' }}>
+                  <span className="sr-only">Pick any colour for {l.name}</span>
+                  <input type="color" value={l.color} onChange={(e) => setL(l.id, (x) => { x.color = e.target.value })} className="absolute inset-0 size-full cursor-pointer opacity-0" />
+                </label>
+              </div>
+              <button className="p-1 text-mute" aria-label={'Delete ' + l.name}
+                onClick={() => undoable(`Deleted ${l.name}`, (d) => { d.settings.labels = d.settings.labels.filter((x) => x.id !== l.id) })}><X className="size-4" /></button>
+            </div>
+          )
+        })}
       </div>
+      <Button className="mt-3" onClick={add}>Add a colour</Button>
+      <p className="mb-0 text-[12.5px] text-mute">Deleting a colour never deletes what was using it. The colour just comes off.</p>
     </Card>
   )
 }

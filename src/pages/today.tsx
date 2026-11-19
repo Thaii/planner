@@ -11,7 +11,7 @@ import { TaskRow, HabitRow, Drops, Moods } from '@/components/bits'
 import { startFive } from '@/components/five'
 import { useS, update, undoable } from '@/lib/store'
 import { go, openDay } from '@/lib/ui'
-import { addD, diffD, fmt, mins, nowMins, pad, today, ym, type DateStr } from '@/lib/date'
+import { addD, diffD, fmt, mins, nowMins, pad, t12, today, ym, type DateStr } from '@/lib/date'
 import {
   eventsOn, workoutsOn, tasksOn, hDue, kept, hRate, momentum, idById, votesOn, nextUp, lowEnergy, roughDay,
   weekStart, weekOf, monthOf, periodKey, labColor, tint,
@@ -88,10 +88,47 @@ function Timeline({ d }: { d: DateStr }) {
   )
 }
 
+/* ---------- The day's schedule as a plain list, in time order ---------- */
+function ScheduleList({ d }: { d: DateStr }) {
+  const s = useS()
+  const ev = eventsOn(s, d), wo = workoutsOn(s, d)
+  type It = { k: string; t: string; s: number; e: number; c: string; when: string; sub?: string; run?: () => void; done?: boolean }
+  const all: It[] = [
+    ...ev.map((e) => {
+      const a = e.time ? mins(e.time) : -1, b = e.time ? (e.end && mins(e.end) > a ? mins(e.end) : a + 30) : -1
+      return { k: e.id, t: e.title, s: a, e: b, c: e.ro ? '#8a857d' : labColor(s, e.label) || 'var(--accent)', when: e.time ? t12(e.time) + (e.end ? ' – ' + t12(e.end) : '') : 'All day', sub: e.loc, run: e.ro ? undefined : () => eventForm(e.id) }
+    }),
+    ...wo.map((w) => {
+      const a = w.time ? mins(w.time) : -1
+      return { k: w.id, t: w.name, s: a, e: a < 0 ? -1 : a + (w.dur || 45), c: labColor(s, w.label) || '#e0916b', when: w.time ? t12(w.time) : 'Any time', sub: (w.dur || 45) + ' min workout', run: () => toggleWorkout(w.id, d), done: !!w.log?.[d] }
+    }),
+  ].sort((a, b) => a.s - b.s)
+  const nm = nowMins(), isT = d === today()
+  if (!all.length) return <Empty>Nothing scheduled. Enjoy the space.</Empty>
+  return (
+    <div className="rows">
+      {all.map((it) => {
+        const past = isT && it.e >= 0 && it.e <= nm, now = isT && it.s >= 0 && it.s <= nm && it.e > nm
+        return (
+          <button key={it.k} onClick={it.run} className={cn('row w-full text-left', past && 'opacity-55')}>
+            <span className="w-[74px] flex-none font-mono text-[11.5px] text-mute">{it.when}</span>
+            <span className="h-8 w-1 flex-none rounded-full" style={{ background: it.c }} />
+            <span className="min-w-0 flex-1">
+              <span className={cn('tt block truncate', it.done && 'line-through')}>{it.done ? '✓ ' : ''}{it.t}</span>
+              {it.sub && <span className="block truncate text-[12px] text-mute">{it.sub}</span>}
+            </span>
+            {now && <span className="rounded-full bg-danger px-2 py-0.5 text-[11px] font-semibold text-white">Now</span>}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
 /* ---------- Cards ---------- */
 type CardFn = (p: { d: DateStr; s: State }) => React.ReactNode
 const CARDS: Record<string, CardFn> = {
-  schedule: ({ d }) => <Card><CardHeader title="The day's schedule" action={<Button variant="link" className="text-[12.5px]" onClick={() => eventForm(undefined, d)}>Add an event</Button>} /><Timeline d={d} /></Card>,
+  schedule: ({ d, s }) => <Card><CardHeader title="The day's schedule" action={<Button variant="link" className="text-[12.5px]" onClick={() => eventForm(undefined, d)}>Add an event</Button>} />{s.settings.schedView === 'list' ? <ScheduleList d={d} /> : <Timeline d={d} />}</Card>,
 
   nextup: ({ d, s }) => {
     const n = nextUp(s, d)
