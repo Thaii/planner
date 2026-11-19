@@ -1,3 +1,4 @@
+import { TimePicker } from './ui/time-picker'
 import * as React from 'react'
 import { create } from 'zustand'
 import { Drawer } from 'vaul'
@@ -35,6 +36,8 @@ export type FieldType = 'text' | 'textarea' | 'date' | 'time' | 'number' | 'sele
 export interface Field {
   k: string; l: string; t?: FieldType; v?: unknown; ph?: string; half?: boolean; rows?: number
   o?: [string | number, string][]; min?: number; max?: number; step?: string; list?: string[]
+  /** For time fields: the earlier time this one follows (e.g. an end time after 'time'). */
+  after?: string
 }
 type Values = Record<string, any>
 export interface FormSpec {
@@ -64,6 +67,7 @@ function FormBody({ spec }: { spec: FormSpec }) {
           const id = 'f_' + f.k, v = vals[f.k]
           let inp: React.ReactNode
           if (f.t === 'textarea') inp = <Textarea id={id} rows={f.rows || 4} placeholder={f.ph} value={v} onChange={(e) => set(f.k, e.target.value)} />
+          else if (f.t === 'time') inp = <TimePicker id={id} value={v || ''} onChange={(x) => set(f.k, x)} after={f.after ? vals[f.after] : undefined} />
           else if (f.t === 'select') inp = <Select id={id} value={String(v)} onChange={(e) => set(f.k, e.target.value)}>{f.o!.map(([a, b]) => <option key={a} value={a}>{b}</option>)}</Select>
           else if (f.t === 'label') inp = <Select id={id} value={v || ''} onChange={(e) => set(f.k, e.target.value)}><option value="">No label</option>{s.settings.labels.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}</Select>
           else if (f.t === 'days') inp = (

@@ -38,7 +38,7 @@ export function eventForm(id?: string, date?: DateStr) {
       { k: 'date', l: 'Date', t: 'date', v: e?.date || date || today(), half: true },
       { k: 'repeat', l: 'Repeat', t: 'select', o: REPEATS, v: e?.repeat || 'none', half: true },
       { k: 'time', l: 'Start', t: 'time', v: e?.time, half: true },
-      { k: 'end', l: 'End', t: 'time', v: e?.end, half: true },
+      { k: 'end', l: 'End', t: 'time', v: e?.end, half: true, after: 'time' },
       { k: 'label', l: 'Colour label', t: 'label', v: e?.label },
       { k: 'loc', l: 'Where', v: e?.loc },
       { k: 'notes', l: 'Notes', t: 'textarea', rows: 2, v: e?.notes },
