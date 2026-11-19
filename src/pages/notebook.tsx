@@ -1,4 +1,7 @@
-import { X } from 'lucide-react'
+import * as React from 'react'
+import { ImagePlus, X } from 'lucide-react'
+import { toast } from 'sonner'
+import { compress, PhotoViewer } from '@/components/photos'
 import { create } from 'zustand'
 import { Card, Empty } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -25,8 +28,50 @@ export function newNote(style = 'lined') {
   useNote.setState({ id })
   go('notes')
 }
-const setNote = (id: string, fn: (n: { title: string; style: string; body: string; upd: number }) => void) =>
+type Note = import('@/lib/types').State['notes'][number]
+const setNote = (id: string, fn: (n: Note) => void) =>
   update((d) => { const n = d.notes.find((x) => x.id === id); if (n) { fn(n); n.upd = Date.now() } })
+
+const MAX = 20
+
+/** Photos attached to a page: a strip under the writing, tap one to see it full screen. */
+function NotePhotos({ n }: { n: Note }) {
+  const [view, setView] = React.useState<number | null>(null)
+  const imgs = n.imgs || []
+  const add = async (files: FileList | null) => {
+    const list = [...(files || [])].slice(0, MAX - imgs.length)
+    if (files && files.length > list.length) toast(`A page holds up to ${MAX} photos`)
+    for (const f of list) {
+      try { const img = await compress(f); setNote(n.id, (x) => { (x.imgs = x.imgs || []).push({ id: uid(), img, cap: '' }) }) } catch { toast("Couldn't read that image") }
+    }
+  }
+  return (
+    <div className="mt-3 border-t border-line pt-3">
+      {view !== null && imgs[view] && <PhotoViewer photos={imgs} i={view} onIndex={setView} />}
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(96px,1fr))] gap-2">
+        {imgs.map((p, i) => (
+          <figure key={p.id} className="m-0">
+            <div className="relative">
+              <button className="block w-full" aria-label={'Open ' + (p.cap || 'photo')} onClick={() => setView(i)}>
+                <img src={p.img} alt={p.cap || 'Notebook photo'} className="lamp-warm block aspect-square w-full rounded-xl object-cover" />
+              </button>
+              <button className="absolute top-1 right-1 grid size-6 place-items-center rounded-full bg-black/55 text-white" aria-label="Remove photo"
+                onClick={() => undoable('Photo removed', (d) => { const x = d.notes.find((z) => z.id === n.id); if (x) x.imgs = (x.imgs || []).filter((z) => z.id !== p.id) })}><X className="size-3.5" /></button>
+            </div>
+            <CommitInput value={p.cap} placeholder="Caption" aria-label="Caption" className="mt-0.5 border-0 bg-transparent px-1 py-0.5 text-xs"
+              onCommit={(c) => setNote(n.id, (x) => { const z = (x.imgs || []).find((q) => q.id === p.id); if (z) z.cap = c })} />
+          </figure>
+        ))}
+        {imgs.length < MAX && (
+          <label className="grid aspect-square cursor-pointer place-items-center rounded-xl border-[1.5px] border-dashed border-line text-center text-[12.5px] text-mute">
+            <span className="flex flex-col items-center gap-1"><ImagePlus className="size-5" />Add photos</span>
+            <input type="file" accept="image/*" multiple className="hidden" onChange={async (e) => { await add(e.target.files); e.target.value = '' }} />
+          </label>
+        )}
+      </div>
+    </div>
+  )
+}
 
 export function NotebookPage() {
   const s = useS()
@@ -55,6 +100,7 @@ export function NotebookPage() {
           <AutoTextarea key={n.id + ':' + n.body.length /* refresh after a template is added */} value={n.body} placeholder="Start writing…" aria-label="Page"
             className={cn('notebook min-h-[360px] resize-y border-0 bg-transparent leading-7', 'nb-' + n.style)}
             onSave={(v) => setNote(n.id, (x) => { x.body = v })} />
+          <NotePhotos n={n} />
           <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
             <span className="lbl text-mute">Templates</span>
             {Object.keys(TEMPLATES).map((k) => (

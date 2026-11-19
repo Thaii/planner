@@ -72,7 +72,7 @@ export interface State {
   workouts: Workout[]
   lists: Record<string, { id: string; title: string; stage?: string; rating?: number; by?: string; notes?: string }[]>
   customLists: { key: string; name: string; icon?: string; desc?: string; stages: string[] }[]
-  trips: Trip[]; notes: { id: string; title: string; style: string; body: string; upd: number }[]
+  trips: Trip[]; notes: { id: string; title: string; style: string; body: string; upd: number; imgs?: { id: string; img: string; cap: string }[] }[]
   daynotes: Record<DateStr, string>; focus: Record<DateStr, number>
   weeks: Record<DateStr, WeekPlan>; months: Record<string, MonthPlan>
   years: Record<string, { word?: string; review: Record<string, string> }>
