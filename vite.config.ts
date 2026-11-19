@@ -9,7 +9,7 @@ export default defineConfig({
   base: './',
   plugins: [react(), tailwindcss(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
         name: 'Life Planner', short_name: 'Planner', description: 'A private daily planner that lives on your device.',
