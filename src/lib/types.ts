@@ -47,7 +47,7 @@ export interface ListItem {
 export type DayPart = 'morning' | 'afternoon' | 'evening'
 
 export interface Settings {
-  theme: ThemeMode; accent: string; paper: string; cards: { id: string; on: boolean }[]; labels: Label[]; water: number
+  theme: ThemeMode; accent: string; paper: string; cards: { id: string; on: boolean; /** column on wide screens (0–2), set by arranging */ col?: number }[]; labels: Label[]; water: number
   /** Daily water goal in ml, and how much one drop (a glass/bottle) holds. `water` = number of drops. */
   waterGoal: number; glass: number
   /** How Today shows the day's schedule. */

@@ -1,3 +1,4 @@
+import { ArrangeGrid } from './arrange'
 import { AddToDay } from '@/components/welcome'
 import { MedsToday } from './meds'
 import { glassMl, ml } from '@/lib/water'
@@ -351,16 +352,34 @@ function Banners({ d, s }: { d: DateStr; s: State }) {
 
 /* ---------- Page ---------- */
 const LEFT = ['schedule'], MID = ['priorities', 'meals', 'grocery', 'upcoming', 'intention', 'note']
+/** Rough height of each card, so the default layout spreads evenly instead of piling into one column. */
+const WEIGHT: Record<string, number> = { schedule: 6, tasks: 2, habits: 2, checkin: 3, meds: 2, dopamine: 2, priorities: 2 }
+
+/** Split cards into columns: the user's own arrangement if they made one, otherwise a balanced default. */
+export function layoutCols(cards: { id: string; col?: number }[], n: number): string[][] {
+  const cols: string[][] = Array.from({ length: n }, () => [])
+  const load = Array(n).fill(0)
+  const put = (id: string, c: number) => { cols[c].push(id); load[c] += WEIGHT[id] || 1.5 }
+  const lightest = () => load.indexOf(Math.min(...load))
+  cards.forEach(({ id, col }) => {
+    if (col !== undefined) put(id, n === 3 ? col : col === 2 ? lightest() : col)
+    else if (LEFT.includes(id)) put(id, 0)
+    else if (MID.includes(id) && n === 3) put(id, 1)
+    else put(id, lightest())
+  })
+  return cols
+}
 
 export function TodayPage({ d, isToday }: { d: DateStr; isToday?: boolean }) {
   const s = useS()
-  const [wide, setWide] = React.useState(() => innerWidth >= 760)
-  React.useEffect(() => { const r = () => setWide(innerWidth >= 760); addEventListener('resize', r); return () => removeEventListener('resize', r) }, [])
+  const [w, setW] = React.useState(() => innerWidth)
+  React.useEffect(() => { const r = () => setW(innerWidth); addEventListener('resize', r); return () => removeEventListener('resize', r) }, [])
+  const wide = w >= 760, n = w >= 1100 ? 3 : wide ? 2 : 1
+  const [arranging, setArranging] = React.useState(false)
   const ids = (isToday ? s.settings.cards.filter((c) => c.on) : s.settings.cards).map((c) => c.id).filter((id) => CARDS[id])
   const hero: string[] = ids.filter((id) => id === 'nextup' || id === 'identity'), rest = ids.filter((id) => !hero.includes(id))
-  const cols: string[][] = [[], [], []]
-  if (!wide) cols[0] = rest
-  else rest.forEach((id) => (LEFT.includes(id) ? cols[0] : MID.includes(id) ? cols[1] : cols[2]).push(id))
+  const byId = new Map(s.settings.cards.map((c) => [c.id, c]))
+  const cols: string[][] = n === 1 ? [rest] : layoutCols(rest.map((id) => byId.get(id)!), n)
   const tk = tasksOn(s, d), hr = hRate(s, [d])
   const nav = (n: number) => { const nd = addD(d, n); openDay(nd) }
   return (
@@ -374,6 +393,7 @@ export function TodayPage({ d, isToday }: { d: DateStr; isToday?: boolean }) {
         <Input type="date" value={d} onChange={(e) => e.target.value && openDay(e.target.value)} className="w-auto py-1.5" aria-label="Jump to date" />
         {!isToday && <Button size="mono" onClick={() => go('today')}>Today</Button>}
         <span className="flex-1" />
+        {isToday && n === 3 && !arranging && <Button size="mono" onClick={() => setArranging(true)}>Arrange</Button>}
         <Button size="mono" onClick={() => go('settings', { setTab: 'day' })}>Customise</Button>
       </div>
       {isToday && <div className="group mt-2.5 mb-1 flex items-baseline gap-2"><div className="font-serif text-[34px] leading-tight">{greeting(s.settings)}</div><button className="rounded-md p-1 text-mute opacity-60 hover:opacity-100" aria-label="Change your name and greeting" title="Change your name and greeting" onClick={personaliseForm}><Pencil className="size-4" /></button></div>}
@@ -382,9 +402,11 @@ export function TodayPage({ d, isToday }: { d: DateStr; isToday?: boolean }) {
       </div>
       <Banners d={d} s={s} />
       {hero.length > 0 && <div className={cn('mb-3 grid gap-3', hero.length === 2 && 'min-[760px]:grid-cols-[1.4fr_1fr]')}>{hero.map((id) => <div key={id} className="self-start">{CARDS[id]({ d, s })}</div>)}</div>}
-      <div className="grid grid-cols-1 gap-3 min-[760px]:grid-cols-2 min-[1100px]:grid-cols-[1.15fr_1fr_1fr]">
-        {cols.map((c, i) => (c.length || wide) && <div key={i} className="flex min-w-0 flex-col gap-3">{c.map((id) => <React.Fragment key={id}>{CARDS[id]({ d, s })}</React.Fragment>)}</div>)}
-      </div>
+      {arranging && n === 3 ? <ArrangeGrid cols={cols} d={d} s={s} render={(id) => CARDS[id]({ d, s })} onDone={() => setArranging(false)} /> : (
+        <div className="grid grid-cols-1 gap-3 min-[760px]:grid-cols-2 min-[1100px]:grid-cols-[1.15fr_1fr_1fr]">
+          {cols.map((c, i) => (c.length || wide) && <div key={i} className="flex min-w-0 flex-col gap-3">{c.map((id) => <React.Fragment key={id}>{CARDS[id]({ d, s })}</React.Fragment>)}</div>)}
+        </div>
+      )}
       {isToday && <AddToDay />}
       {isToday && <Button variant="link" className="mt-3 text-[13.5px]" onClick={() => go('settings', { setTab: 'day' })}>Customise today's cards</Button>}
     </div>
