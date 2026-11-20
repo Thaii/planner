@@ -101,3 +101,6 @@ number-flow-react { font-variant-numeric: tabular-nums; }
 .nb-lined { background-image: linear-gradient(transparent 27px, var(--line) 28px); background-size: 100% 28px; }
 .nb-dot { background-image: radial-gradient(var(--line) 1.3px, transparent 1.4px); background-size: 28px 28px; background-position: 0 14px; }
 .nb-grid { background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 28px 28px; }
+
+/* Notifications sit above pop-ups and stay tappable while one is open (the pop-up blocks taps everywhere else). */
+[data-sonner-toaster] { z-index: 100 !important; pointer-events: auto !important; }

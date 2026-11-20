@@ -21,7 +21,10 @@ export function SheetHost() {
     <Drawer.Root open={!!node} onOpenChange={(o) => !o && closeSheet()} repositionInputs={false}>
       <Drawer.Portal>
         <Drawer.Overlay className="vaul-ov" />
-        <Drawer.Content className="vaul-ct" aria-describedby={undefined}>
+        <Drawer.Content className="vaul-ct" aria-describedby={undefined}
+          // Taps on a notification (Undo, Refresh) shouldn't count as "tapping outside" and close this.
+          onPointerDownOutside={(e) => { if ((e.target as Element | null)?.closest?.('[data-sonner-toaster]')) e.preventDefault() }}
+          onInteractOutside={(e) => { if ((e.target as Element | null)?.closest?.('[data-sonner-toaster]')) e.preventDefault() }}>
           <Drawer.Handle className="vaul-hd" />
           <Drawer.Title className="sr-only">{title}</Drawer.Title>
           <div key={key} className="overflow-auto px-[18px] pt-2.5 pb-[calc(18px+var(--sab))]">{node}</div>
