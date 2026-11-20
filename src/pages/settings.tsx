@@ -1,3 +1,4 @@
+import { askNotify, testSound } from '@/lib/sound'
 import { replayWelcome } from '@/components/welcome'
 import { waterForm } from '@/components/water-form'
 import { ml } from '@/lib/water'
@@ -80,6 +81,31 @@ function YourDay() {
   )
 }
 
+function TimerSound() {
+  const s = useS().settings
+  const perm = typeof Notification === 'undefined' ? 'unsupported' : Notification.permission
+  return (
+    <Card>
+      <CardHeader title="Timers" />
+      <p className="mt-0 text-[13.5px] text-mute">What happens when a 5-minute start, Focus, self-care or dopamine timer ends.</p>
+      <div className="lbl mb-1.5 text-mute">Sound</div>
+      <Segmented value={s.sound || 'gentle'} onChange={(v) => setS((st) => { st.sound = v as 'gentle' | 'repeat' | 'off' })}
+        options={[['gentle', 'A few chimes'], ['repeat', 'Keep ringing'], ['off', 'Silent']]} />
+      <p className="-mt-1.5 text-[13px] text-mute">{{ gentle: 'A soft bell three times, then quiet.', repeat: 'Rings every few seconds until you tap something (up to 2 minutes).', off: 'No sound – the screen and tab title still let you know.' }[s.sound || 'gentle']}</p>
+      <Button size="sm" onClick={testSound}>Test the sound</Button>
+      <div className="row mt-3 border-0 px-0">
+        <Check on={!!s.timerNotify && perm === 'granted'} label="Notify me when I'm in another tab or app" onClick={async () => {
+          if (s.timerNotify && perm === 'granted') return setS((st) => { st.timerNotify = false })
+          const ok = await askNotify()
+          if (ok) setS((st) => { st.timerNotify = true }); else toast(perm === 'unsupported' ? "This browser can't show notifications" : 'Notifications are blocked – allow them for this site in your browser settings')
+        }} />
+        <div className="flex-1"><div className="tt">Notify me when I'm in another tab or app</div>
+          <div className="text-[12.5px] text-mute">Shows a system notification while the planner is open in the background. Phones may pause timers once the screen locks.</div></div>
+      </div>
+    </Card>
+  )
+}
+
 function Pages() {
   const s = useS().settings
   return (
@@ -107,6 +133,7 @@ function Pages() {
             <div className="flex items-center gap-2"><span className="flex-1 text-[14px]">{ml(s.waterGoal || 2000)} a day · each drop is {ml(s.glass || 250)}</span><Button size="sm" onClick={waterForm}>Change</Button></div></div>
         </div>
       </Card>
+      <TimerSound />
       <Card>
         <CardHeader title="Goal areas" />
         <div className="rows">

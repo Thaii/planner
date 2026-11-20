@@ -57,7 +57,9 @@ export interface Settings {
   /** false = show the welcome flow. */
   onboarded?: boolean
   /** The "Add to your day" list on Today was hidden. */
-  trayHidden?: boolean; name: string
+  trayHidden?: boolean
+  /** End-of-timer alert: a few chimes, keep ringing, or silent; and a system notification when the page is in the background. */
+  sound?: 'gentle' | 'repeat' | 'off'; timerNotify?: boolean; name: string
   weekStart: 0 | 1; dayStart: number; dayEnd: number; goalAreas: string[]; dayTheme: string; nightTheme: string
   nightFrom: number; nightTo: number; themeAccent: boolean; taskIdentity?: string
   /** Show "<Name>'s Planner" (true) or "Life Planner" (false). */

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/field'
 import { Segmented } from '@/components/ui/segmented'
 import { PageHead } from '@/components/bits'
-import { chime, unlockAudio } from '@/components/five'
+import { ring, stopRing, unlockAudio } from '@/lib/sound'
 import { getS, update, useS } from '@/lib/store'
 import { addD, dow, DOWN, pad, range, today } from '@/lib/date'
 import { tasksOn } from '@/lib/logic'
@@ -29,7 +29,7 @@ function tick() {
     const t = today()
     update((d) => { d.focus[t] = (d.focus[t] || 0) + f.len })
     useF.setState({ run: false, left: f.len * 60 })
-    resetTitle(); chime()
+    resetTitle(); ring(f.task ? 'Focus on “' + f.task + '”' : 'Your focus session')
     toast('Focus session done – nice work. Take a short break.')
   }
 }
@@ -40,7 +40,7 @@ function startPause() {
   useF.setState({ run: true, end: Date.now() + f.left * 1000 })
   clearInterval(iv); iv = setInterval(tick, 500); tick()
 }
-function reset(len = useF.getState().len) { clearInterval(iv); useF.setState({ len, left: len * 60, run: false }); resetTitle() }
+function reset(len = useF.getState().len) { stopRing(); clearInterval(iv); useF.setState({ len, left: len * 60, run: false }); resetTitle() }
 
 const R = 96, C = 2 * Math.PI * R
 
