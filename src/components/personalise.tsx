@@ -20,7 +20,17 @@ function PartEditor({ part, label, list, from, until, name, onList, onFrom }: {
   onList: (l: string[]) => void; onFrom: (h: number) => void
 }) {
   const [draft, setDraft] = React.useState('')
+  const ref = React.useRef<HTMLInputElement>(null)
   const add = () => { const t = draft.trim(); if (t) { onList([...list, t]); setDraft('') } }
+  /** Drop {name} in where the cursor is (or at the end), with sensible spacing. */
+  const insertName = () => {
+    const el = ref.current, at = el?.selectionStart ?? draft.length, end = el?.selectionEnd ?? at
+    const before = draft.slice(0, at), after = draft.slice(end)
+    const tok = (before && !/[\s(]$/.test(before) ? ' ' : '') + '{name}' + (after && !/^[\s,.!?)]/.test(after) ? ' ' : '')
+    const next = before + tok + after
+    setDraft(next)
+    requestAnimationFrame(() => { if (!el) return; const p = (before + tok).length; el.focus(); el.setSelectionRange(p, p) })
+  }
   return (
     <div className="border-t border-line pt-3 pb-1">
       <div className="mb-1.5 flex flex-wrap items-center gap-2">
@@ -44,10 +54,12 @@ function PartEditor({ part, label, list, from, until, name, onList, onFrom }: {
         </div>
       ) : <div className="text-[13px] text-mute">Using the standard: <i>{fill(STANDARD[part], name)}</i></div>}
       <div className="mt-1.5 flex gap-1.5">
-        <Input value={draft} placeholder={IDEAS[part]} aria-label={'Add a ' + label.toLowerCase() + ' greeting'} className="py-1.5 text-[14px]"
+        <Input ref={ref} value={draft} placeholder={IDEAS[part]} aria-label={'Add a ' + label.toLowerCase() + ' greeting'} className="py-1.5 text-[14px]"
           onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); add() } }} />
-        <Button type="button" size="sm" onClick={add} disabled={!draft.trim()}>Add</Button>
+        <Button type="button" size="sm" className="whitespace-nowrap" onClick={insertName} aria-label="Insert your name">+ Name</Button>
+        <Button type="button" size="sm" variant="primary" onClick={add} disabled={!draft.trim()}>Add</Button>
       </div>
+      {draft.includes('{') && <div className="mt-1 text-[12px] text-mute">Shows as: <b className="font-normal text-ink">{fill(draft, name) || '…'}</b></div>}
       {list.length > 1 && <div className="mt-1 text-[12px] text-mute">One of these {list.length} is picked at random each time you open the planner.</div>}
     </div>
   )
@@ -86,7 +98,7 @@ function PersonaliseSheet() {
       <div className="mb-4 text-[13px] text-mute">Shows as <b className="font-serif text-[18px] font-normal text-ink">{title[0]} <span className="text-accent">{title[1]}</span></b></div>
 
       <span className="block text-[12.5px] font-medium text-mute">Greetings</span>
-      <p className="mt-0.5 mb-2 text-[12.5px] text-mute">Add as many as you like for each part of the day and one is picked at random. Type <b>{'{name}'}</b> where you want your name. Leave a part empty for the standard greeting.</p>
+      <p className="mt-0.5 mb-2 text-[12.5px] text-mute">Add as many as you like for each part of the day and one is picked at random. Tap <b>+ Name</b> where you want your name to go. Leave a part empty for the standard greeting.</p>
       {PARTS.map(([p, l]) => (
         <PartEditor key={p} part={p} label={l} list={greets[p]} from={parts[p]} until={until[p]} name={n}
           onList={(list) => setGreets((g) => ({ ...g, [p]: list }))} onFrom={(h) => setParts((x) => ({ ...x, [p]: h }))} />
