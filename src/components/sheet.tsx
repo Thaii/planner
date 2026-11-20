@@ -1,7 +1,8 @@
 import { TimePicker } from './ui/time-picker'
 import * as React from 'react'
 import { create } from 'zustand'
-import { Drawer } from 'vaul'
+import * as Dialog from '@radix-ui/react-dialog'
+import { X } from 'lucide-react'
 import { Button } from './ui/button'
 import { Input, Select, Textarea } from './ui/field'
 import { getS } from '@/lib/store'
@@ -18,19 +19,22 @@ export const closeSheet = () => useSheet.setState({ node: null })
 export function SheetHost() {
   const { node, title, key } = useSheet()
   return (
-    <Drawer.Root open={!!node} onOpenChange={(o) => !o && closeSheet()} repositionInputs={false}>
-      <Drawer.Portal>
-        <Drawer.Overlay className="vaul-ov" />
-        <Drawer.Content className="vaul-ct" aria-describedby={undefined}
-          // Taps on a notification (Undo, Refresh) shouldn't count as "tapping outside" and close this.
-          onPointerDownOutside={(e) => { if ((e.target as Element | null)?.closest?.('[data-sonner-toaster]')) e.preventDefault() }}
-          onInteractOutside={(e) => { if ((e.target as Element | null)?.closest?.('[data-sonner-toaster]')) e.preventDefault() }}>
-          <Drawer.Handle className="vaul-hd" />
-          <Drawer.Title className="sr-only">{title}</Drawer.Title>
-          <div key={key} className="overflow-auto px-[18px] pt-2.5 pb-[calc(18px+var(--sab))]">{node}</div>
-        </Drawer.Content>
-      </Drawer.Portal>
-    </Drawer.Root>
+    <Dialog.Root open={!!node} onOpenChange={(o) => !o && closeSheet()}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="vaul-ov pop-ov" />
+        {/* Centred card, like the welcome. Class name kept from the old bottom sheet so styles and tests still match. */}
+        <div className="pop-wrap">
+          <Dialog.Content className="vaul-ct pop-ct" aria-describedby={undefined}
+            // Taps on a notification (Undo, Refresh) shouldn't count as "tapping outside" and close this.
+            onPointerDownOutside={(e) => { if ((e.target as Element | null)?.closest?.('[data-sonner-toaster]')) e.preventDefault() }}
+            onInteractOutside={(e) => { if ((e.target as Element | null)?.closest?.('[data-sonner-toaster]')) e.preventDefault() }}>
+            <Dialog.Title className="sr-only">{title}</Dialog.Title>
+            <Dialog.Close className="absolute top-3.5 right-3.5 z-10 grid size-8 place-items-center rounded-full text-mute hover:bg-soft" aria-label="Close"><X className="size-4" /></Dialog.Close>
+            <div key={key} className="overflow-auto px-6 pt-6 pb-6">{node}</div>
+          </Dialog.Content>
+        </div>
+      </Dialog.Portal>
+    </Dialog.Root>
   )
 }
 

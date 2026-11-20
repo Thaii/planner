@@ -67,8 +67,13 @@ html[data-theme="dark"] {
 }
 
 /* Vaul drawer */
-.vaul-ov { position: fixed; inset: 0; background: rgba(20, 14, 8, 0.4); z-index: 50; }
-.vaul-ct { position: fixed; left: 0; right: 0; bottom: 0; margin: 0 auto; max-width: 560px; max-height: 90vh; background: var(--card); color: var(--ink); border-radius: 20px 20px 0 0; z-index: 51; display: flex; flex-direction: column; outline: none; }
+/* Pop-ups: a centred card on every screen size (matches the welcome). */
+.vaul-ov { position: fixed; inset: 0; background: rgba(20, 14, 8, 0.45); backdrop-filter: blur(2px); z-index: 50; animation: pop-fade .18s ease-out; }
+.pop-wrap { position: fixed; inset: 0; z-index: 51; display: grid; place-items: center; padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom)); pointer-events: none; }
+.vaul-ct { pointer-events: auto; position: relative; width: 100%; max-width: 540px; max-height: min(86dvh, 820px); background: var(--card); color: var(--ink); border-radius: 24px; box-shadow: 0 24px 70px rgba(0, 0, 0, .28); display: flex; flex-direction: column; outline: none; animation: pop-in .2s cubic-bezier(.2, .9, .3, 1.1); }
+@keyframes pop-fade { from { opacity: 0 } }
+@keyframes pop-in { from { opacity: 0; transform: translateY(8px) scale(.97) } }
+@media (prefers-reduced-motion: reduce) { .vaul-ov, .vaul-ct { animation: none } }
 .vaul-hd { margin: 10px auto 2px !important; width: 44px !important; height: 5px !important; border-radius: 9px !important; background: var(--line) !important; flex: none; }
 
 /* cmdk */
@@ -104,3 +109,4 @@ number-flow-react { font-variant-numeric: tabular-nums; }
 
 /* Notifications sit above pop-ups and stay tappable while one is open (the pop-up blocks taps everywhere else). */
 [data-sonner-toaster] { z-index: 100 !important; pointer-events: auto !important; }
+.vaul-ct h3:first-child, .vaul-ct form > h3:first-child { padding-right: 34px; }
