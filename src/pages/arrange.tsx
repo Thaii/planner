@@ -1,8 +1,10 @@
 import * as React from 'react'
-import { DndContext, DragOverlay, PointerSensor, KeyboardSensor, closestCorners, pointerWithin, useDroppable, type CollisionDetection, useSensor, useSensors, type DragEndEvent, type DragOverEvent, type DragStartEvent } from '@dnd-kit/core'
+import { DndContext, DragOverlay, PointerSensor, KeyboardSensor, MouseSensor, TouchSensor, closestCorners, pointerWithin, useDroppable, type CollisionDetection, useSensor, useSensors, type DragEndEvent, type DragOverEvent, type DragStartEvent } from '@dnd-kit/core'
 import { SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { EyeOff, GripVertical } from 'lucide-react'
+import { ChevronDown, ChevronsDown, ChevronsUp, ChevronUp, EyeOff, GripVertical } from 'lucide-react'
+import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifiers'
+import { CARD_INFO } from '@/components/welcome'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { update } from '@/lib/store'
@@ -109,6 +111,76 @@ export function ArrangeGrid({ cols: start, render, onDone }: { cols: string[][];
         </div>
         <DragOverlay>{active && <div className="rotate-1 rounded-card bg-card px-3 py-2 text-[13px] font-semibold shadow-[0_12px_32px_rgba(0,0,0,.2)]"><GripVertical className="mr-1 inline size-4 text-accent" />{nameOf(active)}</div>}</DragOverlay>
       </DndContext>
+    </div>
+  )
+}
+
+/* ---------- Phones and narrow screens: one list of card names ---------- */
+
+function Row({ id, i, last, move, onHide }: { id: string; i: number; last: number; move: (from: number, to: number) => void; onHide: () => void }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
+  const [icon] = CARD_INFO[id] || ['▫️']
+  const btn = 'grid size-7 flex-none place-items-center rounded-lg border border-line bg-card text-mute disabled:opacity-30'
+  return (
+    <div ref={setNodeRef} style={{ transform: CSS.Translate.toString(transform), transition }}
+      className={cn('flex items-center gap-1 rounded-xl border border-line bg-card px-2 py-1', isDragging && 'z-10 shadow-[0_10px_28px_rgba(0,0,0,.18)] ring-2 ring-accent')}>
+      {/* Hold anywhere on the name to pick it up (a quick swipe still scrolls the page). */}
+      <div {...attributes} {...listeners} aria-label={'Hold and drag to move ' + nameOf(id)} className="flex min-w-0 flex-1 cursor-grab items-center gap-2 py-1.5 select-none [-webkit-touch-callout:none] active:cursor-grabbing">
+        <GripVertical className="size-4 flex-none text-accent" />
+        <span className="text-base">{icon}</span>
+        <span className="truncate text-[13.5px] font-semibold">{nameOf(id)}</span>
+      </div>
+      <button className={btn} aria-label={'Move ' + nameOf(id) + ' to the top'} disabled={i === 0} onClick={() => move(i, 0)}><ChevronsUp className="size-4" /></button>
+      <button className={btn} aria-label={'Move ' + nameOf(id) + ' up'} disabled={i === 0} onClick={() => move(i, i - 1)}><ChevronUp className="size-4" /></button>
+      <button className={btn} aria-label={'Move ' + nameOf(id) + ' down'} disabled={i === last} onClick={() => move(i, i + 1)}><ChevronDown className="size-4" /></button>
+      <button className={btn} aria-label={'Move ' + nameOf(id) + ' to the bottom'} disabled={i === last} onClick={() => move(i, last)}><ChevronsDown className="size-4" /></button>
+      <button className={cn(btn, 'max-[460px]:hidden')} aria-label={'Hide ' + nameOf(id)} onClick={onHide}><EyeOff className="size-4" /></button>
+    </div>
+  )
+}
+
+/** Reorder Today's cards as a list: hold and drag, or the arrows. Done saves; it stays put until arranged again. */
+export function ArrangeList({ items: start, onDone }: { items: string[]; onDone: () => void }) {
+  const [items, setItems] = React.useState(start)
+  const sensors = useSensors(
+    useSensor(MouseSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 220, tolerance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  )
+  const move = (from: number, to: number) => setItems((x) => arrayMove(x, from, to))
+  const top = React.useRef<HTMLDivElement>(null)
+  React.useEffect(() => { top.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }, [])
+  const save = () => {
+    update((d) => {
+      const all = d.settings.cards
+      const placed = items.map((id) => all.find((y) => y.id === id)!)
+      const ids = new Set(items)
+      d.settings.cards = [...all.filter((x) => !ids.has(x.id) && x.on), ...placed, ...all.filter((x) => !ids.has(x.id) && !x.on)]
+    })
+    toast('Layout saved'); onDone()
+  }
+  return (
+    <div>
+      <div ref={top} className="mb-3 scroll-mt-3 rounded-xl bg-accent-soft px-3.5 py-2.5 text-[13.5px]">
+        Hold a card's name and drag it, or use the arrows: <ChevronsUp className="inline size-3.5" /> top, <ChevronUp className="inline size-3.5" /> up, <ChevronDown className="inline size-3.5" /> down, <ChevronsDown className="inline size-3.5" /> bottom.
+        <div className="mt-2 flex justify-end gap-2">
+          <Button size="sm" onClick={onDone}>Cancel</Button>
+          <Button size="sm" variant="primary" onClick={save}>Done</Button>
+        </div>
+      </div>
+      <DndContext sensors={sensors} collisionDetection={closestCorners} modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+        onDragEnd={({ active, over }) => { if (over && active.id !== over.id) setItems((x) => arrayMove(x, x.indexOf(String(active.id)), x.indexOf(String(over.id)))) }}>
+        <SortableContext items={items} strategy={verticalListSortingStrategy}>
+          <div className="flex flex-col gap-1.5">
+            {items.map((id, i) => <Row key={id} id={id} i={i} last={items.length - 1} move={move}
+              onHide={() => { setItems((x) => x.filter((y) => y !== id)); update((d) => { const c = d.settings.cards.find((y) => y.id === id); if (c) c.on = false }) }} />)}
+          </div>
+        </SortableContext>
+      </DndContext>
+      <div className="mt-3 flex justify-end gap-2">
+        <Button size="sm" onClick={onDone}>Cancel</Button>
+        <Button size="sm" variant="primary" onClick={save}>Done</Button>
+      </div>
     </div>
   )
 }

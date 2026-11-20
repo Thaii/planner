@@ -1,4 +1,4 @@
-import { ArrangeGrid } from './arrange'
+import { ArrangeGrid, ArrangeList } from './arrange'
 import { AddToDay } from '@/components/welcome'
 import { MedsToday } from './meds'
 import { glassMl, ml } from '@/lib/water'
@@ -393,7 +393,7 @@ export function TodayPage({ d, isToday }: { d: DateStr; isToday?: boolean }) {
         <Input type="date" value={d} onChange={(e) => e.target.value && openDay(e.target.value)} className="w-auto py-1.5" aria-label="Jump to date" />
         {!isToday && <Button size="mono" onClick={() => go('today')}>Today</Button>}
         <span className="flex-1" />
-        {isToday && n === 3 && !arranging && <Button size="mono" onClick={() => setArranging(true)}>Arrange</Button>}
+        {isToday && !arranging && <Button size="mono" onClick={() => setArranging(true)}>Arrange</Button>}
         <Button size="mono" onClick={() => go('settings', { setTab: 'day' })}>Customise</Button>
       </div>
       {isToday && <div className="group mt-2.5 mb-1 flex items-baseline gap-2"><div className="font-serif text-[34px] leading-tight">{greeting(s.settings)}</div><button className="rounded-md p-1 text-mute opacity-60 hover:opacity-100" aria-label="Change your name and greeting" title="Change your name and greeting" onClick={personaliseForm}><Pencil className="size-4" /></button></div>}
@@ -402,7 +402,7 @@ export function TodayPage({ d, isToday }: { d: DateStr; isToday?: boolean }) {
       </div>
       <Banners d={d} s={s} />
       {hero.length > 0 && <div className={cn('mb-3 grid gap-3', hero.length === 2 && 'min-[760px]:grid-cols-[1.4fr_1fr]')}>{hero.map((id) => <div key={id} className="self-start">{CARDS[id]({ d, s })}</div>)}</div>}
-      {arranging && n === 3 ? <ArrangeGrid cols={cols} d={d} s={s} render={(id) => CARDS[id]({ d, s })} onDone={() => setArranging(false)} /> : (
+      {arranging && n < 3 ? <ArrangeList items={rest} onDone={() => setArranging(false)} /> : arranging ? <ArrangeGrid cols={cols} d={d} s={s} render={(id) => CARDS[id]({ d, s })} onDone={() => setArranging(false)} /> : (
         <div className="grid grid-cols-1 gap-3 min-[760px]:grid-cols-2 min-[1100px]:grid-cols-[1.15fr_1fr_1fr]">
           {cols.map((c, i) => (c.length || wide) && <div key={i} className="flex min-w-0 flex-col gap-3">{c.map((id) => <React.Fragment key={id}>{CARDS[id]({ d, s })}</React.Fragment>)}</div>)}
         </div>
