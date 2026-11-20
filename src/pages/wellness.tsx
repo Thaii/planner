@@ -1,3 +1,4 @@
+import { MedsSection } from './meds'
 import { glassMl, ml } from '@/lib/water'
 import * as React from 'react'
 import { X, Play } from 'lucide-react'
@@ -141,6 +142,7 @@ export function WellnessPage() {
           <Summary s={s} k="sleep" label="Sleep" max={11} big={(v) => `${fmtSleep(v)} a night`} small={(v) => fmtSleep(v)} />
         </div>
       </Card>
+      <MedsSection />
       <div className="mb-3 grid gap-3 min-[760px]:grid-cols-2 min-[1100px]:grid-cols-3">
         <Card><CardHeader title="Mood & energy" />
           <Moods d={t} />

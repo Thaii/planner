@@ -1,3 +1,4 @@
+import { MedsToday } from './meds'
 import { glassMl, ml } from '@/lib/water'
 import * as React from 'react'
 import { X, RotateCw, Pencil } from 'lucide-react'
@@ -300,6 +301,7 @@ const CARDS: Record<string, CardFn> = {
     )) : <Empty>Get it out of your head. Sort it later.</Empty>}</div>
     <InlineAdd placeholder="Anything on your mind…" onAdd={(t) => update((st) => { st.inbox.push({ id: uid(), text: t }) })} /></Card>,
 
+  meds: ({ d }) => <MedsToday d={d} />,
   dopamine: ({ s }) => {
     const n = nextUp(s, today())
     return <Card><CardHeader title="Dopamine menu" action={<Button variant="link" className="text-[12.5px]" onClick={() => go('dopamine')}>Menu</Button>} />

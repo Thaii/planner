@@ -35,7 +35,7 @@ export const CARDS_DEF: [string, string][] = [
   ['nextup', 'Next up'], ['identity', "Who I'm becoming"], ['schedule', "The day's schedule"], ['priorities', 'Top 3 priorities'], ['tasks', 'To-do list'],
   ['planned', 'From your week and month'], ['meals', 'Meals'], ['grocery', 'Grocery list'], ['habits', 'Habits'], ['checkin', 'Check-in'],
   ['intention', 'Intention'], ['gratitude', 'Gratitude'], ['upcoming', 'Upcoming'], ['home', 'Home jobs'], ['goals', 'Goals'],
-  ['braindump', 'Brain dump'], ['dopamine', 'Dopamine menu'], ['note', 'Notebook'],
+  ['meds', 'Medications'], ['braindump', 'Brain dump'], ['dopamine', 'Dopamine menu'], ['note', 'Notebook'],
 ]
 export const CARD_IDS = CARDS_DEF.map((c) => c[0])
 

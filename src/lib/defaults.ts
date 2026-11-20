@@ -46,7 +46,7 @@ export function defaults(): State {
     journal: { grat: {}, intent: {} },
     meals: {}, recipes: [], grocery: [], pantry: [], chores: [],
     clean: { rooms: ['Kitchen', 'Bathroom', 'Living room', 'Bedrooms', 'Floors', 'Laundry'], log: {} },
-    contacts: [], inventory: [], workouts: [], lists: {}, customLists: [], trips: [], notes: [], daynotes: {}, focus: {},
+    contacts: [], inventory: [], workouts: [], lists: {}, customLists: [], trips: [], notes: [], daynotes: {}, focus: {}, meds: [], medLog: {},
     weeks: {}, months: {}, years: {}, vision: {},
   }
 }

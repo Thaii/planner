@@ -71,8 +71,24 @@ export interface Settings {
 }
 
 /** Same shape as the Claude-hosted version, so its backups import directly. */
+/** A medication, vitamin or supplement. Scheduled ones have times on chosen days; as-needed ones are logged when taken. */
+export interface Med {
+  id: string; name: string; dose?: string; asNeeded?: boolean
+  days: number[]; times: string[]
+  /** How many you have left, and how many one dose uses (tablets, puffs…). Blank count = not tracking supply. */
+  count?: number | ''; perDose?: number
+  notes?: string; paused?: boolean
+  /** Day it was added – history doesn't count it as missed before this. */
+  since?: DateStr
+}
+/** One dose: taken (with the minute of the day it was ticked) or skipped, plus an optional note. */
+export interface DoseLog { s: 'taken' | 'skipped'; at: number; note?: string }
+
 export interface State {
   settings: Settings
+  meds: Med[]
+  /** date → "medId|HH:MM" (scheduled) or "medId|n<number>" (as-needed) → dose */
+  medLog: Record<DateStr, Record<string, DoseLog>>
   tasks: Task[]; events: CalEvent[]; ics: Record<string, { name: string; events: CalEvent[]; at: number }>
   prio: Record<DateStr, { items: string[]; done: boolean[] }>
   habits: Habit[]; goals: Goal[]; projects: Project[]; identities: Identity[]; inbox: Item[]
