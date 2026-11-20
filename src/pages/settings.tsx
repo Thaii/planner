@@ -1,3 +1,4 @@
+import { replayWelcome } from '@/components/welcome'
 import { waterForm } from '@/components/water-form'
 import { ml } from '@/lib/water'
 import * as React from 'react'
@@ -70,7 +71,11 @@ function YourDay() {
           </div>
         </SortableContext>
       </DndContext>
-      <Button variant="link" className="mt-2 text-[13px]" onClick={() => undoable('Dashboard reset', (d) => { d.settings.cards = defaults().settings.cards })}>Reset the dashboard</Button>
+      <div className="mt-2 flex flex-wrap gap-x-4">
+        <Button variant="link" className="text-[13px]" onClick={() => undoable('Dashboard reset', (d) => { d.settings.cards = defaults().settings.cards })}>Reset the dashboard</Button>
+        <Button variant="link" className="text-[13px]" onClick={replayWelcome}>Show the welcome again</Button>
+        {s.trayHidden && <Button variant="link" className="text-[13px]" onClick={() => setS((st) => { st.trayHidden = false })}>Bring back "Add to your day"</Button>}
+      </div>
     </Card>
   )
 }

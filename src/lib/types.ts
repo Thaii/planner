@@ -53,7 +53,11 @@ export interface Settings {
   /** How Today shows the day's schedule. */
   schedView?: 'timeline' | 'list'
   /** 12-hour (2:30pm) or 24-hour (14:30) clock. Unset = follow the device. */
-  clock?: '12' | '24'; name: string
+  clock?: '12' | '24'
+  /** false = show the welcome flow. */
+  onboarded?: boolean
+  /** The "Add to your day" list on Today was hidden. */
+  trayHidden?: boolean; name: string
   weekStart: 0 | 1; dayStart: number; dayEnd: number; goalAreas: string[]; dayTheme: string; nightTheme: string
   nightFrom: number; nightTo: number; themeAccent: boolean; taskIdentity?: string
   /** Show "<Name>'s Planner" (true) or "Life Planner" (false). */

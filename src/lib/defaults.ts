@@ -1,10 +1,10 @@
 import type { State } from './types'
-import { CARD_IDS } from './constants'
+import { CARD_IDS, MINIMAL } from './constants'
 
 export function defaults(): State {
   return {
     settings: {
-      theme: 'light', accent: 'blush', paper: 'plain', cards: CARD_IDS.map((id) => ({ id, on: true })),
+      theme: 'light', accent: 'blush', paper: 'plain', cards: [...CARD_IDS.filter((id) => MINIMAL.includes(id)), ...CARD_IDS.filter((id) => !MINIMAL.includes(id))].map((id) => ({ id, on: MINIMAL.includes(id) })), onboarded: false,
       labels: [
         { id: 'work', name: 'Work', color: '#6f8fd6' }, { id: 'home', name: 'Home', color: '#e09a6b' },
         { id: 'family', name: 'Family', color: '#e07fa6' }, { id: 'health', name: 'Health', color: '#6fae7a' },
@@ -63,6 +63,8 @@ export function migrate(raw: Partial<State>): State {
       else s.settings.cards.push({ id, on: true })
     }
   })
+  // Anyone who already had a planner has had their welcome.
+  if (raw.settings && raw.settings.onboarded === undefined) s.settings.onboarded = true
   // Older planners had one custom greeting for all day and a yes/no for the name in the title.
   if (!raw.settings?.greetings) {
     const g = (s.settings.greeting || '').trim()

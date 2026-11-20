@@ -1,3 +1,4 @@
+import { Welcome } from './welcome'
 import { InstallButton } from './install'
 import * as React from 'react'
 import { Toaster } from 'sonner'
@@ -58,6 +59,7 @@ export function AppShell({ children, dark }: { children: React.ReactNode; dark: 
       <SheetHost />
       <CommandMenu />
       <FiveTimer />
+      <Welcome />
       <Toaster position="bottom-center" theme={dark ? 'dark' : 'light'} offset={88} mobileOffset={92} visibleToasts={3} />
     </div>
   )

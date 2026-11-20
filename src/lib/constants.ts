@@ -38,5 +38,7 @@ export const CARDS_DEF: [string, string][] = [
   ['meds', 'Medications'], ['braindump', 'Brain dump'], ['dopamine', 'Dopamine menu'], ['note', 'Notebook'],
 ]
 export const CARD_IDS = CARDS_DEF.map((c) => c[0])
+/** The cards a brand-new planner starts with; the rest are a tap away in "Add to your day". */
+export const MINIMAL = ['nextup', 'schedule', 'priorities', 'tasks', 'checkin']
 
 export const PERIOD_WORD: Record<Freq, string> = { daily: 'today', weekly: 'this week', fortnightly: 'this fortnight', monthly: 'this month', quarterly: 'this quarter' }

@@ -1,3 +1,4 @@
+import { AddToDay } from '@/components/welcome'
 import { MedsToday } from './meds'
 import { glassMl, ml } from '@/lib/water'
 import * as React from 'react'
@@ -347,22 +348,6 @@ function Banners({ d, s }: { d: DateStr; s: State }) {
 }
 
 /* ---------- First-run: ask for a name ---------- */
-function NameCard() {
-  const [v, setV] = React.useState('')
-  return (
-    <Card className="mb-3 border-accent/50 bg-accent-soft">
-      <div className="lbl text-accent">Welcome</div>
-      <h2 className="mt-1 mb-1 text-[22px]">What should we call you?</h2>
-      <p className="mt-0 mb-2.5 text-[13px] text-mute">It's used for your greeting and your planner's name. It stays on this device. Optional – skip it and it stays “Life Planner”.</p>
-      <form className="flex flex-wrap gap-2" onSubmit={(e) => { e.preventDefault(); const n = v.trim(); if (n) update((st) => { st.settings.name = n; st.settings.nameAsked = true }) }}>
-        <Input value={v} onChange={(e) => setV(e.target.value)} placeholder="Your first name" className="max-w-[260px] bg-card" aria-label="Your first name" autoComplete="given-name" />
-        <Button variant="primary" type="submit">That's me</Button>
-        <Button type="button" onClick={() => update((st) => { st.settings.nameAsked = true })}>Skip</Button>
-        <Button type="button" variant="link" className="text-[13px]" onClick={personaliseForm}>More options</Button>
-      </form>
-    </Card>
-  )
-}
 
 /* ---------- Page ---------- */
 const LEFT = ['schedule'], MID = ['priorities', 'meals', 'grocery', 'upcoming', 'intention', 'note']
@@ -395,12 +380,12 @@ export function TodayPage({ d, isToday }: { d: DateStr; isToday?: boolean }) {
       <div className="mb-3.5 text-[13.5px] text-mute">
         <Num value={tk.filter((x) => x.done).length} /> of {tk.length} done · {ml((s.well[d]?.water || 0) * glassMl(s.settings))} water · <Num value={hr.pct} suffix="%" /> of habits · momentum <Num value={momentum(s)} />
       </div>
-      {isToday && !s.settings.name && !s.settings.nameAsked && <NameCard />}
       <Banners d={d} s={s} />
       {hero.length > 0 && <div className={cn('mb-3 grid gap-3', hero.length === 2 && 'min-[760px]:grid-cols-[1.4fr_1fr]')}>{hero.map((id) => <div key={id} className="self-start">{CARDS[id]({ d, s })}</div>)}</div>}
       <div className="grid grid-cols-1 gap-3 min-[760px]:grid-cols-2 min-[1100px]:grid-cols-[1.15fr_1fr_1fr]">
         {cols.map((c, i) => (c.length || wide) && <div key={i} className="flex min-w-0 flex-col gap-3">{c.map((id) => <React.Fragment key={id}>{CARDS[id]({ d, s })}</React.Fragment>)}</div>)}
       </div>
+      {isToday && <AddToDay />}
       {isToday && <Button variant="link" className="mt-3 text-[13.5px]" onClick={() => go('settings', { setTab: 'day' })}>Customise today's cards</Button>}
     </div>
   )
