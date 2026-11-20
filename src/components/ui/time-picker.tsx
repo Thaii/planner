@@ -1,10 +1,11 @@
 import * as React from 'react'
 import * as Popover from '@radix-ui/react-popover'
 import { Clock } from 'lucide-react'
-import { t12 } from '@/lib/date'
+import { is24, pad, t12 } from '@/lib/date'
 import { cn } from '@/lib/utils'
 
 const HOURS = [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+const HOURS24 = Array.from({ length: 24 }, (_, i) => i)
 const MINS = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
 const QUICK = ['07:00', '08:00', '09:00', '12:00', '15:00', '17:00', '18:00', '19:00']
 const p2 = (n: number) => String(n).padStart(2, '0')
@@ -63,12 +64,17 @@ export function TimePicker({ id, value, onChange, after, placeholder = 'Pick a t
             </button>
           ))}
         </div>
-        <div className="flex gap-1.5">
+        {is24() ? (
+          <div className="flex gap-1.5">
+            <Col label="Hour" items={HOURS24} value={cur ? cur.h : null} show={pad} onPick={(h) => onChange(p2(h) + ':' + p2(cur?.m ?? 0))} />
+            <Col label="Minutes" items={mins} value={cur?.m ?? null} show={p2} onPick={(m) => onChange(p2(cur ? cur.h : base.h) + ':' + p2(m))} />
+          </div>
+        ) : <div className="flex gap-1.5">
           <Col label="Hour" items={HOURS} value={h12} show={String} onPick={(h) => set(h, cur?.m ?? 0, pm ?? base.h >= 12)} />
           <Col label="Minutes" items={mins} value={cur?.m ?? null} show={p2} onPick={(m) => set(h12 ?? (base.h % 12 || 12), m, pm ?? base.h >= 12)} />
           <Col label="am or pm" items={['am', 'pm']} value={pm === null ? null : pm ? 'pm' : 'am'} show={String}
             onPick={(x) => set(h12 ?? (base.h % 12 || 12), cur?.m ?? 0, x === 'pm')} />
-        </div>
+        </div>}
         <div className="mt-2.5 flex items-center justify-between">
           <button type="button" className="text-[13px] text-mute underline" onClick={() => { onChange(''); setOpen(false) }}>No time</button>
           <button type="button" className="rounded-[10px] bg-accent px-4 py-1.5 text-[13.5px] font-semibold text-on-accent" onClick={() => setOpen(false)}>Done</button>

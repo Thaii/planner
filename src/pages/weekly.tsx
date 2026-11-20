@@ -6,7 +6,7 @@ import { CommitInput, InlineAdd } from '@/components/ui/field'
 import { PageHead, TaskRow, Drops, Moods } from '@/components/bits'
 import { useS, update, undoable } from '@/lib/store'
 import { go, openDay, useUI } from '@/lib/ui'
-import { addD, dow, DOWN, fmt, range, today } from '@/lib/date'
+import { addD, dow, DOWN, fmt, range, t12, today } from '@/lib/date'
 import { ensureWeek, eventsOn, labColor, tasksOn, tint, weekOf, weekStart, workoutsOn } from '@/lib/logic'
 import { addTask, toggleWorkout, weekItem } from '@/lib/actions'
 import { eventForm } from '@/lib/forms'
@@ -71,8 +71,8 @@ export function WeeklyPage() {
             return (
               <div key={d} className={cn('flex min-w-0 flex-col gap-1.5 rounded-xl border border-line bg-card px-2 py-2.5', d === t && 'border-accent shadow-[inset_0_0_0_1.5px_var(--accent)]')}>
                 <button className="flex items-baseline gap-1.5 text-left" onClick={() => openDay(d)}><span className="lbl">{DOWN[dow(d)]}</span><b className="font-serif text-xl font-normal">{+d.slice(8)}</b></button>
-                {ev.map((e) => <button key={e.id} className="lamp-warm truncate rounded-md px-1.5 py-1 text-left text-[11px]" style={{ background: tint(e.ro ? '#8a857d' : labColor(s, e.label) || 'var(--accent)', 22) }} onClick={() => !e.ro && eventForm(e.id)}>{e.time ? e.time + ' ' : ''}{e.title}</button>)}
-                {wo.map((x) => <button key={x.id} className="truncate rounded-md px-1.5 py-1 text-left text-[11px]" style={{ background: tint('#e0916b', 22) }} onClick={() => toggleWorkout(x.id, d)}>{x.log?.[d] ? '✓ ' : ''}{x.time ? x.time + ' ' : ''}{x.name}</button>)}
+                {ev.map((e) => <button key={e.id} className="lamp-warm truncate rounded-md px-1.5 py-1 text-left text-[11px]" style={{ background: tint(e.ro ? '#8a857d' : labColor(s, e.label) || 'var(--accent)', 22) }} onClick={() => !e.ro && eventForm(e.id)}>{e.time ? t12(e.time) + ' ' : ''}{e.title}</button>)}
+                {wo.map((x) => <button key={x.id} className="truncate rounded-md px-1.5 py-1 text-left text-[11px]" style={{ background: tint('#e0916b', 22) }} onClick={() => toggleWorkout(x.id, d)}>{x.log?.[d] ? '✓ ' : ''}{x.time ? t12(x.time) + ' ' : ''}{x.name}</button>)}
                 <div className="rows">{tk.map((x) => <TaskRow key={x.k.id + x.occ} x={x} compact />)}</div>
                 <InlineAdd placeholder="Add" className="mt-0.5 [&_input]:py-1 [&_input]:text-[12.5px] [&_button]:size-6 [&_button]:text-sm" onAdd={(t) => addTask(t, d)} />
                 <div className="mt-auto pt-1.5"><Drops d={d} small /><div className="mt-1.5"><Moods d={d} small /></div></div>

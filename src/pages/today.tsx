@@ -11,7 +11,7 @@ import { TaskRow, HabitRow, Drops, Moods } from '@/components/bits'
 import { startFive } from '@/components/five'
 import { useS, update, undoable } from '@/lib/store'
 import { go, openDay } from '@/lib/ui'
-import { addD, diffD, fmt, mins, nowMins, pad, t12, today, ym, type DateStr } from '@/lib/date'
+import { addD, diffD, fmt, mins, nowMins, t12, hourLabel, minsLabel, today, ym, type DateStr } from '@/lib/date'
 import {
   eventsOn, workoutsOn, tasksOn, hDue, kept, hRate, momentum, idById, votesOn, nextUp, lowEnergy, roughDay,
   weekStart, weekOf, monthOf, periodKey, labColor, tint,
@@ -37,11 +37,11 @@ function Timeline({ d }: { d: DateStr }) {
   const items: It[] = []
   ev.filter((e) => e.time).forEach((e) => {
     const a = mins(e.time!), b = e.end && mins(e.end) > a ? mins(e.end) : a + 30
-    items.push({ t: e.title, s: a, e: b, c: e.ro ? '#8a857d' : labColor(s, e.label) || 'var(--accent)', tm: e.time + (e.end ? ' to ' + e.end : ''), run: e.ro ? undefined : () => eventForm(e.id) })
+    items.push({ t: e.title, s: a, e: b, c: e.ro ? '#8a857d' : labColor(s, e.label) || 'var(--accent)', tm: t12(e.time) + (e.end ? ' – ' + t12(e.end) : ''), run: e.ro ? undefined : () => eventForm(e.id) })
   })
   wo.filter((w) => w.time).forEach((w) => {
     const a = mins(w.time!)
-    items.push({ t: (w.log?.[d] ? '✓ ' : '') + w.name, s: a, e: a + (w.dur || 45), c: labColor(s, w.label) || '#e0916b', tm: w.time!, run: () => toggleWorkout(w.id, d) })
+    items.push({ t: (w.log?.[d] ? '✓ ' : '') + w.name, s: a, e: a + (w.dur || 45), c: labColor(s, w.label) || '#e0916b', tm: t12(w.time), run: () => toggleWorkout(w.id, d) })
   })
   // On phones, only show the hours that matter.
   if (typeof innerWidth !== 'undefined' && innerWidth < 760) {
@@ -60,7 +60,7 @@ function Timeline({ d }: { d: DateStr }) {
   const outside = items.filter((i) => i.e <= top0 || i.s >= en * 60)
   return (
     <>
-      {cur && <div className="mb-2 text-[12.5px]"><b className="text-danger">On now:</b> {cur.t} until {pad(Math.floor(cur.e / 60))}:{pad(cur.e % 60)}</div>}
+      {cur && <div className="mb-2 text-[12.5px]"><b className="text-danger">On now:</b> {cur.t} until {minsLabel(cur.e)}</div>}
       {ev.filter((e) => !e.time).map((e) => (
         <button key={e.id} className="lamp-warm mb-1 block w-full truncate rounded-md px-1.5 py-1 text-left text-[11px]" style={{ background: tint(e.ro ? '#8a857d' : labColor(s, e.label) || 'var(--accent)', 22) }} onClick={() => !e.ro && eventForm(e.id)}>{e.title} · all day</button>
       ))}
@@ -68,7 +68,7 @@ function Timeline({ d }: { d: DateStr }) {
         <button key={w.id} className="mb-1 block w-full truncate rounded-md px-1.5 py-1 text-left text-[11px]" style={{ background: tint('#e0916b', 22) }} onClick={() => toggleWorkout(w.id, d)}>{w.log?.[d] ? '✓ ' : '🏃 '}{w.name}</button>
       ))}
       <div className="tl" style={{ height: (en - st) * H + 8 }}>
-        {Array.from({ length: en - st + 1 }, (_, i) => <div key={i} className="hr" style={{ top: i * H }}><span>{pad(st + i)}:00</span></div>)}
+        {Array.from({ length: en - st + 1 }, (_, i) => <div key={i} className="hr" style={{ top: i * H }}><span>{hourLabel(st + i)}</span></div>)}
         {items.map((it, i) => {
           const a = Math.max(it.s, top0), b = Math.min(Math.max(it.e, a + 20), en * 60)
           if (b <= top0 || a >= en * 60) return null
@@ -76,12 +76,12 @@ function Timeline({ d }: { d: DateStr }) {
           return (
             <button key={i} className="ev lamp-warm" onClick={it.run}
               style={{ top: tp, height: ht, left: `calc(44px + (100% - 44px) * ${it.col}/${it.n})`, width: `calc((100% - 44px)/${it.n} - 3px)`, background: tint(it.c, 20), borderColor: it.c }}>
-              {ht < 34 ? <b className="block truncate font-medium"><small className="font-mono text-[10px] opacity-80">{it.tm.slice(0, 5)}</small> {it.t}</b>
+              {ht < 34 ? <b className="block truncate font-medium"><small className="font-mono text-[10px] opacity-80">{it.tm.split(' – ')[0]}</small> {it.t}</b>
                 : <><small className="block font-mono text-[10px] opacity-80">{it.tm}</small><b className="block font-medium">{it.t}</b></>}
             </button>
           )
         })}
-        {d === today() && nm >= top0 && nm <= en * 60 && <div className="now" style={{ top: ((nm - top0) / 60) * H }}><span>{pad(Math.floor(nm / 60))}:{pad(nm % 60)}</span></div>}
+        {d === today() && nm >= top0 && nm <= en * 60 && <div className="now" style={{ top: ((nm - top0) / 60) * H }}><span>{minsLabel(nm)}</span></div>}
       </div>
       {outside.length > 0 && <div className="mt-1.5 text-[12.5px] text-mute">Outside these hours: {outside.map((i) => i.tm + ' ' + i.t).join(', ')}</div>}
     </>

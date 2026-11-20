@@ -20,7 +20,7 @@ import { tint } from '@/lib/logic'
 import { defaults } from '@/lib/defaults'
 import { ACCENTS, CARDS_DEF, DAY_THEMES, NIGHT_THEMES, PAPERS, type Palette } from '@/lib/constants'
 import { accentColor, isNight } from '@/lib/theme'
-import { pad, today } from '@/lib/date'
+import { deviceUses24, hourLabel, today } from '@/lib/date'
 import { parseICS } from '@/lib/ics'
 import { greeting, plannerTitle } from '@/lib/greeting'
 import type { Settings, ThemeMode } from '@/lib/types'
@@ -89,13 +89,15 @@ function Pages() {
       </Card>
       <Card>
         <CardHeader title="Calendar" />
+        <div className="lbl mb-1.5 text-mute">Time format</div>
+        <Segmented value={s.clock || (deviceUses24() ? '24' : '12')} onChange={(v) => setS((st) => { st.clock = v as '12' | '24' })} options={[['12', '12-hour · 2:30pm'], ['24', '24-hour · 14:30']]} />
         <div className="lbl mb-1.5 text-mute">Weeks start on</div>
         <Segmented value={String(s.weekStart)} onChange={(v) => setS((st) => { st.weekStart = +v as 0 | 1 })} options={[['1', 'Monday'], ['0', 'Sunday']]} />
         <div className="flex flex-wrap gap-2.5">
           <label className="w-[calc(50%-5px)]"><span className="mb-1 block text-[12.5px] font-medium text-mute">Schedule starts</span>
-            <Select value={s.dayStart} onChange={(e) => setS((st) => { st.dayStart = +e.target.value })}>{hours(0, 11).map((h) => <option key={h} value={h}>{pad(h)}:00</option>)}</Select></label>
+            <Select value={s.dayStart} onChange={(e) => setS((st) => { st.dayStart = +e.target.value })}>{hours(0, 11).map((h) => <option key={h} value={h}>{hourLabel(h)}</option>)}</Select></label>
           <label className="w-[calc(50%-5px)]"><span className="mb-1 block text-[12.5px] font-medium text-mute">Schedule ends</span>
-            <Select value={s.dayEnd} onChange={(e) => setS((st) => { st.dayEnd = +e.target.value })}>{hours(13, 24).map((h) => <option key={h} value={h}>{pad(h % 24)}:00</option>)}</Select></label>
+            <Select value={s.dayEnd} onChange={(e) => setS((st) => { st.dayEnd = +e.target.value })}>{hours(13, 24).map((h) => <option key={h} value={h}>{hourLabel(h)}</option>)}</Select></label>
           <div className="w-full"><span className="mb-1 block text-[12.5px] font-medium text-mute">Water goal</span>
             <div className="flex items-center gap-2"><span className="flex-1 text-[14px]">{ml(s.waterGoal || 2000)} a day · each drop is {ml(s.glass || 250)}</span><Button size="sm" onClick={waterForm}>Change</Button></div></div>
         </div>
@@ -151,9 +153,9 @@ function Look() {
       {s.theme === 'schedule' && (
         <div className="mb-3 flex gap-2.5">
           <label className="flex-1"><span className="mb-1 block text-[12.5px] font-medium text-mute">Night starts</span>
-            <Select value={s.nightFrom} onChange={(e) => setS((st) => { st.nightFrom = +e.target.value })}>{hours(0, 23).map((h) => <option key={h} value={h}>{pad(h)}:00</option>)}</Select></label>
+            <Select value={s.nightFrom} onChange={(e) => setS((st) => { st.nightFrom = +e.target.value })}>{hours(0, 23).map((h) => <option key={h} value={h}>{hourLabel(h)}</option>)}</Select></label>
           <label className="flex-1"><span className="mb-1 block text-[12.5px] font-medium text-mute">Day starts</span>
-            <Select value={s.nightTo} onChange={(e) => setS((st) => { st.nightTo = +e.target.value })}>{hours(0, 23).map((h) => <option key={h} value={h}>{pad(h)}:00</option>)}</Select></label>
+            <Select value={s.nightTo} onChange={(e) => setS((st) => { st.nightTo = +e.target.value })}>{hours(0, 23).map((h) => <option key={h} value={h}>{hourLabel(h)}</option>)}</Select></label>
         </div>
       )}
       <p className="mt-0 text-[13px] text-mute">Right now you're seeing your <b className="text-ink">{isNight(s) ? 'night' : 'day'}</b> theme.</p>

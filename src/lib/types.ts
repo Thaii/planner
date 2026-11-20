@@ -51,7 +51,9 @@ export interface Settings {
   /** Daily water goal in ml, and how much one drop (a glass/bottle) holds. `water` = number of drops. */
   waterGoal: number; glass: number
   /** How Today shows the day's schedule. */
-  schedView?: 'timeline' | 'list'; name: string
+  schedView?: 'timeline' | 'list'
+  /** 12-hour (2:30pm) or 24-hour (14:30) clock. Unset = follow the device. */
+  clock?: '12' | '24'; name: string
   weekStart: 0 | 1; dayStart: number; dayEnd: number; goalAreas: string[]; dayTheme: string; nightTheme: string
   nightFrom: number; nightTo: number; themeAccent: boolean; taskIdentity?: string
   /** Show "<Name>'s Planner" (true) or "Life Planner" (false). */

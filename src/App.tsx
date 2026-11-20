@@ -1,3 +1,4 @@
+import { deviceUses24, setClock24 } from './lib/date'
 import { useEffect, useState } from 'react'
 import { AppShell } from './components/app-shell'
 import { useS } from './lib/store'
@@ -26,6 +27,8 @@ import { SettingsPage } from './pages/settings'
 
 export default function App() {
   const s = useS()
+  // Set the clock before anything below renders a time.
+  setClock24(s.settings.clock ? s.settings.clock === '24' : deviceUses24())
   const { view, date } = useUI()
   const [dark, setDark] = useState(false)
   const [, tick] = useState(0)

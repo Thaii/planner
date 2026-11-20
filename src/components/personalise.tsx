@@ -5,12 +5,12 @@ import { Input, Select } from './ui/field'
 import { Segmented } from './ui/segmented'
 import { closeSheet, openSheet } from './sheet'
 import { getS, update } from '@/lib/store'
+import { hourLabel } from '@/lib/date'
 import { DEFAULT_PARTS, fill, PARTS, plannerTitle, STANDARD } from '@/lib/greeting'
 import type { DayPart, Settings } from '@/lib/types'
 import { cn } from '@/lib/utils'
 
 type Mode = NonNullable<Settings['titleMode']>
-const hourLabel = (h: number) => (h % 12 || 12) + (h < 12 ? 'am' : 'pm')
 /** Hours each part can start at, kept in order so morning < afternoon < evening. */
 const RANGE: Record<DayPart, number[]> = { morning: [3, 4, 5, 6, 7, 8, 9, 10], afternoon: [11, 12, 13, 14], evening: [15, 16, 17, 18, 19, 20, 21] }
 const IDEAS: Record<DayPart, string> = { morning: 'e.g. Rise and shine, {name}!', afternoon: 'e.g. Keep it up, {name}.', evening: 'e.g. Time to wind down, {name}.' }
@@ -104,7 +104,7 @@ function PersonaliseSheet() {
           onList={(list) => setGreets((g) => ({ ...g, [p]: list }))} onFrom={(h) => setParts((x) => ({ ...x, [p]: h }))} />
       ))}
       <button type="button" className={cn('mt-1 text-[12.5px] text-mute underline', JSON.stringify(parts) === JSON.stringify(DEFAULT_PARTS) && 'invisible')}
-        onClick={() => setParts({ ...DEFAULT_PARTS })}>Back to the standard times (5am, 12pm, 5pm)</button>
+        onClick={() => setParts({ ...DEFAULT_PARTS })}>Back to the standard times ({hourLabel(5)}, {hourLabel(12)}, {hourLabel(17)})</button>
 
       <div className="mt-4 flex justify-end gap-2">
         <Button type="button" onClick={closeSheet}>Cancel</Button>
