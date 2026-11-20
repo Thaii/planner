@@ -78,7 +78,7 @@ export function Welcome() {
               <h2 className="mb-3 text-[30px] leading-tight">Welcome to your planner</h2>
               <p className="mt-0 text-[15px] leading-relaxed text-mute">A calm place for your day, your plans and the small habits that add up. It starts simple – you can add more whenever you like.</p>
               <label className="mt-7 block"><span className="mb-2 block text-[12.5px] font-medium text-mute">What should we call you? (optional)</span>
-                <Input autoFocus value={name} onChange={(e) => setName(e.target.value)} placeholder="Your first name" /></label>
+                <Input autoFocus value={name} onChange={(e) => setName(e.target.value)} placeholder="Your preferred name" /></label>
               <p className="mt-2.5 mb-0 text-[12.5px] text-mute">Used in your greeting and the planner's title. You can change it any time.</p>
             </form>
           )}

@@ -89,7 +89,7 @@ function PersonaliseSheet() {
       <h3 className="mb-3 text-[21px]">Your name, title and greetings</h3>
 
       <label className="mb-3 block"><span className="mb-1 block text-[12.5px] font-medium text-mute">What should we call you? (optional)</span>
-        <Input value={name} placeholder="Your first name" onChange={(e) => setName(e.target.value)} /></label>
+        <Input value={name} placeholder="Your preferred name" onChange={(e) => setName(e.target.value)} /></label>
 
       <span className="mb-1 block text-[12.5px] font-medium text-mute">Planner title</span>
       <Segmented value={mode} onChange={(v) => setMode(v as Mode)} options={[['name', n ? `${n}'s Planner` : "Your name's"], ['life', 'Life Planner'], ['custom', 'Your own']]} />
