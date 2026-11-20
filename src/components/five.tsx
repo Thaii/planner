@@ -3,7 +3,8 @@ import { create } from 'zustand'
 import { toast } from 'sonner'
 import { Button } from './ui/button'
 import { markDone } from '@/lib/actions'
-import { getS, update } from '@/lib/store'
+import { getS, replaceState, update } from '@/lib/store'
+import { Check } from 'lucide-react'
 import { pad, today, type DateStr } from '@/lib/date'
 import { ring, stopRing, unlockAudio } from '@/lib/sound'
 
@@ -40,7 +41,19 @@ export function FiveTimer() {
   }, [f.open, f.run])
   if (!f.open) return null
   const close = () => { stopRing(); useFive.setState({ open: false, run: false }) }
-  const log = () => { stopRing(); markDone(f.kind, f.id, f.d, f.occ); close(); toast(f.kind === 'self' || f.kind === 'dopa' ? 'Logged. Looking after yourself counts.' : 'Logged. Momentum is built from exactly this.') }
+  const care = f.kind === 'self' || f.kind === 'dopa'
+  /** Mark it done (early or at the end). Undo puts everything back and reopens the timer, paused. */
+  const log = () => {
+    stopRing()
+    const before = getS(), timer = { ...useFive.getState() }
+    const left = timer.ended ? 0 : Math.max(0, Math.round((timer.end - Date.now()) / 1000))
+    // Finishing early still counts the minutes actually spent (the end of the timer already counted the rest).
+    if (!timer.ended && !care) { const spent = Math.ceil((timer.mins * 60 - left) / 60); if (spent > 0) update((d) => { const t = today(); d.focus[t] = (d.focus[t] || 0) + spent }) }
+    markDone(f.kind, f.id, f.d, f.occ); close()
+    toast(care ? 'Logged. Looking after yourself counts.' : timer.ended ? 'Logged. Momentum is built from exactly this.' : 'Done – nice work.', {
+      action: { label: 'Undo', onClick: () => { replaceState(before); useFive.setState({ ...timer, open: true, run: false, left: timer.ended ? 0 : left }) } },
+    })
+  }
   const dessert = f.kind === 'dopa' && getS().dopa.find((x) => x.id === f.id)?.course === 'dessert'
   return (
     <div className="fixed inset-0 z-[70] flex flex-col items-center justify-center bg-bg p-6 text-center">
@@ -49,17 +62,18 @@ export function FiveTimer() {
       <div className="my-5 font-mono text-[clamp(64px,18vw,120px)] leading-none" aria-live="polite">
         {f.ended ? (f.kind === 'dopa' ? "Time's up." : 'Nice.') : `${Math.floor(f.left / 60)}:${pad(f.left % 60)}`}
       </div>
-      <div className="flex flex-wrap justify-center gap-2.5">
+      <div className="flex flex-wrap justify-center gap-2">
         {!f.ended ? (
           <>
-            <Button onClick={() => f.run ? useFive.setState({ run: false, left: Math.max(0, Math.round((f.end - Date.now()) / 1000)) }) : (unlockAudio(), useFive.setState({ run: true, end: Date.now() + f.left * 1000 }))}>{f.run ? 'Pause' : 'Resume'}</Button>
-            <Button size="mono" onClick={close}>Stop</Button>
+            <Button size="lg" className="min-w-[100px] px-4" onClick={() => f.run ? useFive.setState({ run: false, left: Math.max(0, Math.round((f.end - Date.now()) / 1000)) }) : (unlockAudio(), useFive.setState({ run: true, end: Date.now() + f.left * 1000 }))}>{f.run ? 'Pause' : 'Resume'}</Button>
+            <Button size="lg" variant="primary" className="min-w-[100px] px-4" onClick={log}><Check className="size-4" />{care ? 'I did it' : 'Done'}</Button>
+            <Button size="lg" className="min-w-[100px] px-4" onClick={close}>Stop</Button>
           </>
         ) : (
           <>
-            <Button variant="primary" onClick={log}>{f.kind === 'self' || f.kind === 'dopa' ? 'I did it' : 'Log it'}</Button>
-            {!dessert && <Button onClick={() => { stopRing(); useFive.setState({ end: Date.now() + 600000, left: 600, run: true, ended: false }) }}>+10 minutes</Button>}
-            <Button size="mono" onClick={close}>Stop here</Button>
+            <Button size="lg" variant="primary" className="min-w-[100px] px-4" onClick={log}><Check className="size-4" />{care ? 'I did it' : 'Mark done'}</Button>
+            {!dessert && <Button size="lg" className="min-w-[100px] px-4" onClick={() => { stopRing(); useFive.setState({ end: Date.now() + 600000, left: 600, run: true, ended: false }) }}>+10 minutes</Button>}
+            <Button size="lg" className="min-w-[100px] px-4" onClick={close}>Stop here</Button>
           </>
         )}
       </div>
