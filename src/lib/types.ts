@@ -63,7 +63,9 @@ export interface Settings {
   /** Classic look, or the Cute style (rounded fonts, softer cards, the planner pals). */
   style?: 'classic' | 'cute'; pals?: boolean
   /** Theme choices to go back to when switching Cute off. */
-  classicThemes?: { day: string; night: string; themeAccent: boolean }; name: string
+  classicThemes?: { day: string; night: string; themeAccent: boolean }
+  /** Per page: the order of its sections and which are hidden (set by Arrange). */
+  layouts?: Record<string, { order: string[]; hidden: string[] }>; name: string
   weekStart: 0 | 1; dayStart: number; dayEnd: number; goalAreas: string[]; dayTheme: string; nightTheme: string
   nightFrom: number; nightTo: number; themeAccent: boolean; taskIdentity?: string
   /** Show "<Name>'s Planner" (true) or "Life Planner" (false). */

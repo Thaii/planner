@@ -1,3 +1,4 @@
+import { Sections } from '@/components/sections'
 import { X } from 'lucide-react'
 import { create } from 'zustand'
 import { Card, CardHeader, Empty } from '@/components/ui/card'
@@ -26,7 +27,9 @@ export function GoalsPage() {
     <div>
       <PageHead crumb="Grow" title="Goals" />
       <div className="mb-3 flex flex-wrap gap-2"><Button size="mono" onClick={() => go('yearly')}>Yearly</Button><Button size="mono" onClick={() => go('projects')}>Projects</Button></div>
-      <Card className="mb-3"><CardHeader title="My goals" action={<span className="text-[12.5px] text-mute">Open a goal to add progress and a next step</span>} />
+      <Sections page="goals" items={[
+        { id: 'list', title: "My goals", icon: '🏔️', desc: "Your goals by area of life", node: (<>
+      <Card><CardHeader title="My goals" action={<span className="text-[12.5px] text-mute">Open a goal to add progress and a next step</span>} />
         <div className="mb-2 flex flex-wrap gap-1.5">
           {areas.map((a) => (
             <button key={a} onClick={() => useArea.setState({ a })} className={cn('rounded-full border border-line bg-card px-3 py-1 text-[12.5px]', a === cur && 'border-accent bg-accent-soft font-semibold')}>
@@ -49,6 +52,8 @@ export function GoalsPage() {
         </div>
         <InlineAdd placeholder={`Add a ${cur.toLowerCase()} goal`} onAdd={(t) => update((d) => { d.goals.push({ id: uid(), title: t, area: cur, pct: 0 }) })} />
       </Card>
+        </>) },
+        { id: 'where', title: "Where you are", icon: '📍', desc: "Progress for every goal", node: (<>
       <Card><CardHeader title="Where you are" />
         <div className="grid grid-cols-2 gap-2.5 min-[760px]:grid-cols-4">
           {areas.map((a) => { const g = s.goals.filter((x) => (x.area || areas[0]) === a); return (
@@ -62,6 +67,8 @@ export function GoalsPage() {
           </div>
         ))}
       </Card>
+        </>) },
+      ]} />
     </div>
   )
 }

@@ -1,3 +1,4 @@
+import { Sections } from '@/components/sections'
 import * as React from 'react'
 import { X, MapPin } from 'lucide-react'
 import { create } from 'zustand'
@@ -115,7 +116,8 @@ export function TravelPage() {
         <Button onClick={() => tripForm(id)}>Edit</Button>
       </Card>
 
-      <div className="grid gap-3 min-[760px]:grid-cols-2 min-[1100px]:grid-cols-3">
+        <Sections page="trip" items={[
+          { id: 'plan', title: "Trip planner", icon: '🧾', desc: "Flights, stays and what is booked", node: (<>
         <Card>
           <CardHeader title="Trip planner" action={<span className="text-[12.5px] text-mute">{L('todo').filter((i) => i.status === 'booked').length}/{L('todo').length} booked</span>} />
           <div className="rows">{L('todo').map((i) => (
@@ -128,19 +130,8 @@ export function TravelPage() {
           ))}</div>
           <InlineAdd placeholder="Flights, stays, insurance…" onAdd={(t) => setTrip(id, (x) => { x.todo.push({ id: uid(), text: t, status: 'todo' }) })} />
         </Card>
-
-        <Card>
-          <CardHeader title="Itinerary sketch" />
-          <div className="rows">{L('itin').map((i) => (
-            <ClickRow key={i.id} onOpen={() => subForm(id, 'itin', i.id)}>
-              <span className="w-12 flex-none font-mono text-[11.5px] text-mute">Day {i.day}</span>
-              <div className="tt flex-1 whitespace-pre-wrap">{i.text}</div>
-              <Del tid={id} k="itin" id={i.id} />
-            </ClickRow>
-          ))}</div>
-          <TwoAdd key={L('itin').length} a="Day" b="Plan" aw="w-12" aMode="numeric" onAdd={(d, t) => t && setTrip(id, (x) => { x.itin.push({ id: uid(), day: d || String(x.itin.length + 1), text: t }) })} />
-        </Card>
-
+          </>) },
+          { id: 'pack', title: "Packing list", icon: '🧳', desc: "Tick things off as you pack", node: (<>
         <Card>
           <CardHeader title="Packing list" action={<span className="text-[12.5px] text-mute">{L('pack').filter((i) => i.done).length}/{L('pack').length}</span>} />
           <div className="rows">{L('pack').map((i) => (
@@ -153,19 +144,8 @@ export function TravelPage() {
           <InlineAdd placeholder="Add an item" onAdd={(t) => setTrip(id, (x) => { x.pack.push({ id: uid(), text: t, done: false }) })} />
           {!L('pack').length && <Button variant="link" className="mt-2 text-[13px]" onClick={() => setTrip(id, (x) => { PACK.forEach((t) => x.pack.push({ id: uid(), text: t, done: false })) })}>Add a starter packing list</Button>}
         </Card>
-
-        <Card>
-          <CardHeader title="Places & restaurants" />
-          <div className="rows">{L('places').map((i) => (
-            <div key={i.id} className="row">
-              <MapPin className="size-4 flex-none text-accent" />
-              <a className="tt flex-1" href={'https://maps.google.com/?q=' + encodeURIComponent(i.text + (tr.dest ? ', ' + tr.dest : ''))} target="_blank" rel="noreferrer">{i.text}</a>
-              <Del tid={id} k="places" id={i.id} />
-            </div>
-          ))}</div>
-          <InlineAdd placeholder="Add a place" onAdd={(t) => setTrip(id, (x) => { x.places.push({ id: uid(), text: t }) })} />
-        </Card>
-
+          </>) },
+          { id: 'budget', title: "Travel budget", icon: '💰', desc: "Spending against your budget", node: (<>
         <Card>
           <CardHeader title="Travel budget" />
           <div className="rows">{L('budget').map((i) => (
@@ -184,7 +164,34 @@ export function TravelPage() {
             </div>
           )}
         </Card>
-
+          </>) },
+          { id: 'itin', title: "Itinerary sketch", icon: '🗺️', desc: "A rough plan for each day", hide: true, node: (<>
+        <Card>
+          <CardHeader title="Itinerary sketch" />
+          <div className="rows">{L('itin').map((i) => (
+            <ClickRow key={i.id} onOpen={() => subForm(id, 'itin', i.id)}>
+              <span className="w-12 flex-none font-mono text-[11.5px] text-mute">Day {i.day}</span>
+              <div className="tt flex-1 whitespace-pre-wrap">{i.text}</div>
+              <Del tid={id} k="itin" id={i.id} />
+            </ClickRow>
+          ))}</div>
+          <TwoAdd key={L('itin').length} a="Day" b="Plan" aw="w-12" aMode="numeric" onAdd={(d, t) => t && setTrip(id, (x) => { x.itin.push({ id: uid(), day: d || String(x.itin.length + 1), text: t }) })} />
+        </Card>
+          </>) },
+          { id: 'places', title: "Places & restaurants", icon: '📍', desc: "Spots to visit, linked to Maps", hide: true, node: (<>
+        <Card>
+          <CardHeader title="Places & restaurants" />
+          <div className="rows">{L('places').map((i) => (
+            <div key={i.id} className="row">
+              <MapPin className="size-4 flex-none text-accent" />
+              <a className="tt flex-1" href={'https://maps.google.com/?q=' + encodeURIComponent(i.text + (tr.dest ? ', ' + tr.dest : ''))} target="_blank" rel="noreferrer">{i.text}</a>
+              <Del tid={id} k="places" id={i.id} />
+            </div>
+          ))}</div>
+          <InlineAdd placeholder="Add a place" onAdd={(t) => setTrip(id, (x) => { x.places.push({ id: uid(), text: t }) })} />
+        </Card>
+          </>) },
+          { id: 'book', title: "Activities & booking info", icon: '🎟️', desc: "Booking references in one place", hide: true, node: (<>
         <Card>
           <CardHeader title="Activities & booking info" />
           <div className="rows">{L('book').map((i) => (
@@ -196,9 +203,9 @@ export function TravelPage() {
           ))}</div>
           <TwoAdd a="What" b="Details / ref" aw="w-24" onAdd={(w, r) => setTrip(id, (x) => { x.book.push({ id: uid(), what: w || 'Booking', ref: r }) })} />
         </Card>
-      </div>
-
-      <Card className="mt-3">
+          </>) },
+          { id: 'journal', title: "Journal", icon: '📔', desc: "Capture moments while they are fresh", hide: true, wide: true, node: (<>
+      <Card>
         <CardHeader title="Journal" action={<Button variant="link" className="text-[12.5px]" onClick={() => subForm(id, 'journal')}>+ Entry</Button>} />
         <div className="rows">
           {L('journal').slice().sort((a, b) => (b.date || '').localeCompare(a.date || '')).map((i) => (
@@ -210,6 +217,8 @@ export function TravelPage() {
         </div>
         {!L('journal').length && <Empty>Capture the moments while they are fresh.</Empty>}
       </Card>
+          </>) },
+        ]} />
     </div>
   )
 }

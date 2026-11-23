@@ -1,3 +1,4 @@
+import { Sections } from '@/components/sections'
 import { create } from 'zustand'
 import { toast } from 'sonner'
 import { Card, CardHeader } from '@/components/ui/card'
@@ -54,7 +55,8 @@ export function FocusPage() {
   return (
     <div>
       <PageHead crumb="Focus" title="Focus timer" />
-      <div className="grid gap-3 min-[900px]:grid-cols-[minmax(0,460px)_1fr]">
+        <Sections page="focus" items={[
+          { id: 'timer', title: "Focus timer", icon: '⏰', desc: "15 to 60 minutes of focus", node: (<>
         <Card className="text-center">
           <Segmented value={String(f.len)} onChange={(v) => !f.run && reset(+v)} options={[['15', '15 min'], ['25', '25 min'], ['45', '45 min'], ['60', '60 min']]} />
           <svg viewBox="0 0 220 220" className="mx-auto my-2 w-[min(240px,70vw)]" role="img" aria-label={clock(f.left) + ' left'}>
@@ -71,6 +73,8 @@ export function FocusPage() {
           </div>
           <p className="mb-0 text-[13px] text-mute">Focused today: <b className="text-ink">{s.focus[t] || 0} min</b>. Minutes from Next up timers count too.</p>
         </Card>
+          </>) },
+          { id: 'week', title: "Last 7 days", icon: '📊', desc: "How much you focused each day", node: (<>
         <Card>
           <CardHeader title="Last 7 days" action={<span className="text-[12.5px] text-mute">{week.reduce((a, d) => a + (s.focus[d] || 0), 0)} min</span>} />
           <div className="flex h-40 items-end gap-2">
@@ -87,7 +91,8 @@ export function FocusPage() {
           </div>
           <p className="mb-0 text-[13px] text-mute">Stuck starting? Pick the smallest piece, set 15 minutes and only promise yourself that. Stopping when it rings is allowed.</p>
         </Card>
-      </div>
+          </>) },
+        ]} />
     </div>
   )
 }

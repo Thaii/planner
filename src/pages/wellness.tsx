@@ -1,3 +1,4 @@
+import { Sections } from '@/components/sections'
 import { MedsSection } from './meds'
 import { glassMl, ml } from '@/lib/water'
 import * as React from 'react'
@@ -30,7 +31,7 @@ function Summary({ s, k, label, max, big, small }: { s: State; k: 'mood' | 'ener
   const dl = avg != null && pavg != null ? avg - pavg : null
   const W = 200, H = 50, bw = W / 30
   return (
-    <div>
+    <div className="summary-box">
       <span className="lbl text-mute">{label}</span>
       <div className="font-serif text-2xl">{avg == null ? '–' : big(avg)}</div>
       <div className="text-xs text-mute">{dl == null ? `${have.length} of 30 days logged` : `${dl >= 0 ? '↑ up' : '↓ down'} ${small(Math.abs(Math.round(dl * 10) / 10))} on the 30 days before`}</div>
@@ -134,16 +135,21 @@ export function WellnessPage() {
   return (
     <div>
       <PageHead crumb={'Live · ' + fmt(t, { weekday: 'long', day: 'numeric', month: 'long' })} title="Wellness" />
-      <Card className="mb-3"><CardHeader title="How the last 30 days have gone" action={<span className="text-[12.5px] text-mute">A gap means you did not record it, not a zero</span>} />
-        <div className="grid gap-4 min-[760px]:grid-cols-4">
+      <Sections page="wellness" items={[
+        { id: 'summary', title: "The last 30 days", icon: '📈', desc: "Mood, energy, water and sleep trends", wide: true, node: (<>
+      <Card><CardHeader title="How the last 30 days have gone" action={<span className="text-[12.5px] text-mute">A gap means you did not record it, not a zero</span>} />
+        <div className="summary-grid grid gap-4 min-[760px]:grid-cols-4">
           <Summary s={s} k="mood" label="Mood" max={5} big={(v) => `${MOODW[Math.round(v)]} most days`} small={(v) => `${v} pts`} />
           <Summary s={s} k="energy" label="Energy" max={100} big={(v) => `${Math.round(v)}% on the slider`} small={(v) => `${v}%`} />
           <Summary s={s} k="water" label="Water" max={Math.max(1, (s.settings.waterGoal || 2000) / glassMl(s.settings))} big={(v) => `${ml(v * glassMl(s.settings))} a day`} small={(v) => ml(v * glassMl(s.settings))} />
           <Summary s={s} k="sleep" label="Sleep" max={11} big={(v) => `${fmtSleep(v)} a night`} small={(v) => fmtSleep(v)} />
         </div>
       </Card>
+        </>) },
+        { id: 'meds', title: "Medications", icon: '💊', desc: "Your medications and their history", wide: true, node: (<>
       <MedsSection />
-      <div className="mb-3 grid gap-3 min-[760px]:grid-cols-2 min-[1100px]:grid-cols-3">
+        </>) },
+        { id: 'mood', title: "Mood & energy", icon: '🙂', desc: "Today's check-in", node: (<>
         <Card><CardHeader title="Mood & energy" />
           <Moods d={t} />
           <div className="lbl mt-3.5 mb-1.5 text-mute">Energy</div>
@@ -153,6 +159,17 @@ export function WellnessPage() {
           <Drops d={t} />
           <Button variant="link" className="mt-2.5 text-[12.5px]" onClick={() => update((d) => { delete d.well[t] })}>Clear today</Button>
         </Card>
+        </>) },
+        { id: 'selfcare', title: "Self-care menu", icon: '🛁', desc: "Little ways to look after yourself", node: (<>
+        <SelfCareCard s={s} />
+        </>) },
+        { id: 'gratitude', title: "Gratitude", icon: '🙏', desc: "A few good things", node: (<>
+        <Card><CardHeader title="Gratitude" />
+          <div className="rows">{grat.length ? grat.map((i) => <div key={i.id} className="row"><span>♡</span><div className="flex-1">{i.text}</div><button className="p-1 text-mute" aria-label="Remove" onClick={() => update((d) => { d.journal.grat[t] = (d.journal.grat[t] || []).filter((z) => z.id !== i.id) })}><X className="size-4" /></button></div>) : <Empty>Something good, however small.</Empty>}</div>
+          <InlineAdd placeholder="Something good" onAdd={(v) => update((d) => { (d.journal.grat[t] = d.journal.grat[t] || []).push({ id: uid(), text: v }) })} />
+        </Card>
+        </>) },
+        { id: 'sleep', title: "Sleep", icon: '😴', desc: "The last 7 nights", hide: true, node: (<>
         <Card><CardHeader title="Sleep · last 7 days" />
           <div className="rows">{[...d7].reverse().map((d) => {
             const x = s.well[d] || {}
@@ -166,22 +183,22 @@ export function WellnessPage() {
           })}</div>
           <p className="mt-1.5 mb-0 text-[12.5px] text-mute">However you like to write it: 7h 20m, 7:20, or 7.5 for seven and a half.</p>
         </Card>
-        <SelfCareCard s={s} />
-      </div>
-      <div className="grid gap-3 min-[760px]:grid-cols-2 min-[1100px]:grid-cols-3">
+        </>) },
+        { id: 'morning', title: "Morning routine", icon: '🌅', desc: "Your morning anchors", hide: true, node: (<>
         <Routine s={s} k="morning" title="Morning routine" />
+        </>) },
+        { id: 'evening', title: "Evening routine", icon: '🌙', desc: "Your wind-down steps", hide: true, node: (<>
         <Routine s={s} k="evening" title="Evening routine" />
-        <Card><CardHeader title="Gratitude" />
-          <div className="rows">{grat.length ? grat.map((i) => <div key={i.id} className="row"><span>♡</span><div className="flex-1">{i.text}</div><button className="p-1 text-mute" aria-label="Remove" onClick={() => update((d) => { d.journal.grat[t] = (d.journal.grat[t] || []).filter((z) => z.id !== i.id) })}><X className="size-4" /></button></div>) : <Empty>Something good, however small.</Empty>}</div>
-          <InlineAdd placeholder="Something good" onAdd={(v) => update((d) => { (d.journal.grat[t] = d.journal.grat[t] || []).push({ id: uid(), text: v }) })} />
-        </Card>
-      </div>
+        </>) },
+        { id: 'week', title: "Week in numbers", icon: '🔢', desc: "This week at a glance", hide: true, wide: true, node: (<>
       <div className="mt-3 rounded-card bg-accent-soft px-4 py-3.5">
         <span className="lbl text-accent">Week {Math.ceil((diffD(t.slice(0, 4) + '-01-01', t) + 1) / 7)} in numbers</span>
         <div className="mt-1.5 text-[14px]">
           {hr.pct}% of habits · {ml(water7 * glassMl(s.settings))} of water · {sl.length ? fmtSleep(sl.reduce((a, b) => a + b, 0) / sl.length) + ' average sleep' : 'no sleep logged'} · {d7.filter((d) => (s.journal.grat[d] || []).length).length} days with gratitude · {d7.filter((d) => (s.selfLog[d] || []).length).length} days of self-care
         </div>
       </div>
+        </>) },
+      ]} />
     </div>
   )
 }

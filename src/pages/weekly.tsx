@@ -1,3 +1,4 @@
+import { Sections } from '@/components/sections'
 import { X } from 'lucide-react'
 import { Card, CardHeader, Empty } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -37,7 +38,8 @@ export function WeeklyPage() {
         <Button size="mono" onClick={() => useUI.setState({ weekRef: today() })}>This week</Button>
         <Button size="mono" onClick={() => go('monthly')}>Monthly</Button>
       </div>
-      <div className="mb-3 grid gap-3 min-[760px]:grid-cols-2 min-[1100px]:grid-cols-3">
+        <Sections page="weekly" items={[
+          { id: 'prio', title: "Top 3 priorities", icon: '⭐', desc: "The three things that matter most this week", node: (<>
         <Card><CardHeader title="Top 3 priorities" />
           {[0, 1, 2].map((i) => (
             <div key={i} className={cn('flex items-center gap-2.5 py-1', w.pdone[i] && '[&_input]:text-mute [&_input]:line-through')}>
@@ -48,10 +50,8 @@ export function WeeklyPage() {
             </div>
           ))}
         </Card>
-        <Card><CardHeader title="Weekly goals" />
-          <ItemList items={w.goals} onToggle={tog('goals')} onDelete={rm('goals')} empty="What would make this a good week?" />
-          <InlineAdd placeholder="Add a weekly goal" onAdd={(t) => weekItem(ws, 'goals', (l) => { l.push({ id: uid(), text: t, done: false }) })} />
-        </Card>
+          </>) },
+          { id: 'todo', title: "Week to-do", icon: '✅', desc: "Things for this week, any day", node: (<>
         <Card><CardHeader title="Week to-do" />
           {carry.length > 0 && ws <= weekStart(s, t) && (
             <div className="mb-1.5 flex items-center gap-2 rounded-[10px] bg-accent-soft px-2.5 py-2 text-[13px]">
@@ -62,7 +62,14 @@ export function WeeklyPage() {
           <ItemList items={w.todo} onToggle={tog('todo')} onDelete={rm('todo')} empty="Things for this week, any day." />
           <InlineAdd placeholder="Add to this week" onAdd={(t) => weekItem(ws, 'todo', (l) => { l.push({ id: uid(), text: t, done: false }) })} />
         </Card>
-      </div>
+          </>) },
+          { id: 'goals', title: "Weekly goals", icon: '🎯', desc: "What would make this week a good one", hide: true, node: (<>
+        <Card><CardHeader title="Weekly goals" />
+          <ItemList items={w.goals} onToggle={tog('goals')} onDelete={rm('goals')} empty="What would make this a good week?" />
+          <InlineAdd placeholder="Add a weekly goal" onAdd={(t) => weekItem(ws, 'goals', (l) => { l.push({ id: uid(), text: t, done: false }) })} />
+        </Card>
+          </>) },
+          { id: 'spread', title: "The 7-day spread", icon: '🗓️', desc: "Each day side by side", wide: true, node: (<>
       <h2 className="mt-4 mb-2 text-[21px]">The 7-day <em className="text-accent">spread</em></h2>
       <div className="overflow-x-auto pb-1">
         <div className="grid min-w-[1080px] grid-cols-7 gap-2">
@@ -82,6 +89,8 @@ export function WeeklyPage() {
         </div>
       </div>
       <p className="mt-1.5 text-[12.5px] text-mute">Tap a day's name to open it. Drops log water, faces log mood. <Button variant="link" className="text-[12.5px]" onClick={() => eventForm(undefined, ws)}>Add an event</Button></p>
+          </>) },
+        ]} />
     </div>
   )
 }

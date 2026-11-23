@@ -150,3 +150,43 @@ number-flow-react { font-variant-numeric: tabular-nums; }
 html.pals .hero-pad { position: relative; padding-right: 104px; }
 html.pals .hero-pal { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); }
 html.cute .habit-pill { border-radius: 999px; min-height: 36px; padding-inline: 16px; font-weight: 800; border-width: 2px; }
+
+/* ---------- Cute style: shared pieces ---------- */
+/* Stat tiles take turns through the pastel tints */
+html.cute .stat-grid > .stat:not(.stat-set) { border-color: transparent; }
+html.cute .stat-grid > .stat:not(.stat-set):nth-child(5n+1) { background: var(--tint-mint); }
+html.cute .stat-grid > .stat:not(.stat-set):nth-child(5n+2) { background: var(--tint-peach); }
+html.cute .stat-grid > .stat:not(.stat-set):nth-child(5n+3) { background: var(--tint-sky); }
+html.cute .stat-grid > .stat:not(.stat-set):nth-child(5n+4) { background: var(--tint-butter); }
+html.cute .stat-grid > .stat:not(.stat-set):nth-child(5n+5) { background: var(--tint-lav); }
+html.cute .stat b { font-family: var(--app-serif); font-weight: 600; }
+/* Tabs become a soft pill bar */
+html.cute [role='tablist'] { border-radius: 999px; background: var(--tint-lav); border-color: transparent; padding: 4px; }
+html.cute [role='tablist'] > button { border-radius: 999px; font-weight: 700; }
+html.cute [role='tablist'] > button[aria-selected='true'] { color: var(--accent); }
+/* Progress bars: chunkier and rounder */
+html.cute .h-\[7px\] { height: 10px; }
+/* Page titles in Fredoka */
+html.cute main h1 { font-weight: 600; }
+/* List rows: soft separators instead of hard lines */
+html.cute .rows > .row { border-color: color-mix(in srgb, var(--line) 70%, transparent); }
+
+/* Cute style: buttons and the Quick add use the rounded Fredoka font, like the mockup */
+html.cute .btn, html.cute .fab, html.cute .habit-pill { font-family: var(--app-serif); font-weight: 600; letter-spacing: 0.01em; }
+html.cute .btn.font-mono { font-family: var(--app-serif); font-weight: 600; letter-spacing: 0.04em; }
+html.cute .fab { box-shadow: 0 5px 0 color-mix(in srgb, var(--accent) 60%, black 15%), 0 8px 20px rgba(0,0,0,.12); font-size: 16px; }
+/* Cute sidebar: rounded pills, a soft tint behind the menu, group names in Fredoka */
+html.cute nav[aria-label='Main'] { background: color-mix(in srgb, var(--accent) 5%, var(--card)); border-right-color: transparent; box-shadow: 4px 0 0 var(--line); }
+html.cute .nav-item { border-radius: 999px; font-weight: 600; }
+html.cute .nav-item:hover { background: color-mix(in srgb, var(--accent) 9%, var(--card)); }
+html.cute .nav-group { font-family: var(--app-serif); font-weight: 600; font-size: 12px; letter-spacing: 0.06em; color: var(--accent); }
+/* Toasts and search use the app's own fonts (they bring their own by default) */
+[data-sonner-toaster], [data-sonner-toast], [data-sonner-toast] [data-title], [data-sonner-toast] [data-button] { font-family: var(--app-sans) !important; }
+html.cute [data-sonner-toast] [data-button] { font-family: var(--app-serif) !important; border-radius: 999px !important; }
+[cmdk-dialog], [cmdk-input] { font-family: var(--app-sans); }
+html.cute .summary-grid { gap: 10px; }
+html.cute .summary-box { border-radius: 20px; padding: 12px 14px; }
+html.cute .summary-grid > .summary-box:nth-child(1) { background: var(--tint-butter); }
+html.cute .summary-grid > .summary-box:nth-child(2) { background: var(--tint-peach); }
+html.cute .summary-grid > .summary-box:nth-child(3) { background: var(--tint-sky); }
+html.cute .summary-grid > .summary-box:nth-child(4) { background: var(--tint-lav); }

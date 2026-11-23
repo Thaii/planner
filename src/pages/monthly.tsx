@@ -1,3 +1,4 @@
+import { Sections } from '@/components/sections'
 import { X } from 'lucide-react'
 import { Card, CardHeader, Empty } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -83,11 +84,14 @@ export function MonthlyPage() {
         <Button size={colorMode ? 'md' : 'mono'} variant={colorMode ? 'primary' : 'outline'} onClick={() => useUI.setState({ colorMode: !colorMode })}>{colorMode ? 'Done colouring' : 'Colour days'}</Button>
       </div>
       {colorMode && <div className="mb-2 rounded-[10px] bg-accent-soft px-3 py-2 text-[13px]">Tap a day to colour it with one of your labels.</div>}
-      <Card className="mb-3">
+      <Sections page="monthly" items={[
+        { id: 'calendar', title: "The month", icon: '📅', desc: "Your month at a glance", wide: true, node: (<>
+      <Card>
         <MonthGrid s={s} y={y} mo={mo} colorMode={colorMode} />
         {used.length > 0 && <div className="mt-2.5 flex flex-wrap gap-1.5">{used.map((id) => <span key={id} className="rounded-full border border-line px-2.5 py-1 text-[12.5px]" style={{ background: tint(labColor(s, id), 28) }}>{s.settings.labels.find((l) => l.id === id)!.name}</span>)}</div>}
       </Card>
-      <div className="grid gap-3 min-[760px]:grid-cols-2">
+        </>) },
+        { id: 'todo', title: "Month to-do", icon: '✅', desc: "Things to get done this month", node: (<>
         <Card><CardHeader title="Month to-do" />
           <div className="rows">{m.todo.length ? m.todo.map((i) => (
             <div key={i.id} className={cn('row', i.done && 'done')}><Check on={!!i.done} onClick={() => monthTodo(key, (l) => { const x = l.find((z) => z.id === i.id); if (x) x.done = !x.done })} /><div className="tt flex-1">{i.text}</div>
@@ -95,13 +99,16 @@ export function MonthlyPage() {
           )) : <Empty>Things to get done this month.</Empty>}</div>
           <InlineAdd placeholder="Add to this month" onAdd={(t) => monthTodo(key, (l) => { l.push({ id: uid(), text: t, done: false }) })} />
         </Card>
+        </>) },
+        { id: 'refl', title: "Monthly reflection", icon: '💭', desc: "Look back on the month", hide: true, node: (<>
         <Card><CardHeader title="Monthly reflection" />
           {REFL.map(([k, l]) => (
             <div key={k}><div className="lbl mt-2 mb-1 text-mute">{l}</div>
               <AutoTextarea rows={2} className="min-h-[44px] bg-transparent" value={m.refl[k] || ''} onSave={(v) => update((d) => { ensureMonth(d, key).refl[k] = v })} /></div>
           ))}
         </Card>
-      </div>
+        </>) },
+      ]} />
     </div>
   )
 }

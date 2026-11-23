@@ -1,3 +1,10 @@
+import { MaybePal } from './pals'
+import { Calendar, CalendarRange, Candy, FolderKanban, HeartPulse, House, LayoutDashboard, ListChecks, Mountain, NotebookPen, Plane, RotateCcw, Settings2, Sprout, Timer, Utensils } from 'lucide-react'
+/** An icon for each page, so the menu can be scanned at a glance. */
+const NAV_ICONS: Record<string, React.ElementType> = {
+  today: LayoutDashboard, yearly: CalendarRange, monthly: CalendarDays, weekly: Calendar, goals: Mountain, projects: FolderKanban, habits: Sprout,
+  wellness: HeartPulse, dopamine: Candy, food: Utensils, home: House, lists: ListChecks, notes: NotebookPen, trips: Plane, reset: RotateCcw, focus: Timer, settings: Settings2,
+}
 import { Welcome } from './welcome'
 import { InstallButton } from './install'
 import * as React from 'react'
@@ -28,13 +35,19 @@ export function AppShell({ children, dark }: { children: React.ReactNode; dark: 
         <a href="#today" onClick={(e) => { e.preventDefault(); go('today') }} title="Go to Today" className="block px-2.5 pb-2.5 font-serif text-xl">{brand} <span className="text-accent">{brand2}</span></a>
         {NAVGROUPS.map(([g, items]) => (
           <React.Fragment key={g}>
-            <div className="px-3 pt-3 pb-1 font-mono text-[10.5px] tracking-[0.1em] text-mute uppercase">{g}</div>
-            {items.map(([v, n]) => (
-              <button key={v} onClick={() => go(v)} aria-current={v === hl ? 'page' : undefined}
-                className={cn('rounded-[9px] px-3 py-1.5 text-left text-sm', v === hl && 'bg-accent-soft font-semibold')}>{n}</button>
-            ))}
+            <div className="nav-group px-3 pt-3 pb-1 font-mono text-[10.5px] tracking-[0.1em] text-mute uppercase">{g}</div>
+            {items.map(([v, n]) => {
+              const Icon = NAV_ICONS[v]
+              return (
+                <button key={v} onClick={() => go(v)} aria-current={v === hl ? 'page' : undefined}
+                  className={cn('nav-item flex items-center gap-2.5 rounded-[9px] px-3 py-1.5 text-left text-sm', v === hl && 'bg-accent-soft font-semibold text-accent')}>
+                  {Icon && <Icon className="size-4 flex-none opacity-75" />}{n}
+                </button>
+              )
+            })}
           </React.Fragment>
         ))}
+        <div className="mt-auto flex justify-center pt-4"><MaybePal name="snoozy" size={70} /></div>
       </nav>
       <main className="mx-auto w-full max-w-[1180px] min-w-0 flex-1 px-3.5 pt-[calc(14px+var(--sat))] pb-[calc(100px+var(--sab))] min-[900px]:px-7 min-[900px]:pt-6 min-[900px]:pb-15">
         <div className="mb-3.5 flex items-center gap-2">
@@ -53,7 +66,7 @@ export function AppShell({ children, dark }: { children: React.ReactNode; dark: 
           </button>
         ))}
       </nav>
-      <button onClick={quickAdd} className="fixed right-4 bottom-[calc(76px+var(--sab))] z-21 flex h-12 items-center gap-1 rounded-full bg-accent px-4.5 text-[15px] font-semibold text-on-accent shadow-[0_6px_18px_rgba(0,0,0,0.18)] min-[900px]:right-7 min-[900px]:bottom-6">
+      <button onClick={quickAdd} className="fab fixed right-4 bottom-[calc(76px+var(--sab))] z-21 flex h-12 items-center gap-1 rounded-full bg-accent px-4.5 text-[15px] font-semibold text-on-accent shadow-[0_6px_18px_rgba(0,0,0,0.18)] min-[900px]:right-7 min-[900px]:bottom-6">
         <Plus className="size-4.5" />Quick add
       </button>
       <SheetHost />

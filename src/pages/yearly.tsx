@@ -1,3 +1,4 @@
+import { Sections } from '@/components/sections'
 import * as React from 'react'
 import { X } from 'lucide-react'
 import { Card, CardHeader } from '@/components/ui/card'
@@ -31,12 +32,17 @@ export function YearlyPage() {
         <Button size="mono" onClick={() => go('monthly')}>Monthly</Button>
         <Button size="mono" onClick={() => go('goals')}>Goals</Button>
       </div>
-      <Card className="mb-3"><CardHeader title="Word of the year" />
+      {view !== null && vis[view] && <PhotoViewer photos={vis} i={view} onIndex={setView} />}
+      <Sections page="yearly" items={[
+        { id: 'word', title: "Word of the year", icon: '🌟', desc: "One word to check your choices against", node: (<>
+      <Card><CardHeader title="Word of the year" />
         <p className="mt-0 mb-2 text-[13px] text-mute">One word for how you want this year to feel – something to check your choices against.</p>
         <CommitInput value={yy.word || ''} placeholder="e.g. Calm, Brave, Growth" aria-label="Word of the year" className="px-4 py-2.5 font-serif text-[22px]"
           onCommit={(v) => update((d) => { ensureY(d).word = v.trim() })} />
       </Card>
-      <Card className="mb-3"><CardHeader title="Year at a glance" />
+        </>) },
+        { id: 'glance', title: "Year at a glance", icon: '📅', desc: "All twelve months on one page", wide: true, node: (<>
+      <Card><CardHeader title="Year at a glance" />
         <div className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2.5">
           {Array.from({ length: 12 }, (_, i) => (
             <div key={i} className="rounded-xl border border-line bg-soft p-2.5">
@@ -47,8 +53,9 @@ export function YearlyPage() {
         </div>
         <p className="mt-1.5 mb-0 text-[12.5px] text-mute">Days with plans are shaded; birthdays and yearly dates are in red. Tap a day to open its month.</p>
       </Card>
-      {view !== null && vis[view] && <PhotoViewer photos={vis} i={view} onIndex={setView} />}
-      <Card className="mb-3"><CardHeader title="Vision board" />
+        </>) },
+        { id: 'vision', title: "Vision board", icon: '🖼️', desc: "Photos of what you are working towards", wide: true, node: (<>
+      <Card><CardHeader title="Vision board" />
         <div className="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-2.5">
           {vis.map((v) => (
             <figure key={v.id} className="m-0">
@@ -76,6 +83,8 @@ export function YearlyPage() {
         </div>
         <p className="mt-1.5 mb-0 text-[12.5px] text-mute">Photos are shrunk and kept inside your planner, up to twelve a year.</p>
       </Card>
+        </>) },
+        { id: 'review', title: "Year in review", icon: '📝', desc: "Wins, lessons and proud moments", hide: true, node: (<>
       <Card><CardHeader title="Year in review" />
         <div className="grid gap-3 min-[760px]:grid-cols-3">
           {([['win', 'Biggest win'], ['lesson', 'Biggest lesson'], ['proud', 'Proud of']] as const).map(([k, l]) => (
@@ -84,6 +93,8 @@ export function YearlyPage() {
           ))}
         </div>
       </Card>
+        </>) },
+      ]} />
     </div>
   )
 }

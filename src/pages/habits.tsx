@@ -1,3 +1,4 @@
+import { Sections } from '@/components/sections'
 import * as React from 'react'
 import { ChevronDown, Pencil, Plus } from 'lucide-react'
 import { toast } from 'sonner'
@@ -102,6 +103,8 @@ export function HabitsPage() {
   return (
     <div>
       <PageHead crumb={'Grow · ' + fmt(t, { weekday: 'long', day: 'numeric', month: 'long' })} title="Habits" />
+      <Sections page="habits" items={[
+        { id: 'stats', title: "Your numbers", icon: '📊', desc: "30 days, momentum, today and this week", wide: true, node: (<>
       {s.habits.length > 0 && (
         <StatGrid>
           <Stat tint="mint" label="Last 30 days" value={<Num value={l30.pct} suffix="%" />} note={`${l30.done} of ${l30.due} kept when due`} />
@@ -110,12 +113,15 @@ export function HabitsPage() {
           <Stat tint="butter" label="This week" value={<Num value={thisWeek} />} note={`habit${thisWeek === 1 ? '' : 's'} kept so far`} icon={<MaybePal name="twinkle" size={34} />} />
         </StatGrid>
       )}
-      <div className="mb-3 grid items-start gap-3 min-[900px]:grid-cols-2">
+        </>) },
+        { id: 'today', title: "Today", icon: '✅', desc: "Tick off today's habits", node: (<>
         <TodayCard s={s} />
+        </>) },
+        { id: 'yours', title: "Your habits", icon: '🌱', desc: "Add, edit and see how each is going", node: (<>
         <YourHabits s={s} />
-      </div>
-
-      <Card className="mb-3">
+        </>) },
+        { id: 'tracker', title: "Habit tracker", icon: '🗓️', desc: "The whole month, square by square", wide: true, node: (<>
+      <Card>
         <CardHeader title={'Habit tracker · ' + monthName} action={
           <span className="flex items-center gap-1">
             <Button size="icon" className="size-8" aria-label="Previous month" onClick={() => shift(-1)}>‹</Button>
@@ -152,8 +158,9 @@ export function HabitsPage() {
           </>
         ) : <Empty>Add a habit to start tracking. Each one keeps its own rhythm, so a rest day never counts against you.</Empty>}
       </Card>
-
-      <Card className="mb-3"><CardHeader title="Who you're becoming" pal="twinkle" />
+        </>) },
+        { id: 'ids', title: "Who you're becoming", icon: '🪞', desc: "Every habit is a vote for who you are becoming", wide: true, node: (<>
+      <Card><CardHeader title="Who you're becoming" pal="twinkle" />
         <div className="grid gap-2 min-[760px]:grid-cols-3">
           {s.identities.map((x) => (
             <button key={x.id} onClick={() => identityForm(x.id)} className="flex items-center gap-2.5 rounded-2xl bg-tint-lav px-3.5 py-2.5 text-left">
@@ -169,6 +176,8 @@ export function HabitsPage() {
         {s.identities.length < 3 && <InlineAdd placeholder="Add who you're becoming, e.g. a calm person" onAdd={(v) => update((d) => { d.identities.push({ id: uid(), name: v.replace(/^i'?m\s+/i, ''), does: '' }) })} />}
         <p className="mt-1.5 mb-0 text-[12.5px] text-mute">Every habit you keep is a vote for who you're becoming. Pick which one each habit builds when you edit it. Votes are from the last 30 days.</p>
       </Card>
+        </>) },
+      ]} />
       <Button size="mono" onClick={() => go('wellness')}>Wellness</Button>
     </div>
   )

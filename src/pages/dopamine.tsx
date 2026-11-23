@@ -1,3 +1,4 @@
+import { Sections } from '@/components/sections'
 import * as React from 'react'
 import { Play, Plus, Minus } from 'lucide-react'
 import { Card, CardHeader } from '@/components/ui/card'
@@ -119,17 +120,19 @@ export function DopaminePage() {
   return (
     <div>
       <PageHead crumb="Live" title="Dopamine menu" />
-      <Explainer />
       <div className="mb-3.5 flex flex-wrap gap-1.5"><Button variant="primary" onClick={() => showDopa()}>Pick one for me</Button><Button onClick={() => showDopa('side')}>Pair a side with my next task</Button></div>
+      <Sections page="dopamine" items={[
+        { id: 'how', title: 'How this works', icon: '💡', desc: 'A quick, friendly explainer', wide: true, node: <Explainer /> },
+        { id: 'stats', title: 'This week', icon: '📊', desc: 'What you ordered from the menu', wide: true, node: (<>
       <StatGrid>
         <Stat label="This week" value={<Num value={Object.values(wk).reduce((a, b) => a + b, 0)} />} note="things ordered from the menu" />
         <Stat label="Healthy picks" value={<Num value={(wk.app || 0) + (wk.main || 0) + (wk.side || 0)} />} note="appetizers, mains and sides" />
         <Stat label="Desserts" value={<Num value={wk.dessert || 0} />} note="this week, all on a timer" />
         <div className="rounded-card bg-accent-soft px-3.5 py-3"><span className="lbl text-accent">Your favourites</span><div className="mt-1.5 text-[13px]">{fav.length ? fav.map((f) => <div key={f}>{f}</div>) : 'Tick things off to see what you reach for most'}</div></div>
       </StatGrid>
-      <div className="grid gap-3 min-[760px]:grid-cols-2 min-[1100px]:grid-cols-3">
-        {COURSES.map(([k, n, ic, desc]) => (
-          <Card key={k}><CardHeader title={`${ic} ${n}`} action={<Button variant="link" className="text-[12.5px]" onClick={() => showDopa(k)}>Pick</Button>} />
+        </>) },
+        ...COURSES.map(([k, n, ic, desc]) => ({ id: k, title: n, icon: ic, desc, node: (<>
+          <Card><CardHeader title={`${ic} ${n}`} action={<Button variant="link" className="text-[12.5px]" onClick={() => showDopa(k)}>Pick</Button>} />
             <p className="mt-0 text-[12.5px] text-mute">{desc}</p>
             <div className="rows">{s.dopa.filter((i) => i.course === k).map((i) => {
               const dn = dpDone(i.id, t)
@@ -143,8 +146,8 @@ export function DopaminePage() {
             })}</div>
             <InlineAdd placeholder={k === 'app' ? 'Add an appetizer' : `Add a ${n.toLowerCase().replace(/s$/, '')}`} onAdd={(v) => update((d) => { d.dopa.push({ id: uid(), text: v, course: k, mins: k === 'app' ? 5 : k === 'dessert' ? 15 : k === 'main' ? 30 : 0 }) })} />
           </Card>
-        ))}
-      </div>
+        </>) })),
+      ]} />
     </div>
   )
 }
