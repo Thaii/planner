@@ -102,7 +102,7 @@ export function HabitsPage() {
   const monthName = pd(m + '-01').toLocaleDateString('en-AU', { month: 'long' })
   return (
     <div>
-      <PageHead crumb={'Grow · ' + fmt(t, { weekday: 'long', day: 'numeric', month: 'long' })} title="Habits" />
+      <PageHead crumb={'Grow · ' + fmt(t, { weekday: 'long', day: 'numeric', month: 'long' })} title="Habits" right={<Button size="mono" onClick={() => go('wellness')}>Wellness</Button>} />
       <Sections page="habits" items={[
         { id: 'stats', title: "Your numbers", icon: '📊', desc: "30 days, momentum, today and this week", wide: true, node: (<>
       {s.habits.length > 0 && (
@@ -178,7 +178,6 @@ export function HabitsPage() {
       </Card>
         </>) },
       ]} />
-      <Button size="mono" onClick={() => go('wellness')}>Wellness</Button>
     </div>
   )
 }
