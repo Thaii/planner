@@ -201,3 +201,11 @@ html.cute .summary-grid > .summary-box:nth-child(4) { background: var(--tint-lav
 /* Pale pastel accents are lovely as fills but too faint as text, so light Cute themes draw accent-coloured words a shade deeper. */
 html.cute[data-theme='light'] { --accent-text: color-mix(in srgb, var(--accent) 62%, var(--ink)); }
 html.cute[data-theme='light'] .text-accent, html.cute[data-theme='light'] .crumb, html.cute[data-theme='light'] [role='tablist'] > button[aria-selected='true'] { color: var(--accent-text); }
+
+/* iPhone Safari gives date/time fields a built-in minimum width and extra height, so they spill out of half-width columns.
+   Make them size like every other field, with the value left-aligned. */
+input.field[type='date'], input.field[type='time'], input.field[type='datetime-local'], input.field[type='month'] { min-width: 0; max-width: 100%; width: 100%; box-sizing: border-box; }
+@supports (-webkit-touch-callout: none) {
+  input.field[type='date'], input.field[type='time'], input.field[type='datetime-local'], input.field[type='month'] { -webkit-appearance: none; appearance: none; display: block; min-height: calc(1.4em + 20px); }
+  input.field::-webkit-date-and-time-value { text-align: left; margin: 0; min-height: 1.4em; line-height: 1.4; }
+}
