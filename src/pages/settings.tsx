@@ -1,3 +1,4 @@
+import { checkForUpdates } from '@/lib/pwa-update'
 import { AppIconPicker } from '@/components/app-icon-picker'
 import { ColourPicker } from '@/components/colour-picker'
 import { Pal } from '@/components/pals'
@@ -6,7 +7,7 @@ import { replayWelcome } from '@/components/welcome'
 import { waterForm } from '@/components/water-form'
 import { ml } from '@/lib/water'
 import * as React from 'react'
-import { GripVertical, X } from 'lucide-react'
+import { GripVertical, RotateCw, X } from 'lucide-react'
 import { DndContext, KeyboardSensor, PointerSensor, closestCenter, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, arrayMove, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifiers'
@@ -403,6 +404,10 @@ export function SettingsPage() {
       {tab === 'look' && <Look />}
       {tab === 'colours' && <Colours />}
       {tab === 'data' && <Data />}
+      <div className="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[12.5px] text-mute">
+        <span>This version: {new Date(__BUILD__).toLocaleString(undefined, { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })}</span>
+        <Button size="sm" onClick={checkForUpdates}><RotateCw className="size-3.5" />Check for updates</Button>
+      </div>
     </div>
   )
 }

@@ -26,5 +26,6 @@ export default defineConfig({
         runtimeCaching: [{ urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/, handler: 'StaleWhileRevalidate', options: { cacheName: 'fonts', expiration: { maxEntries: 20 } } }],
       },
     })],
+  define: { __BUILD__: JSON.stringify(new Date().toISOString()) },
   resolve: { alias: { '@': path.resolve(__dirname, './src') } },
 })
