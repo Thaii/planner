@@ -37,7 +37,7 @@ export function WhyHelper({ why, area, onChange }: { why: string; area: string; 
           <div className="flex flex-wrap gap-1.5">{STARTERS.map((x) => <button type="button" key={x} className={chip} onClick={() => add(x, true)}>{x}</button>)}</div>
           <div className="mt-2.5 mb-1.5 text-[12px] font-semibold text-mute">Or borrow a reason{area ? ` for ${area.toLowerCase()}` : ''}</div>
           <div className="flex flex-wrap gap-1.5">{ideas.map((x) => <button type="button" key={x} className={cn(chip, (why || '').includes(x) && 'border-accent bg-accent-soft')} onClick={() => !(why || '').includes(x) && add(x, false)}>{x}</button>)}</div>
-          {(why || '').trim().length > 8 && <p className="mt-2.5 mb-0 text-[12.5px] text-mute">Dig one level deeper: ask yourself <i>“and why does that matter to me?”</i> The answer underneath is usually the one that keeps you going.</p>}
+          <p className="mt-2.5 mb-0 text-[12.5px] text-mute"><b>Tip:</b> once you've written a reason, ask yourself <i>“and why does that matter to me?”</i> The answer underneath is usually the one that keeps you going.</p>
         </div>
       )}
     </div>

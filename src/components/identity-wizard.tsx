@@ -148,8 +148,12 @@ export function IdentityWizard({ id }: { id?: string }) {
       <div className="mt-2 mb-1.5 text-[12px] font-semibold text-mute">Start with</div>
       <div className="flex flex-wrap gap-1.5">{['So I can ', 'Because I want to feel ', 'For ', 'So that one day '].map((t) => <button key={t} type="button" className={chip} onClick={() => { const v = (why ? why.trim() + ' ' : '') + t; setWhy(v); setTimeout(() => { const el = document.getElementById('id_why') as HTMLTextAreaElement | null; if (el) { el.focus(); el.setSelectionRange(v.length, v.length) } }, 30) }}>{t.trim()}…</button>)}</div>
       <div className="mt-2.5 mb-1.5 text-[12px] font-semibold text-mute">Or borrow a reason</div>
-      <div className="flex flex-wrap gap-1.5">{whyIdeas.map((t) => <button key={t} type="button" className={chip} onClick={() => setWhy(t.charAt(0).toUpperCase() + t.slice(1) + '.')}>{t}</button>)}</div>
-      {why.trim().length > 8 && <p className="mt-3 mb-0 rounded-xl bg-soft px-3 py-2 text-[12.5px] text-mute">Try asking <i>“and why does that matter?”</i> once more. The answer underneath is usually the one that keeps you going.</p>}
+      <div className="flex flex-wrap gap-1.5">{whyIdeas.map((t) => {
+        const line = t.charAt(0).toUpperCase() + t.slice(1), has = why.toLowerCase().includes(t.toLowerCase())
+        // Adds to what's already written rather than replacing it.
+        return <button key={t} type="button" className={cn(chip, has && 'border-accent bg-accent-soft')} onClick={() => { if (has) return; const b = why.trim(); setWhy(b ? b.replace(/[.!]?$/, '') + ', and ' + t.replace(/^to /i, '') + '.' : line + '.') }}>{line}</button>
+      })}</div>
+      <p className="mt-3 mb-0 rounded-xl bg-soft px-3 py-2 text-[12.5px] text-mute"><b>Tip:</b> once you've written a reason, ask yourself <i>“and why does that matter?”</i> The answer underneath is usually the one that keeps you going.</p>
     </div>,
     // 4 · Votes
     <div key="votes">
