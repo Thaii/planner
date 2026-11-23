@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Pencil, Pill, Plus, X } from 'lucide-react'
 import { toast } from 'sonner'
+import { create } from 'zustand'
 import { Card, CardHeader, Empty } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { TimePicker } from '@/components/ui/time-picker'
@@ -82,6 +83,49 @@ function noteForm(m: Med, d: DateStr, key: string) {
     fields: [{ k: 'note', l: 'How did it go? (side effects, how you felt…)', t: 'textarea', rows: 3, v: v?.note }],
     onSave: (x) => update((s) => { const e = s.medLog[d]?.[key]; if (e) e.note = String(x.note || '').trim() || undefined }),
   })
+}
+
+/* ---------- Next up: doses that are due now ---------- */
+
+const EARLY = 15 // a dose shows in Next up from 15 minutes before its time
+/** "Later" hides a dose from Next up for 30 minutes (this session only). */
+export const useSnooze = create<{ until: Record<string, number> }>(() => ({ until: {} }))
+
+/** Today's scheduled doses that are due (or overdue) and not yet ticked or skipped, earliest first. */
+export function dueDoses(s: State, d: DateStr) {
+  if (d !== today()) return []
+  const nm = nowMins(), log = s.medLog[d] || {}, snz = useSnooze.getState().until
+  return s.meds.filter((m) => dueOn(m, d))
+    .flatMap((m) => m.times.map((t) => ({ m, t, k: m.id + '|' + t })))
+    .filter(({ t, k }) => !log[k] && nm >= mins(t) - EARLY && !(snz[k] && snz[k] > Date.now()))
+    .sort((a, b) => a.t.localeCompare(b.t))
+}
+
+/** Next up card for a due dose: Took it / Skip / Later. */
+export function MedNextUp({ d, cls, btn, fallback }: { d: DateStr; cls: string; btn: string; fallback: React.ReactNode }) {
+  const s = useS()
+  useSnooze() // re-render when something is snoozed
+  const due = dueDoses(s, d)
+  if (!due.length) return <>{fallback}</>
+  const { m, t, k } = due[0]
+  const late = nowMins() - mins(t)
+  const when = late < -1 ? 'due at ' + t12(t) : late < 60 ? 'due now' : `due ${t12(t)} · ${late < 120 ? 'an hour' : Math.floor(late / 60) + ' hours'} ago`
+  const took = () => {
+    toggleTaken(m, d, t)
+    toast(`${m.name} ticked off`, { action: { label: 'Undo', onClick: () => { if (getS().medLog[d]?.[k]?.s === 'taken') toggleTaken(m, d, t) } } })
+  }
+  return (
+    <Card className={cls}>
+      <span className="lbl opacity-85 in-data-[theme=dark]:text-accent">Medication · {when}</span>
+      <h2 className="mt-1.5 mb-0.5 flex items-center gap-2 text-[26px] leading-tight"><Pill className="size-6 flex-none" />Take {m.name}</h2>
+      <div className="text-[13px] opacity-85">{[m.dose, slotLabel(t), m.notes, due.length > 1 && `+${due.length - 1} more due`].filter(Boolean).join(' · ')}</div>
+      <div className="mt-3.5 flex flex-wrap gap-2">
+        <button className={cn(btn, 'bg-on-accent font-semibold text-accent in-data-[theme=dark]:bg-accent in-data-[theme=dark]:text-on-accent')} onClick={took}>✓ Took it</button>
+        <button className={btn} onClick={() => useSnooze.setState((x) => ({ until: { ...x.until, [k]: Date.now() + 30 * 60000 } }))}>Later (30 min)</button>
+        <button className={btn} onClick={() => skip(m, d, t)}>Skip this dose</button>
+      </div>
+    </Card>
+  )
 }
 
 /* ---------- Add / edit ---------- */
