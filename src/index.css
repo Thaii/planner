@@ -147,8 +147,15 @@ number-flow-react { font-variant-numeric: tabular-nums; }
 .vaul-ct h3:first-child, .vaul-ct form > h3:first-child { padding-right: 34px; }
 
 /* Room for a pal in the corner of the Next up card */
-html.pals .hero-pad { position: relative; padding-right: 104px; }
-html.pals .hero-pal { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); }
+/* Next up: the pal sits in a soft circle right beside the text, not stranded at the far edge of a wide card. */
+html.pals .hero-pad { display: grid; grid-template-columns: minmax(0, max-content) auto; justify-content: start; align-content: center; column-gap: 36px; }
+html.pals .hero-pad > * { grid-column: 1; max-width: 560px; }
+html.pals .hero-pad > .hero-pal { grid-column: 2; grid-row: 1 / span 4; align-self: center; box-sizing: content-box; padding: 22px; border-radius: 50%; background: color-mix(in srgb, white 45%, transparent); }
+html.pals[data-theme='dark'] .hero-pad > .hero-pal, html.pals .dark .hero-pad > .hero-pal { background: color-mix(in srgb, var(--accent) 18%, transparent); }
+@media (max-width: 520px) {
+  html.pals .hero-pad { column-gap: 14px; }
+  html.pals .hero-pad > .hero-pal { width: 60px !important; height: 60px !important; padding: 14px; }
+}
 html.cute .habit-pill { border-radius: 999px; min-height: 36px; padding-inline: 16px; font-weight: 800; border-width: 2px; }
 
 /* ---------- Cute style: shared pieces ---------- */
