@@ -11,7 +11,7 @@ export function defaults(): State {
         { id: 'money', name: 'Money', color: '#cf9c3f' }, { id: 'friends', name: 'Friends', color: '#9f88c8' },
       ],
       water: 8, waterGoal: 2000, glass: 250, name: '', weekStart: 1, dayStart: 6, dayEnd: 22, goalAreas: ['Personal', 'Career', 'Health', 'Learning'],
-      dayTheme: 'linen', nightTheme: 'ember', nightFrom: 19, nightTo: 6, themeAccent: true, nameInTitle: true, greeting: '', nameAsked: false, titleMode: 'name', customTitle: '', greetings: { morning: [], afternoon: [], evening: [] }, dayParts: { morning: 5, afternoon: 12, evening: 17 }, schedView: 'timeline',
+      style: 'cute', classicThemes: { day: 'linen', night: 'ember', themeAccent: true }, dayTheme: 'cuteBlush', nightTheme: 'cutePlum', nightFrom: 19, nightTo: 6, themeAccent: true, nameInTitle: true, greeting: '', nameAsked: false, titleMode: 'name', customTitle: '', greetings: { morning: [], afternoon: [], evening: [] }, dayParts: { morning: 5, afternoon: 12, evening: 17 }, schedView: 'timeline',
     },
     tasks: [], events: [], ics: {}, prio: {}, habits: [], goals: [], projects: [],
     identities: [
@@ -65,6 +65,12 @@ export function migrate(raw: Partial<State>): State {
   })
   // Anyone who already had a planner has had their welcome.
   if (raw.settings && raw.settings.onboarded === undefined) s.settings.onboarded = true
+  // New planners start in the Cute style. Anyone who had a planner before keeps the look they had.
+  if (raw.settings && !raw.settings.style) {
+    s.settings.style = 'classic'
+    if (!raw.settings.dayTheme) s.settings.dayTheme = 'linen'
+    if (!raw.settings.nightTheme) s.settings.nightTheme = 'ember'
+  }
   // Older planners had one custom greeting for all day and a yes/no for the name in the title.
   if (!raw.settings?.greetings) {
     const g = (s.settings.greeting || '').trim()

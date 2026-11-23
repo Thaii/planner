@@ -1,4 +1,4 @@
-import { Pal, usePals } from './pals'
+import { Pal, usePals, type PalName } from './pals'
 import * as React from 'react'
 import { CalendarDays, Check, LayoutDashboard, Plus, Search, Settings2, ShieldCheck, Sparkles } from 'lucide-react'
 import { Button } from './ui/button'
@@ -40,6 +40,9 @@ const BUNDLES: { id: string; icon: string; name: string; desc: string; cards: st
   { id: 'goals', icon: '🏔️', name: 'Goals & the big picture', desc: 'Goal progress and who you are becoming', cards: ['goals', 'identity'] },
 ]
 
+const BUNDLE_PAL: Record<string, [PalName, string]> = { tasks: ['stickle', 'bg-tint-sky'], habits: ['sprig', 'bg-tint-mint'], health: ['pip', 'bg-tint-peach'], food: ['brocco', 'bg-tint-butter'], feel: ['hugs', 'bg-tint-lav'], goals: ['twinkle', 'bg-tint-sky'] }
+const TOUR_PAL: [PalName, string][] = [['sunny', 'bg-tint-butter'], ['dottie', 'bg-tint-mint'], ['twinkle', 'bg-tint-peach'], ['stickle', 'bg-tint-sky'], ['bloom', 'bg-tint-lav'], ['snoozy', 'bg-tint-lav']]
+
 const TOUR: [React.ElementType, string, string][] = [
   [LayoutDashboard, 'Today is home', 'Your day on one page – the schedule, what to do next and quick check-ins. Tap the planner name to come back to it.'],
   [CalendarDays, 'Plan ahead when you want to', 'Week, Month and Year pages for bigger plans, plus Habits, Goals, Wellness, Food, Home, Lists, Travel and a Notebook in the menu.'],
@@ -69,16 +72,23 @@ export function Welcome() {
   const steps = 3
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center bg-[rgba(20,14,8,.5)] p-5 backdrop-blur-[3px] pt-[max(20px,env(safe-area-inset-top))] pb-[max(20px,env(safe-area-inset-bottom))]">
-      <div role="dialog" aria-modal="true" aria-label="Welcome" className="flex max-h-[min(86dvh,760px)] w-full max-w-[540px] flex-col rounded-[26px] bg-card text-ink shadow-[0_24px_70px_rgba(0,0,0,.3)]">
+      <div role="dialog" aria-modal="true" aria-label="Welcome" className="welcome flex max-h-[min(86dvh,760px)] w-full max-w-[540px] flex-col rounded-[26px] bg-card text-ink shadow-[0_24px_70px_rgba(0,0,0,.3)]">
         <div className="flex items-center gap-1.5 px-7 pt-6">
           {Array.from({ length: steps }, (_, i) => <span key={i} className={cn('h-1.5 flex-1 rounded-full', i <= step ? 'bg-accent' : 'bg-soft')} />)}
         </div>
         <div className="overflow-y-auto px-7 pt-6 pb-5">
           {step === 0 && (
             <form id="w0" onSubmit={(e) => { e.preventDefault(); setStep(1) }}>
-              {pals ? <div className="mb-3 flex justify-center"><Pal name="snoozy" size={110} /></div> : <Sparkles className="mb-4 size-8 text-accent" />}
-              <h2 className="mb-3 text-[30px] leading-tight">Welcome to your planner</h2>
-              <p className="mt-0 text-[15px] leading-relaxed text-mute">A calm place for your day, your plans and the small habits that add up. It starts simple – you can add more whenever you like.</p>
+              {pals ? (
+                <div className="relative mb-4 flex h-[150px] items-center justify-center overflow-hidden rounded-[22px] bg-[linear-gradient(160deg,color-mix(in_srgb,var(--accent)_22%,var(--card)),color-mix(in_srgb,var(--accent)_38%,var(--card)))]">
+                  <Pal name="sunny" size={54} className="absolute top-3 left-5 -rotate-6" />
+                  <Pal name="snoozy" size={108} />
+                  <Pal name="twinkle" size={40} className="absolute right-6 bottom-4 rotate-12" />
+                  <Pal name="sprig" size={46} className="absolute top-4 right-8" />
+                </div>
+              ) : <Sparkles className="mb-4 size-8 text-accent" />}
+              <h2 className={cn('mb-3 text-[30px] leading-tight', pals && 'text-center')}>Welcome to your planner</h2>
+              <p className={cn('mt-0 text-[15px] leading-relaxed text-mute', pals && 'text-center')}>A calm place for your day, your plans and the small habits that add up. It starts simple – you can add more whenever you like.</p>
               <label className="mt-7 block"><span className="mb-2 block text-[12.5px] font-medium text-mute">What should we call you? (optional)</span>
                 <Input autoFocus value={name} onChange={(e) => setName(e.target.value)} placeholder="Your preferred name" /></label>
               <p className="mt-2.5 mb-0 text-[12.5px] text-mute">Used in your greeting and the planner's title. You can change it any time.</p>
@@ -88,9 +98,10 @@ export function Welcome() {
             <div>
               <h2 className="mb-5 text-[26px] leading-tight">A quick look around</h2>
               <div className="flex flex-col gap-5">
-                {TOUR.map(([Icon, t, d]) => (
+                {TOUR.map(([Icon, t, d], i) => (
                   <div key={t} className="flex gap-3.5">
-                    <span className="grid size-10 flex-none place-items-center rounded-xl bg-accent-soft text-accent"><Icon className="size-4.5" /></span>
+                    {pals ? <span className={cn('grid size-12 flex-none place-items-center rounded-full', TOUR_PAL[i][1])}><Pal name={TOUR_PAL[i][0]} size={34} /></span>
+                      : <span className="grid size-10 flex-none place-items-center rounded-xl bg-accent-soft text-accent"><Icon className="size-4.5" /></span>}
                     <div><div className="font-semibold text-[14.5px]">{t}</div><div className="text-[13.5px] text-mute">{d}</div></div>
                   </div>
                 ))}
@@ -106,10 +117,10 @@ export function Welcome() {
                   const on = picked.includes(b.id)
                   return (
                     <button key={b.id} type="button" aria-pressed={on} onClick={() => setPicked((p) => on ? p.filter((x) => x !== b.id) : [...p, b.id])}
-                      className={cn('relative flex gap-3 rounded-2xl border-[1.5px] px-3.5 py-3 text-left', on ? 'border-accent bg-accent-soft' : 'border-line bg-card')}>
-                      <span className="text-xl">{b.icon}</span>
+                      className={cn('relative flex gap-3 rounded-2xl border-[1.5px] px-3.5 py-3 text-left', on ? 'border-accent bg-accent-soft' : 'border-line bg-card', pals && 'items-center rounded-[20px]', pals && !on && cn('border-transparent', BUNDLE_PAL[b.id][1]))}>
+                      {pals ? <span className="grid size-11 flex-none place-items-center rounded-full bg-card/70"><Pal name={BUNDLE_PAL[b.id][0]} size={32} /></span> : <span className="text-xl">{b.icon}</span>}
                       <span className="min-w-0 flex-1"><span className="block font-semibold text-[14px]">{b.name}</span><span className="block text-[12.5px] text-mute">{b.desc}</span></span>
-                      {on && <Check className="absolute top-2 right-2 size-4 text-accent" />}
+                      {on && <Check className={cn('absolute top-2 right-2 size-4 text-accent', pals && 'top-2.5 right-2.5 size-5 rounded-full bg-accent p-0.5 text-on-accent')} />}
                     </button>
                   )
                 })}
