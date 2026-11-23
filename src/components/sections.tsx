@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { DndContext, KeyboardSensor, MouseSensor, TouchSensor, closestCenter, useSensor, useSensors } from '@dnd-kit/core'
-import { SortableContext, arrayMove, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
+import { SortableContext, arrayMove, rectSortingStrategy, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifiers'
 import { CSS } from '@dnd-kit/utilities'
 import { ChevronDown, ChevronsDown, ChevronsUp, ChevronUp, Eye, EyeOff, GripVertical, LayoutGrid, Plus } from 'lucide-react'
@@ -81,6 +81,66 @@ function Arrange({ items, order: start, hidden: startHidden, onSave, onReset, on
   )
 }
 
+/** Big screens: drag the real cards around the page. Each card gets a grip bar; its contents can't be tapped while arranging. */
+function CardItem({ sec, onHide }: { sec: Sec; onHide: () => void }) {
+  const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, transition, isDragging } = useSortable({ id: sec.id })
+  return (
+    <div ref={setNodeRef} style={{ transform: CSS.Translate.toString(transform), transition }}
+      className={cn('relative min-w-0 rounded-card ring-2 ring-accent/35 ring-offset-2 ring-offset-bg', sec.wide && 'col-span-2', isDragging && 'z-10 opacity-80 shadow-[0_16px_40px_rgba(0,0,0,.2)]')}>
+      <div className="flex items-center gap-1 rounded-t-card bg-accent-soft px-2 py-1">
+        <button ref={setActivatorNodeRef} {...attributes} {...listeners} aria-label={'Move ' + sec.title} className="flex flex-1 cursor-grab touch-none items-center gap-1.5 py-1 text-left text-[13px] font-semibold active:cursor-grabbing">
+          <GripVertical className="size-4 text-accent" /><span>{sec.icon}</span>{sec.title}
+        </button>
+        <button className="flex items-center gap-1 rounded-md px-1.5 py-1 text-[12px] text-mute hover:text-ink" onClick={onHide}><EyeOff className="size-3.5" />Hide</button>
+      </div>
+      <div className="pointer-events-none select-none [&>section]:rounded-t-none" aria-hidden>{sec.node}</div>
+    </div>
+  )
+}
+
+function ArrangeCards({ items, order: start, hidden: startHidden, onSave, onReset, onDone }: { items: Sec[]; order: string[]; hidden: Set<string>; onSave: (o: string[], h: Set<string>) => void; onReset: () => void; onDone: () => void }) {
+  const [order, setOrder] = React.useState(start)
+  const [hidden, setHidden] = React.useState(new Set(startHidden))
+  const byId = new Map(items.map((x) => [x.id, x]))
+  const shown = order.filter((id) => !hidden.has(id))
+  const sensors = useSensors(useSensor(MouseSensor, { activationConstraint: { distance: 4 } }), useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 8 } }), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }))
+  return (
+    <div className="mb-3">
+      <div className="mb-3 flex flex-wrap items-center gap-2 rounded-xl bg-accent-soft px-3.5 py-2.5 text-[13.5px]">
+        <span className="flex-1">Drag cards by their bar to move them around the page. <b>Hide</b> tucks one into “Add to this page”.</span>
+        <Button size="sm" variant="ghost" onClick={() => { onReset(); onDone() }}>Standard layout</Button>
+        <Button size="sm" onClick={onDone}>Cancel</Button>
+        <Button size="sm" variant="primary" onClick={() => { onSave(order, hidden); toast('Layout saved'); onDone() }}>Done</Button>
+      </div>
+      <DndContext sensors={sensors} collisionDetection={closestCenter}
+        onDragEnd={({ active, over }) => { if (over && active.id !== over.id) setOrder((x) => arrayMove(x, x.indexOf(String(active.id)), x.indexOf(String(over.id)))) }}>
+        <SortableContext items={shown} strategy={rectSortingStrategy}>
+          <div className="grid grid-cols-2 items-start gap-4">
+            {shown.map((id) => <CardItem key={id} sec={byId.get(id)!} onHide={() => setHidden((h) => new Set(h).add(id))} />)}
+          </div>
+        </SortableContext>
+      </DndContext>
+      {[...hidden].filter((id) => byId.has(id)).length > 0 && (
+        <div className="mt-3 flex flex-wrap items-center gap-1.5 text-[13px]">
+          <span className="text-mute">Hidden:</span>
+          {order.filter((id) => hidden.has(id)).map((id) => (
+            <button key={id} className="flex items-center gap-1 rounded-full bg-soft px-2.5 py-1" onClick={() => setHidden((h) => { const n = new Set(h); n.delete(id); return n })}>
+              {byId.get(id)!.icon} {byId.get(id)!.title} <Plus className="size-3.5 text-accent" />
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+const useWide = () => {
+  const q = '(min-width: 900px)'
+  const [w, setW] = React.useState(() => matchMedia(q).matches)
+  React.useEffect(() => { const m = matchMedia(q), f = () => setW(m.matches); m.addEventListener('change', f); return () => m.removeEventListener('change', f) }, [])
+  return w
+}
+
 /** Renders a page's sections in the user's order, with an Arrange button and an "Add to this page" tray. */
 export function Sections({ page, items, className }: { page: string; items: Sec[]; className?: string }) {
   const { order, hidden, save } = useLayout(page, items)
@@ -90,15 +150,17 @@ export function Sections({ page, items, className }: { page: string; items: Sec[
   const shown = order.filter((id) => !hidden.has(id)).map((id) => byId.get(id)!)
   const off = order.filter((id) => hidden.has(id)).map((id) => byId.get(id)!)
   const reset = () => update((d) => { if (d.settings.layouts) delete d.settings.layouts[page] })
+  const wide = useWide()
   return (
     <div className={className}>
       <div className="mb-2 flex justify-end">
         {!arranging && <Button size="mono" onClick={() => setArranging(true)}><LayoutGrid className="size-3.5" />Arrange</Button>}
       </div>
-      {arranging && <Arrange items={items} order={order} hidden={hidden} onSave={save} onReset={reset} onDone={() => setArranging(false)} />}
+      {arranging && !wide && <Arrange items={items} order={order} hidden={hidden} onSave={save} onReset={reset} onDone={() => setArranging(false)} />}
+      {arranging && wide ? <ArrangeCards items={items} order={order} hidden={hidden} onSave={save} onReset={reset} onDone={() => setArranging(false)} /> :
       <div className="grid items-start gap-3 min-[900px]:grid-cols-2">
         {shown.map((x) => <div key={x.id} className={cn('min-w-0', x.wide && 'min-[900px]:col-span-2')}>{x.node}</div>)}
-      </div>
+      </div>}
       {off.length > 0 && !arranging && (
         <section className="mt-4 rounded-card border border-dashed border-line px-4 py-3.5">
           <div className="lbl mb-2 text-mute">Add to this page</div>
