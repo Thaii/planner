@@ -71,6 +71,8 @@ export function migrate(raw: Partial<State>): State {
     s.settings.classicThemes = { day: raw.settings.dayTheme || 'linen', night: raw.settings.nightTheme || 'ember', themeAccent: raw.settings.themeAccent ?? true }
     s.settings.dayTheme = 'cuteBlush'; s.settings.nightTheme = 'cutePlum'; s.settings.themeAccent = true
   }
+  // Peachy dusk was removed: anyone on it moves to Cosy night.
+  if (s.settings.nightTheme === 'cutePeachNight') s.settings.nightTheme = 'cutePlum'
   // Older planners had one custom greeting for all day and a yes/no for the name in the title.
   if (!raw.settings?.greetings) {
     const g = (s.settings.greeting || '').trim()

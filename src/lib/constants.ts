@@ -29,9 +29,9 @@ export const CUTE_NIGHT: Record<string, Palette> = {
   cutePlum: { n: 'Cosy night', d: 'Plum and rose', cute: true, pure: true, bg: '#241c2a', card: '#33293b', ink: '#f7ebf1', mute: '#c7b6c1', line: '#46394f', soft: '#3e3346', field: '#2b2231', accent: '#f4a7c0' },
   cuteHaze: { n: 'Lavender haze', d: 'Dusky lilac', cute: true, pure: true, bg: '#1f1c2e', card: '#2b2740', ink: '#f2eefc', mute: '#bdb5d8', line: '#3e3958', soft: '#363150', field: '#24213a', accent: '#c9b6f6' },
   cuteMintNight: { n: 'Midnight mint', d: 'Deep teal and mint', cute: true, pure: true, bg: '#17241f', card: '#21322b', ink: '#ecf7f1', mute: '#aac4b7', line: '#30463c', soft: '#2a3e35', field: '#1b2a24', accent: '#9fdcbc' },
-  cutePeachNight: { n: 'Peachy dusk', d: 'Warm dusk and peach', cute: true, pure: true, bg: '#2a1f1f', card: '#382a29', ink: '#fbefe9', mute: '#d2bab1', line: '#4b3a37', soft: '#433331', field: '#302423', accent: '#f6b89a' },
   cuteBlueNight: { n: 'Blueberry night', d: 'Indigo and periwinkle', cute: true, pure: true, bg: '#1a1d30', card: '#252a43', ink: '#eef0fc', mute: '#b2b8d8', line: '#373e5e', soft: '#30365a', field: '#1f2338', accent: '#a9bcf5' },
   cuteCocoa: { n: 'Hot cocoa', d: 'Cocoa and honey', cute: true, pure: true, bg: '#231b17', card: '#30251f', ink: '#f8efe6', mute: '#cdb9a8', line: '#45362d', soft: '#3c2f27', field: '#29201b', accent: '#f1cf86' },
+  cuteBlack: { n: 'Black sesame', d: 'Near-black with soft pink', cute: true, pure: true, bg: '#0f0e11', card: '#1a191d', ink: '#f4f1f6', mute: '#b2acb8', line: '#2a282f', soft: '#232127', field: '#141317', accent: '#f2a9c4' },
   cuteStarry: { n: 'Starry night', d: 'Navy and lamplight', cute: true, pure: true, bg: '#151b2e', card: '#1f2840', ink: '#eef2fb', mute: '#b4bed6', line: '#33405f', soft: '#2a3452', field: '#19203a', accent: '#ffd27a' },
 }
 export const DAY_THEMES: Record<string, Palette> = {
