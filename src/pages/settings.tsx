@@ -1,3 +1,4 @@
+import { ColourPicker } from '@/components/colour-picker'
 import { Pal } from '@/components/pals'
 import { askNotify, testSound } from '@/lib/sound'
 import { replayWelcome } from '@/components/welcome'
@@ -243,14 +244,9 @@ function Look() {
           <button key={k} aria-label={n} title={n} aria-pressed={!s.themeAccent && s.accent === k} onClick={() => setS((st) => { st.accent = k; st.themeAccent = false })}
             className={cn('size-8 rounded-full ring-offset-2 ring-offset-card', !s.themeAccent && s.accent === k && 'ring-2 ring-ink')} style={{ background: c }} />
         ))}
-        {/* Any colour you like: the native colour picker, shown as a rainbow until a custom colour is chosen. */}
-        <label title="Pick any colour" className={cn('relative size-8 cursor-pointer overflow-hidden rounded-full ring-offset-2 ring-offset-card', !s.themeAccent && custom && 'ring-2 ring-ink')}
-          style={{ background: custom ? s.accent : 'conic-gradient(#e57373,#ffb74d,#fff176,#81c784,#64b5f6,#9575cd,#e57373)' }}>
-          <span className="sr-only">Pick any colour</span>
-          <input type="color" className="absolute inset-0 size-full cursor-pointer opacity-0" value={accentColor(s)}
-            onChange={(e) => setS((st) => { st.accent = e.target.value; st.themeAccent = false })} />
-          {!custom && <span className="pointer-events-none absolute inset-0 grid place-items-center text-[15px] font-bold text-white [text-shadow:0_1px_2px_rgba(0,0,0,.4)]">+</span>}
-        </label>
+        {/* Any colour you like: our own picker (HEX first, with RGB and HSL tabs), shown as a rainbow until a custom colour is chosen. */}
+        <ColourPicker value={accentColor(s)} active={!s.themeAccent && custom} className={cn('size-8 ring-offset-2 ring-offset-card', !s.themeAccent && custom && 'ring-2 ring-ink')}
+          onChange={(h) => setS((st) => { st.accent = h; st.themeAccent = false })} />
       </div>
       <div className="lbl mb-1.5 text-mute">Paper</div>
       <Segmented value={s.paper} onChange={(v) => setS((st) => { st.paper = v })} options={PAPERS} />
@@ -292,11 +288,7 @@ function Colours() {
                     className={cn('size-7 rounded-full border-2', l.color.toLowerCase() === c ? 'border-ink' : 'border-transparent')}
                     style={{ background: tint(c, 30), boxShadow: `inset 0 0 0 1.5px ${c}` }} />
                 ))}
-                <label title="Any colour" className={cn('relative size-7 cursor-pointer overflow-hidden rounded-full border-2', custom ? 'border-ink' : 'border-transparent')}
-                  style={{ background: custom ? l.color : 'conic-gradient(#e57373,#ffb74d,#fff176,#81c784,#64b5f6,#9575cd,#e57373)' }}>
-                  <span className="sr-only">Pick any colour for {l.name}</span>
-                  <input type="color" value={l.color} onChange={(e) => setL(l.id, (x) => { x.color = e.target.value })} className="absolute inset-0 size-full cursor-pointer opacity-0" />
-                </label>
+                <ColourPicker value={l.color} active={custom} label={'Any colour for ' + l.name} className={cn('size-7 border-2', custom ? 'border-ink' : 'border-transparent')} onChange={(h) => setL(l.id, (x) => { x.color = h })} />
               </div>
               <button className="p-1 text-mute" aria-label={'Delete ' + l.name}
                 onClick={() => undoable(`Deleted ${l.name}`, (d) => { d.settings.labels = d.settings.labels.filter((x) => x.id !== l.id) })}><X className="size-4" /></button>
