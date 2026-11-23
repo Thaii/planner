@@ -1,3 +1,4 @@
+import { WhyHelper } from '@/components/why-helper'
 import { accentColor } from './theme'
 import { openForm } from '@/components/sheet'
 import { getS, update } from './store'
@@ -93,8 +94,10 @@ export function goalForm(id?: string, area?: string) {
       { k: 'area', l: 'Area of life', t: 'select', o: areas.map((a) => [a, a]), v: g?.area || area || areas[0], half: true },
       { k: 'pct', l: 'Progress %', t: 'number', min: 0, max: 100, v: g?.pct || 0, half: true },
       { k: 'target', l: 'Target date', t: 'date', v: g?.target, half: true },
-      { k: 'next', l: 'Next step', v: g?.next, half: true },
-      { k: 'why', l: 'Why it matters', t: 'textarea', rows: 2, v: g?.why },
+      { k: 'next', l: 'Next small step', v: g?.next, half: true, ph: 'Something you could do this week' },
+      { k: 'why', l: 'Why it matters to you', t: 'textarea', rows: 3, v: g?.why, ph: 'The reason that will keep you going on a hard day', help: (v, set) => <WhyHelper why={v.why} area={v.area} onChange={(x) => set('why', x)} /> },
+      { k: 'obstacle', l: 'What might get in the way?', t: 'textarea', rows: 2, v: g?.obstacle, ph: 'e.g. Too tired after work' },
+      { k: 'plan', l: 'If that happens, I will…', t: 'textarea', rows: 2, v: g?.plan, ph: 'e.g. Do a 10-minute walk instead of skipping' },
     ],
     onSave: (v) => {
       if (!v.title) return false

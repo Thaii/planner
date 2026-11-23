@@ -18,7 +18,7 @@ export interface Habit {
   min?: string; cue?: string; identity?: string; created?: DateStr; log: Record<DateStr, 1 | 'm'>
 }
 export interface Identity { id: string; name: string; does: string }
-export interface Goal { id: string; title: string; area?: string; pct?: number; target?: DateStr; why?: string; next?: string; done?: boolean; label?: string }
+export interface Goal { id: string; title: string; area?: string; pct?: number; target?: DateStr; why?: string; next?: string; done?: boolean; label?: string; obstacle?: string; plan?: string }
 export interface Project { id: string; name: string; label?: string; due?: DateStr; status?: 'active' | 'paused' | 'done'; notes?: string; tasks: { id: string; text: string; done: boolean }[] }
 export interface Item { id: string; text: string; done?: boolean }
 export interface Workout { id: string; name: string; days: number[]; time?: string; dur?: number; label?: string; notes?: string; log: Record<DateStr, 1> }

@@ -195,3 +195,22 @@ def hugs(size=120):  # heart: gratitude
 SECTION = [('Dottie', 'calendar', dottie), ('Stickle', 'sticky note', stickle), ('Inchy', 'caterpillar', inchy),
            ('Mimi', 'menu', mimi), ('Brocco', 'broccoli', brocco), ('Cuppy', 'cupcake', cuppy),
            ('Bloom', 'flower', bloom), ('Zip', 'battery', zip_), ('Puff', 'pillow', puff), ('Chai', 'teacup', chai), ('Hugs', 'heart', hugs)]
+
+
+# ---- Goals pals ----
+def summit(size=120):  # mountain with a flag: active goals
+    s = (f'<path d="M10 100 L50 34 L66 58 L76 46 L110 100 Z" fill="#B9E4C9" {LINE}/>'
+         f'<path d="M50 34 L40 50 l6 -2 l4 5 l4 -6 l5 3 z" fill="#FFFDF8" {LINE}/>'
+         f'<path d="M50 34 V14" {LINE} fill="none" stroke-linecap="round"/><path d="M50 14 h18 l-5 6 l5 6 h-18 z" fill="#F7A9BE" {LINE}/>')
+    return svg(s + face(54, 76, 0.85), 'Summit the mountain', size)
+
+def champ(size=120):  # trophy: achieved
+    s = (f'<path d="M34 30 h-14 q0 24 20 26 M86 30 h14 q0 24 -20 26" fill="none" {LINE}/>'
+         f'<path d="M32 22 h56 v24 a28 28 0 0 1 -56 0 z" fill="#FFE08A" {LINE}/>'
+         f'<path d="M54 74 h12 v12 h-12 z" fill="#F7C9A8" {LINE}/><rect x="40" y="86" width="40" height="14" rx="4" fill="#F7C9A8" {LINE}/>')
+    return svg(s + face(60, 44, 0.8), 'Champ the trophy', size)
+
+def flaggy(size=120):  # progress flag: average progress
+    s = (f'<path d="M30 106 V16" stroke="{INK}" stroke-width="5" stroke-linecap="round"/>'
+         f'<path d="M32 20 q20 -8 36 0 t36 0 v44 q-18 8 -36 0 t-36 0 z" fill="#BFE0F7" {LINE}/>')
+    return svg(s + face(68, 42, 0.8), 'Flaggy the flag', size)

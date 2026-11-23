@@ -40,13 +40,15 @@ export function SheetHost() {
 
 /* ---------- generic form ---------- */
 export type FieldType = 'text' | 'textarea' | 'date' | 'time' | 'number' | 'select' | 'label' | 'days' | 'color' | 'tel' | 'email'
+type Values = Record<string, any>
 export interface Field {
   k: string; l: string; t?: FieldType; v?: unknown; ph?: string; half?: boolean; rows?: number
   o?: [string | number, string][]; min?: number; max?: number; step?: string; list?: string[]
   /** For time fields: the earlier time this one follows (e.g. an end time after 'time'). */
   after?: string
+  /** Extra help shown under the field, e.g. prompts that fill it in. */
+  help?: (v: Values, set: (k: string, val: unknown) => void) => React.ReactNode
 }
-type Values = Record<string, any>
 export interface FormSpec {
   title: string; fields: Field[]
   /** Return false to keep the drawer open (e.g. validation failed). */
@@ -96,6 +98,7 @@ function FormBody({ spec }: { spec: FormSpec }) {
             <div key={f.k} className={f.half ? 'w-[calc(50%-5px)]' : 'w-full'}>
               <label htmlFor={id} className="mb-1 block text-[12.5px] font-medium text-mute">{f.l}</label>
               {inp}
+              {f.help?.(vals, set)}
             </div>
           )
         })}

@@ -27,7 +27,11 @@ export interface Sec {
 function useLayout(page: string, items: Sec[]) {
   const lay = useS().settings.layouts?.[page]
   const ids = items.map((x) => x.id)
-  const order = lay ? [...lay.order.filter((id) => ids.includes(id)), ...ids.filter((id) => !lay.order.includes(id))] : ids
+  // Sections added in an update slot in where they'd sit by default (before the next section that follows them), not at the bottom.
+  const order = lay ? ids.filter((id) => !lay.order.includes(id)).reduce((o, id) => {
+    const after = ids.slice(ids.indexOf(id) + 1).find((x) => o.includes(x))
+    return after ? [...o.slice(0, o.indexOf(after)), id, ...o.slice(o.indexOf(after))] : [...o, id]
+  }, lay.order.filter((id) => ids.includes(id))) : ids
   // New sections added in an update show unless they're marked as extra.
   const hidden = new Set(lay ? [...lay.hidden, ...items.filter((x) => x.hide && !lay.order.includes(x.id)).map((x) => x.id)] : items.filter((x) => x.hide).map((x) => x.id))
   const save = (o: string[], h: Set<string>) => update((d) => { d.settings.layouts = { ...(d.settings.layouts || {}), [page]: { order: o, hidden: [...h] } } })
