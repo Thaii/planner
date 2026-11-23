@@ -22,18 +22,18 @@ export const CUTE_DAY: Record<string, Palette> = {
   cutePeach: { n: 'Peach sorbet', d: 'Peach and apricot', cute: true, bg: '#fff7f1', card: '#ffffff', ink: '#4a3a33', mute: '#7d6a60', line: '#f5e0d2', soft: '#fdede2', field: '#fff5ee', accent: '#f0a07f' },
   cuteLemon: { n: 'Lemon meringue', d: 'Butter yellow and cream', cute: true, bg: '#fffcef', card: '#ffffff', ink: '#48412c', mute: '#7a7258', line: '#f1e8cb', soft: '#faf4da', field: '#fffcf0', accent: '#ecc95f', onAccent: '#48412c' },
   cuteMint: { n: 'Mint tea', d: 'Fresh mint and cream', cute: true, bg: '#f3faf5', card: '#ffffff', ink: '#34443b', mute: '#66786d', line: '#d9eee1', soft: '#e9f6ee', field: '#f3faf5', accent: '#7cc5a0' },
-  cuteSea: { n: 'Sea glass', d: 'Soft aqua and sand', cute: true, bg: '#f2fbfa', card: '#ffffff', ink: '#2f4446', mute: '#617a7c', line: '#d6eeec', soft: '#e6f6f4', field: '#f2fbfa', accent: '#74c9c2' },
+  cuteSea: { n: 'Sea salt soda', d: 'Soft aqua and sand', cute: true, bg: '#f2fbfa', card: '#ffffff', ink: '#2f4446', mute: '#617a7c', line: '#d6eeec', soft: '#e6f6f4', field: '#f2fbfa', accent: '#74c9c2' },
   cuteBlue: { n: 'Blueberry milk', d: 'Soft sky blue', cute: true, bg: '#f4f7ff', card: '#ffffff', ink: '#343c52', mute: '#69718a', line: '#dde5f6', soft: '#eaf0fc', field: '#f4f7ff', accent: '#88a9e6' },
-  cuteLilac: { n: 'Lilac dream', d: 'Lavender and mint', cute: true, bg: '#f8f5ff', card: '#ffffff', ink: '#3f3651', mute: '#706685', line: '#e7e0f5', soft: '#f1ecfb', field: '#f8f5ff', accent: '#7e57c2' },
+  cuteLilac: { n: 'Taro milk tea', d: 'Lilac and cream', cute: true, bg: '#f8f5ff', card: '#ffffff', ink: '#3f3651', mute: '#706685', line: '#e7e0f5', soft: '#f1ecfb', field: '#f8f5ff', accent: '#7e57c2' },
 }
 export const CUTE_NIGHT: Record<string, Palette> = {
-  cutePlum: { n: 'Cosy night', d: 'Plum and rose', cute: true, pure: true, bg: '#241c2a', card: '#33293b', ink: '#f7ebf1', mute: '#c7b6c1', line: '#46394f', soft: '#3e3346', field: '#2b2231', accent: '#f4a7c0' },
-  cuteBlack: { n: 'Black sesame', d: 'Near-black with soft pink', cute: true, pure: true, bg: '#0f0e11', card: '#1a191d', ink: '#f4f1f6', mute: '#b2acb8', line: '#2a282f', soft: '#232127', field: '#141317', accent: '#f2a9c4' },
+  cutePlum: { n: 'Plum jam', d: 'Deep plum and rose', cute: true, pure: true, bg: '#241c2a', card: '#33293b', ink: '#f7ebf1', mute: '#c7b6c1', line: '#46394f', soft: '#3e3346', field: '#2b2231', accent: '#f4a7c0' },
+  cuteBlack: { n: 'Black sesame', d: 'Near-black and soft pink', cute: true, pure: true, bg: '#0f0e11', card: '#1a191d', ink: '#f4f1f6', mute: '#b2acb8', line: '#2a282f', soft: '#232127', field: '#141317', accent: '#f2a9c4' },
   cuteCocoa: { n: 'Hot cocoa', d: 'Cocoa and honey', cute: true, pure: true, bg: '#231b17', card: '#30251f', ink: '#f8efe6', mute: '#cdb9a8', line: '#45362d', soft: '#3c2f27', field: '#29201b', accent: '#f1cf86' },
-  cuteStarry: { n: 'Starry night', d: 'Navy and lamplight', cute: true, pure: true, bg: '#151b2e', card: '#1f2840', ink: '#eef2fb', mute: '#b4bed6', line: '#33405f', soft: '#2a3452', field: '#19203a', accent: '#ffd27a' },
-  cuteMintNight: { n: 'Midnight mint', d: 'Deep teal and mint', cute: true, pure: true, bg: '#17241f', card: '#21322b', ink: '#ecf7f1', mute: '#aac4b7', line: '#30463c', soft: '#2a3e35', field: '#1b2a24', accent: '#9fdcbc' },
-  cuteBlueNight: { n: 'Blueberry night', d: 'Indigo and periwinkle', cute: true, pure: true, bg: '#1a1d30', card: '#252a43', ink: '#eef0fc', mute: '#b2b8d8', line: '#373e5e', soft: '#30365a', field: '#1f2338', accent: '#a9bcf5' },
-  cuteHaze: { n: 'Lavender haze', d: 'Dusky lilac', cute: true, pure: true, bg: '#1f1c2e', card: '#2b2740', ink: '#f2eefc', mute: '#bdb5d8', line: '#3e3958', soft: '#363150', field: '#24213a', accent: '#c9b6f6' },
+  cuteStarry: { n: 'Earl grey', d: 'Navy and honey glow', cute: true, pure: true, bg: '#151b2e', card: '#1f2840', ink: '#eef2fb', mute: '#b4bed6', line: '#33405f', soft: '#2a3452', field: '#19203a', accent: '#ffd27a' },
+  cuteMintNight: { n: 'Mint choc chip', d: 'Dark chocolate and mint', cute: true, pure: true, bg: '#17241f', card: '#21322b', ink: '#ecf7f1', mute: '#aac4b7', line: '#30463c', soft: '#2a3e35', field: '#1b2a24', accent: '#9fdcbc' },
+  cuteBlueNight: { n: 'Blueberry tart', d: 'Indigo and periwinkle', cute: true, pure: true, bg: '#1a1d30', card: '#252a43', ink: '#eef0fc', mute: '#b2b8d8', line: '#373e5e', soft: '#30365a', field: '#1f2338', accent: '#a9bcf5' },
+  cuteHaze: { n: 'Lavender latte', d: 'Dusky lilac', cute: true, pure: true, bg: '#1f1c2e', card: '#2b2740', ink: '#f2eefc', mute: '#bdb5d8', line: '#3e3958', soft: '#363150', field: '#24213a', accent: '#c9b6f6' },
 }
 export const DAY_THEMES: Record<string, Palette> = {
   linen: { n: 'Linen', d: 'Warm paper', bg: '#f7f4ef', card: '#ffffff', ink: '#2b2a28', mute: '#7d7870', line: '#e9e4dc', soft: '#f3efe9' },
