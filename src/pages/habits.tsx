@@ -12,7 +12,7 @@ import { MaybePal } from '@/components/pals'
 import { getS, useS, update } from '@/lib/store'
 import { go } from '@/lib/ui'
 import { addD, DOWN, fmt, pd, range, today, ym, ds } from '@/lib/date'
-import { imLine, hDue, hMomentum, hRate, hSched, idById, isMin, kept, momentum, votesOn, weekStart } from '@/lib/logic'
+import { cleanId, imLine, hDue, hMomentum, hRate, hSched, idById, isMin, kept, momentum, votesOn, weekStart } from '@/lib/logic'
 import { cycleHabit } from '@/lib/actions'
 import { habitForm, identityForm } from '@/lib/forms'
 import type { Habit, State } from '@/lib/types'
@@ -174,7 +174,7 @@ export function HabitsPage() {
             </button>
           ))}
         </div>
-        {s.identities.length < 3 && <InlineAdd placeholder="Add who you're becoming, e.g. a calm person" onAdd={(v) => update((d) => { d.identities.push({ id: uid(), name: v.replace(/^i'?m\s+/i, ''), does: '' }) })} />}
+        {s.identities.length < 3 && <InlineAdd placeholder="Add who you're becoming, e.g. a calm person" onAdd={(v) => update((d) => { d.identities.push({ id: uid(), name: cleanId(v), does: '' }) })} />}
         <p className="mt-1.5 mb-0 text-[12.5px] text-mute">Every habit you keep is a vote for who you're becoming. Pick which one each habit builds when you edit it. Votes are from the last 30 days.</p>
       </Card>
         </>) },

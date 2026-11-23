@@ -19,7 +19,7 @@ import { useS, update, undoable } from '@/lib/store'
 import { go, openDay } from '@/lib/ui'
 import { addD, diffD, fmt, mins, nowMins, t12, hourLabel, minsLabel, today, ym, type DateStr } from '@/lib/date'
 import {
-  eventsOn, workoutsOn, tasksOn, hDue, imLine, kept, hRate, momentum, idById, votesOn, nextUp, lowEnergy, roughDay,
+  eventsOn, workoutsOn, tasksOn, hDue, imLine, prevDue, kept, hRate, momentum, idById, votesOn, nextUp, lowEnergy, roughDay,
   weekStart, weekOf, monthOf, periodKey, labColor, tint,
 } from '@/lib/logic'
 import { addTask, logHabit, markDone, setPrio, setWell, togglePrio, toggleWorkout, weekItem, monthTodo } from '@/lib/actions'
@@ -354,15 +354,15 @@ function Banners({ d, s }: { d: DateStr; s: State }) {
   const [sug, setSug] = React.useState<string | undefined>()
   const auto = React.useMemo(() => (rough ? scPick(w.energy != null && w.energy < 35 ? 'quick' : undefined)?.id : undefined), [rough]) // eslint-disable-line react-hooks/exhaustive-deps
   if (!isT) return null
-  const y = addD(d, -1)
-  const missed = s.habits.filter((h) => h.mode !== 'weekly' && hDue(h, y) && !kept(h, y) && !(h.created && y < h.created) && hDue(h, d) && !kept(h, d)).slice(0, 2)
+  // "Never miss twice": the habit's last due day was missed and it's due again today – yesterday for daily habits, e.g. Wednesday → Friday for a Mon/Wed/Fri one.
+  const missed = s.habits.filter((h) => { const y = prevDue(h, d); return h.mode !== 'weekly' && !!y && !kept(h, y) && !(h.created && y < h.created) && hDue(h, d) && !kept(h, d) }).slice(0, 2)
   const pickItem = rough ? s.selfcare.find((i) => i.id === (sug || auto)) : undefined
   const box = 'mb-2 flex flex-wrap items-center gap-2 rounded-[10px] px-3 py-2 text-[13px]'
   return (
     <>
       {missed.map((h) => {
         const idn = idById(s, h.identity)
-        return <div key={h.id} className={cn(box, 'bg-warn/20')}><span className="flex-1"><b>{idn ? cap(idn.name) + " doesn't miss twice." : "Don't miss twice."}</b> You skipped {h.name} yesterday. {h.min ? `The minimum today: ${h.min}.` : 'Any version counts today.'}</span>
+        return <div key={h.id} className={cn(box, 'bg-warn/20')}><span className="flex-1"><b>{idn ? cap(idn.name) + " doesn't miss twice." : "Don't miss twice."}</b> You skipped {h.name} {prevDue(h, d) === addD(d, -1) ? 'yesterday' : 'on ' + fmt(prevDue(h, d)!, { weekday: 'long' })}. {h.min ? `The minimum today: ${h.min}.` : 'Any version counts today.'}</span>
           <Button onClick={() => logHabit(h.id, d, h.min ? 'm' : 1)}>{h.min ? 'Do the minimum' : 'Done'}</Button></div>
       })}
       {lowEnergy(s) && <div className={cn(box, 'bg-accent-soft')}><span><b>Low energy for a few days.</b> Minimums only today, and just your must-do. That still counts.</span></div>}

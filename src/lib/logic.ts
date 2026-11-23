@@ -116,6 +116,10 @@ export function hMomentum(h: Habit) {
   return Math.round(Math.min(100, m))
 }
 export const momentum = (s: State) => (s.habits.length ? Math.round(s.habits.reduce((a, h) => a + hMomentum(h), 0) / s.habits.length) : 0)
+/** Tidy an identity name: no leading "I'm" / "I am" and no full stop, so it reads well in "vote for …" and "… doesn't miss twice". */
+export const cleanId = (name: string) => name.trim().replace(/^(i['’]?m|i am)\s+/i, '').replace(/[.!]+$/, '').trim()
+/** The last day before `d` (within a week) that a habit was due. */
+export const prevDue = (h: Habit, d: DateStr) => { for (let i = 1; i <= 7; i++) { const x = addD(d, -i); if (hDue(h, x)) return x } return undefined }
 /** An identity as "I'm …" without doubling up when the name already starts with I'm / I am, and without a double full stop. */
 export const imLine = (name: string) => "I'm " + name.trim().replace(/^(i['’]?m|i am)\s+/i, '').replace(/[.!]+$/, '') + '.'
 export const idById = (s: State, id?: string) => s.identities.find((x) => x.id === id)
