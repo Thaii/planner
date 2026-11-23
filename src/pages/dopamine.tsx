@@ -134,7 +134,7 @@ export function DopaminePage() {
       </StatGrid>
         </>) },
         ...COURSES.map(([k, n, ic, desc]) => ({ id: k, title: n, icon: ic, desc, node: (<>
-          <Card><CardHeader title={<span className="flex items-center gap-2"><Ico e={ic} className="[html.cute_&]:size-[34px]" />{n}</span>} action={<Button variant="link" className="text-[12.5px]" onClick={() => showDopa(k)}>Pick</Button>} />
+          <Card><CardHeader title={<span className="flex items-center gap-2 [html.cute_&]:gap-2.5"><span className={cn('contents [html.cute_&]:grid [html.cute_&]:size-10 [html.cute_&]:flex-none [html.cute_&]:place-items-center [html.cute_&]:rounded-full', ({ app: 'bg-tint-butter', main: 'bg-tint-peach', side: 'bg-tint-mint', dessert: 'bg-tint-lav', special: 'bg-tint-sky' } as Record<string, string>)[k])}><Ico e={ic} className="[html.cute_&]:size-[26px]" /></span>{n}</span>} action={<Button variant="link" className="text-[12.5px]" onClick={() => showDopa(k)}>Pick</Button>} />
             <p className="mt-0 text-[12.5px] text-mute">{desc}</p>
             <div className="rows">{s.dopa.filter((i) => i.course === k).map((i) => {
               const dn = dpDone(i.id, t)
