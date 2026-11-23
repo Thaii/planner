@@ -1,3 +1,4 @@
+import { Ico } from '@/components/doodles'
 import { closeSheet, openSheet } from '@/components/sheet'
 import { Button } from '@/components/ui/button'
 import { startFive } from '@/components/five'
@@ -45,7 +46,7 @@ export function showDopa(course?: DopaItem['course'], not?: string) {
   }
   openSheet(
     <div>
-      <div className="lbl text-accent">{c[2]} {c[1]}</div>
+      <div className="lbl text-accent"><Ico e={c[2]} /> {c[1]}</div>
       <h3 className="mt-2 mb-1 text-[28px]">{item.text}</h3>
       <p className="mt-0 text-[13px] text-mute">
         {item.course === 'side' ? 'Pair it with your next task and the task gets easier to start.' : item.course === 'dessert' ? `Enjoy it, on a ${item.mins || 15}-minute timer so it stays a treat.` : item.mins ? item.mins + ' minutes.' : ''}

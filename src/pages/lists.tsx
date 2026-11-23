@@ -1,3 +1,4 @@
+import { Ico } from '@/components/doodles'
 import { ExternalLink } from 'lucide-react'
 import { create } from 'zustand'
 import { Card, CardHeader, Empty } from '@/components/ui/card'
@@ -169,7 +170,7 @@ function ListView({ c }: { c: Def }) {
   return (
     <div>
       <Button variant="link" className="text-[13.5px]" onClick={() => useL.setState({ key: null })}>← Lists & collections</Button>
-      <PageHead crumb="Manage · Lists" title={c.icon + ' ' + c.name} right={c.custom ? <Button onClick={() => customListForm(c.key)}>Edit list</Button> : undefined} />
+      <PageHead crumb="Manage · Lists" title={<><Ico e={c.icon} /> {c.name}</>} right={c.custom ? <Button onClick={() => customListForm(c.key)}>Edit list</Button> : undefined} />
       {!!c.stages.length && (
         <Segmented value={stage} onChange={(v) => useL.setState({ stage: v })}
           options={[['all', 'All · ' + items.length], ...c.stages.map((x) => [x, x + ' · ' + items.filter((i) => i.stage === x).length] as [string, string])]} />
@@ -214,7 +215,7 @@ export function ListsPage() {
           const cnt = it.length ? (st.length ? st.map((x) => [x, it.filter((y) => y.stage === x).length] as const).filter((x) => x[1]).map(([x, c]) => c + ' ' + x.toLowerCase()).join(' · ') : it.length + ' item' + (it.length === 1 ? '' : 's')) : 'Start one'
           return (
             <button key={k} onClick={() => useL.setState({ key: k, stage: 'all' })} className="flex flex-col gap-0.5 rounded-card border border-line bg-card p-3.5 text-left shadow-card">
-              <span className="text-xl">{i}</span>
+              <span className="text-xl leading-none [html.cute_&]:text-[26px]"><Ico e={i} /></span>
               <span className="font-serif text-[17px]">{n}</span>
               <small className="text-[12px] text-mute">{desc}</small>
               <span className="mt-1 font-mono text-[11px] text-accent">{cnt}</span>

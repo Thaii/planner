@@ -1,3 +1,4 @@
+import { Ico } from '@/components/doodles'
 import { MaybePal } from '@/components/pals'
 import { Sections } from '@/components/sections'
 import * as React from 'react'
@@ -133,7 +134,7 @@ export function DopaminePage() {
       </StatGrid>
         </>) },
         ...COURSES.map(([k, n, ic, desc]) => ({ id: k, title: n, icon: ic, desc, node: (<>
-          <Card><CardHeader title={`${ic} ${n}`} action={<Button variant="link" className="text-[12.5px]" onClick={() => showDopa(k)}>Pick</Button>} />
+          <Card><CardHeader title={<span className="flex items-center gap-2"><Ico e={ic} className="[html.cute_&]:size-[34px]" />{n}</span>} action={<Button variant="link" className="text-[12.5px]" onClick={() => showDopa(k)}>Pick</Button>} />
             <p className="mt-0 text-[12.5px] text-mute">{desc}</p>
             <div className="rows">{s.dopa.filter((i) => i.course === k).map((i) => {
               const dn = dpDone(i.id, t)

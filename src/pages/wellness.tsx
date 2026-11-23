@@ -1,3 +1,4 @@
+import { Ico } from '@/components/doodles'
 import { MaybePal } from '@/components/pals'
 import { Sections } from '@/components/sections'
 import { MedsSection } from './meds'
@@ -179,7 +180,7 @@ export function WellnessPage() {
               <div key={d} className="row">
                 <span className="w-24 font-mono text-[11.5px]">{fmt(d, { weekday: 'short', day: 'numeric', month: 'short' })}</span>
                 <CommitInput value={x.sleep != null ? fmtSleep(x.sleep) : ''} placeholder="–" aria-label={`Sleep ${fmt(d)}`} className="w-24 border-transparent bg-transparent px-1.5 py-1 font-mono text-[12.5px]" onCommit={(v) => setWell(d, 'sleep', parseSleep(v))} />
-                <span className="flex-1" /><span>{x.mood ? MOODS[x.mood - 1] : <span className="text-mute">·</span>}</span>
+                <span className="flex-1" /><span>{x.mood ? <Ico e={MOODS[x.mood - 1]} /> : <span className="text-mute">·</span>}</span>
               </div>
             )
           })}</div>
