@@ -20,11 +20,11 @@ import { useS, update, undoable } from '@/lib/store'
 import { go, openDay } from '@/lib/ui'
 import { addD, diffD, fmt, mins, nowMins, t12, hourLabel, minsLabel, today, ym, type DateStr } from '@/lib/date'
 import {
-  eventsOn, workoutsOn, tasksOn, hDue, imLine, prevDue, sprigLook, stackOrder, kept, hRate, momentum, idById, votesOn, nextUp, lowEnergy, roughDay,
+  eventsOn, workoutsOn, tasksOn, hDue, imLine, idMantra, prevDue, sprigLook, stackOrder, kept, hRate, momentum, idById, votesOn, nextUp, lowEnergy, roughDay,
   weekStart, weekOf, monthOf, periodKey, labColor, tint,
 } from '@/lib/logic'
 import { addTask, logHabit, markDone, setPrio, setWell, togglePrio, toggleWorkout, weekItem, monthTodo } from '@/lib/actions'
-import { eventForm, goalForm, mealForm } from '@/lib/forms'
+import { eventForm, goalForm, identityForm, mealForm } from '@/lib/forms'
 import { PERIOD_WORD } from '@/lib/constants'
 import { showDopa, scPick, logSelf } from '@/lib/menus'
 import type { State } from '@/lib/types'
@@ -182,13 +182,14 @@ const CARDS: Record<string, CardFn> = {
       <div className="grid gap-2 min-[760px]:grid-cols-2 min-[1100px]:grid-cols-3">{s.identities.length ? s.identities.map((x) => {
         const v = votesOn(s, x.id, d)
         return (
-          <div key={x.id} className="flex items-center gap-2.5 rounded-2xl bg-soft px-3.5 py-2.5">
+          <button key={x.id} onClick={() => identityForm(x.id)} className="flex items-center gap-2.5 rounded-2xl bg-soft px-3.5 py-2.5 text-left">
             <div className="min-w-0 flex-1">
               <div className="font-serif text-[18px] leading-tight">{imLine(x.name)}</div>
-              {x.does && <div className="text-[12.5px] text-mute">{cap(x.does)}</div>}
+              {idMantra(x, d) && <div className="text-[13px]">{idMantra(x, d)}</div>}
+              {x.why && <div className="mt-0.5 line-clamp-2 text-[12px] text-mute italic">“{x.why}”</div>}
             </div>
             <div className="min-w-[52px] text-center"><b className="block font-serif text-2xl font-normal text-accent"><Num value={v} /></b><span className="text-[10.5px] text-mute">vote{v === 1 ? '' : 's'}{d === today() ? ' today' : ''}</span></div>
-          </div>
+          </button>
         )
       }) : <Empty>Add who you're becoming on the Habits page. Every habit you keep is a vote for it.</Empty>}</div>
     </Card>

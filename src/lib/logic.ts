@@ -1,4 +1,4 @@
-import type { State, Task, CalEvent, Habit, Workout, Freq, WeekPlan, MonthPlan, Part } from './types'
+import type { State, Task, CalEvent, Habit, Workout, Freq, WeekPlan, MonthPlan, Part, Identity } from './types'
 import { type DateStr, addD, diffD, dow, pd, range, today, weekStartOf, ym } from './date'
 
 export const wsDay = (s: State): 0 | 1 => (s.settings.weekStart === 0 ? 0 : 1)
@@ -160,6 +160,13 @@ export function sprigLook(s: State) {
 export const cleanId = (name: string) => name.trim().replace(/^(i['’]?m|i am)\s+/i, '').replace(/[.!]+$/, '').trim()
 /** The last day before `d` (within a week) that a habit was due. */
 export const prevDue = (h: Habit, d: DateStr) => { for (let i = 1; i <= 7; i++) { const x = addD(d, -i); if (hDue(h, x)) return x } return undefined }
+/** Today's reminder line for an identity, e.g. "Athletes move every day." – a different proof each day. */
+export function idMantra(x: Identity, d: DateStr) {
+  const ps = x.proofs?.length ? x.proofs : []
+  if (!ps.length) return x.does ? x.does.charAt(0).toUpperCase() + x.does.slice(1) : ''
+  const p = ps[Math.floor(new Date(d).getTime() / 864e5) % ps.length]
+  return `${x.they ? x.they : 'I'} ${p}.` + (x.dont ? ` I don’t ${x.dont.replace(/\.$/, '')}.` : '')
+}
 /** An identity as "I'm …" without doubling up when the name already starts with I'm / I am, and without a double full stop. */
 export const imLine = (name: string) => "I'm " + name.trim().replace(/^(i['’]?m|i am)\s+/i, '').replace(/[.!]+$/, '') + '.'
 export const idById = (s: State, id?: string) => s.identities.find((x) => x.id === id)
