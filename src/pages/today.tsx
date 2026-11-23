@@ -1,4 +1,4 @@
-import { MaybePal } from '@/components/pals'
+import { MaybePal, Pal, usePals } from '@/components/pals'
 import { ArrangeGrid, ArrangeList } from './arrange'
 import { AddToDay } from '@/components/welcome'
 import { MedNextUp, MedsToday } from './meds'
@@ -89,6 +89,26 @@ function Timeline({ d }: { d: DateStr }) {
       </div>
       {outside.length > 0 && <div className="mt-1.5 text-[12.5px] text-mute">Outside these hours: {outside.map((i) => i.tm + ' ' + i.t).join(', ')}</div>}
     </>
+  )
+}
+
+/* ---------- Cute style: Sprig grows with your habit streak ---------- */
+function SprigIntro({ s }: { s: State }) {
+  if (!usePals()) return null
+  // Days in a row with at least one habit kept (today counts once you've kept one).
+  let d = today(), n = 0
+  const any = (x: DateStr) => s.habits.some((h) => kept(h, x))
+  if (!any(d)) d = addD(d, -1)
+  while (any(d) && n < 3650) { n++; d = addD(d, -1) }
+  return (
+    <div className="mb-2 flex items-center gap-3.5">
+      <span className="pal-bubble size-[72px] flex-none bg-tint-mint"><Pal name="sprig" size={62} /></span>
+      <div className="text-[14px] text-mute">
+        {!s.habits.length ? <>Sprig is waiting for your first habit. Add one on the <button className="text-accent underline" onClick={() => go('habits')}>Habits page</button>.</>
+          : n ? <>Sprig grows a little every day you keep a habit. <b className="text-ink">{n} day{n === 1 ? '' : 's'}</b> so far.</>
+          : <>Keep one habit today and Sprig starts growing.</>}
+      </div>
+    </div>
   )
 }
 
@@ -222,8 +242,9 @@ const CARDS: Record<string, CardFn> = {
 
   habits: ({ d, s }) => {
     const hs = s.habits.filter((h) => hDue(h, d))
-    return <Card><CardHeader title="Habits" pal="sprig" action={<Button variant="link" className="text-[12.5px]" onClick={() => go('habits')}>Tracker</Button>} />
-      <div className="rows">{hs.length ? hs.map((h) => <HabitRow key={h.id} h={h} d={d} />) : <Empty>{s.habits.length ? 'Rest day – nothing due.' : 'No habits yet.'}</Empty>}</div></Card>
+    return <Card><CardHeader title="Habits" action={<Button variant="link" className="text-[12.5px]" onClick={() => go('habits')}>Tracker</Button>} />
+      <SprigIntro s={s} />
+      <div className="rows">{hs.length ? hs.map((h) => <HabitRow key={h.id} h={h} d={d} />) : !s.habits.length && s.settings.style === 'cute' && s.settings.pals !== false ? null : <Empty>{s.habits.length ? 'Rest day – nothing due.' : 'No habits yet.'}</Empty>}</div></Card>
   },
 
   meals: ({ d, s }) => {
@@ -407,8 +428,9 @@ export function TodayPage({ d, isToday }: { d: DateStr; isToday?: boolean }) {
         <div className="mb-3.5 flex flex-wrap gap-2 text-[13px] font-bold">
           <span className="rounded-full bg-tint-mint px-3 py-1.5"><Num value={tk.filter((x) => x.done).length} /> of {tk.length} done</span>
           <span className="rounded-full bg-tint-sky px-3 py-1.5">{ml((s.well[d]?.water || 0) * glassMl(s.settings))} water</span>
+          <span className="rounded-full bg-tint-lav px-3 py-1.5"><Num value={hr.pct} suffix="%" /> of habits</span>
+          <span className="rounded-full bg-tint-peach px-3 py-1.5">momentum <Num value={momentum(s)} /></span>
           {isToday && (() => { const n = dayStreak(s); return <span className="rounded-full bg-tint-butter px-3 py-1.5">{n ? `${n}-day streak` : 'Start a streak today'}</span> })()}
-          {s.habits.length > 0 && <span className="rounded-full bg-tint-lav px-3 py-1.5"><Num value={hr.pct} suffix="%" /> of habits</span>}
         </div>
       ) : (
         <div className="mb-3.5 text-[13.5px] text-mute">

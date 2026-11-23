@@ -47,7 +47,7 @@ export function TaskRow({ x, compact }: { x: TaskOcc; compact?: boolean }) {
 export function HabitRow({ h, d }: { h: Habit; d: DateStr }) {
   const s = useS()
   const k = kept(h, d), mn = isMin(h, d), idn = idById(s, h.identity)
-  const pill = 'whitespace-nowrap rounded-full border border-line bg-card px-3 py-1 text-xs font-semibold'
+  const pill = 'habit-pill whitespace-nowrap rounded-full border border-line bg-card px-3 py-1 text-xs font-semibold'
   return (
     <div className={cn('row', k && 'done')}>
       <div className="min-w-0 flex-1">

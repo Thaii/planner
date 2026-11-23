@@ -41,6 +41,9 @@ html.cute .font-mono { font-family: var(--app-sans); }
 :root { --tint-mint: var(--soft); --tint-sky: var(--soft); --tint-butter: var(--soft); --tint-lav: var(--soft); --tint-peach: var(--soft); }
 html.cute { --tint-mint: #ddf2e4; --tint-sky: #e2f0fc; --tint-butter: #fff0c2; --tint-lav: #ece6fb; --tint-peach: #fde3d2; }
 html.cute[data-theme='dark'] { --tint-mint: color-mix(in srgb, #7fc9a0 22%, var(--card)); --tint-sky: color-mix(in srgb, #7fb6e6 24%, var(--card)); --tint-butter: color-mix(in srgb, #f2c86a 22%, var(--card)); --tint-lav: color-mix(in srgb, #a796e6 26%, var(--card)); --tint-peach: color-mix(in srgb, #f0a98c 22%, var(--card)); }
+/* Card titles: rounded Fredoka in normal case, like the mockup */
+html.cute section > header .lbl { font-family: var(--app-serif); text-transform: none; letter-spacing: 0; font-size: 19px; font-weight: 600; color: var(--ink); }
+html.cute section > header { margin-bottom: 12px; min-height: 32px; }
 html.cute .crumb { color: var(--accent); font-weight: 800; font-family: var(--app-sans); }
 html.cute .tinted { border-radius: 20px; padding: 10px 12px; }
 html.cute .tinted.sky { background: var(--tint-sky); }
@@ -146,3 +149,4 @@ number-flow-react { font-variant-numeric: tabular-nums; }
 /* Room for a pal in the corner of the Next up card */
 html.pals .hero-pad { position: relative; padding-right: 104px; }
 html.pals .hero-pal { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); }
+html.cute .habit-pill { border-radius: 999px; min-height: 36px; padding-inline: 16px; font-weight: 800; border-width: 2px; }

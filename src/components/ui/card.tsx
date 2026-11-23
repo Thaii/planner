@@ -19,10 +19,10 @@ const BUBBLE: Partial<Record<PalName, string>> = { twinkle: 'bg-tint-butter', sp
 /** A pal on a little pastel bubble, for card headers. */
 function PalBubble({ name, level }: { name: PalName; level?: number }) {
   if (!usePals()) return null
-  return <span className={cn('pal-bubble -my-2 size-10 flex-none', BUBBLE[name])}><Pal name={name} size={34} level={level} /></span>
+  return <span className={cn('pal-bubble size-10 flex-none', BUBBLE[name])}><Pal name={name} size={34} level={level} /></span>
 }
 export function Empty({ children }: { children: React.ReactNode }) {
   const pals = usePals()
-  if (pals) return <div className="tinted lav my-1 flex items-center gap-2.5 text-[13.5px] text-ink/75"><Pal name="snoozy" size={46} /><div>{children}</div></div>
+  if (pals) return <div className="tinted lav mt-1 mb-0.5 flex items-center gap-2.5 text-[13.5px] text-ink/75"><Pal name="snoozy" size={46} /><div>{children}</div></div>
   return <div className="py-1.5 text-[13.5px] text-mute">{children}</div>
 }
