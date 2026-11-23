@@ -65,11 +65,11 @@ export function migrate(raw: Partial<State>): State {
   })
   // Anyone who already had a planner has had their welcome.
   if (raw.settings && raw.settings.onboarded === undefined) s.settings.onboarded = true
-  // New planners start in the Cute style. Anyone who had a planner before keeps the look they had.
+  // Cute is the default look. Planners that never picked a style move to it; their old themes are kept for switching back to Classic.
   if (raw.settings && !raw.settings.style) {
-    s.settings.style = 'classic'
-    if (!raw.settings.dayTheme) s.settings.dayTheme = 'linen'
-    if (!raw.settings.nightTheme) s.settings.nightTheme = 'ember'
+    s.settings.style = 'cute'
+    s.settings.classicThemes = { day: raw.settings.dayTheme || 'linen', night: raw.settings.nightTheme || 'ember', themeAccent: raw.settings.themeAccent ?? true }
+    s.settings.dayTheme = 'cuteBlush'; s.settings.nightTheme = 'cutePlum'; s.settings.themeAccent = true
   }
   // Older planners had one custom greeting for all day and a yes/no for the name in the title.
   if (!raw.settings?.greetings) {
