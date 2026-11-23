@@ -1,3 +1,4 @@
+import { useViewportWidth } from '@/lib/use-width'
 import { Ico, IcoBubble } from '@/components/doodles'
 import * as React from 'react'
 import { DndContext, KeyboardSensor, MouseSensor, TouchSensor, closestCenter, useSensor, useSensors } from '@dnd-kit/core'
@@ -159,12 +160,7 @@ function Columns({ items }: { items: Sec[] }) {
   )
 }
 
-const useWide = () => {
-  const q = '(min-width: 900px)'
-  const [w, setW] = React.useState(() => matchMedia(q).matches)
-  React.useEffect(() => { const m = matchMedia(q), f = () => setW(m.matches); m.addEventListener('change', f); return () => m.removeEventListener('change', f) }, [])
-  return w
-}
+const useWide = () => useViewportWidth() >= 900
 
 /** Renders a page's sections in the user's order, with an Arrange button and an "Add to this page" tray. */
 export function Sections({ page, items, className }: { page: string; items: Sec[]; className?: string }) {

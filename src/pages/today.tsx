@@ -1,3 +1,4 @@
+import { useViewportWidth } from '@/lib/use-width'
 import { Ico } from '@/components/doodles'
 import { toast } from 'sonner'
 import { MaybePal, Pal, usePals } from '@/components/pals'
@@ -398,8 +399,7 @@ export function layoutCols(cards: { id: string; col?: number }[], n: number): st
 
 export function TodayPage({ d, isToday }: { d: DateStr; isToday?: boolean }) {
   const s = useS()
-  const [w, setW] = React.useState(() => innerWidth)
-  React.useEffect(() => { const r = () => setW(innerWidth); addEventListener('resize', r); return () => removeEventListener('resize', r) }, [])
+  const w = useViewportWidth()
   const wide = w >= 760, n = w >= 1100 ? 3 : wide ? 2 : 1
   const [arranging, setArranging] = React.useState(false)
   const ids = (isToday ? s.settings.cards.filter((c) => c.on) : s.settings.cards).map((c) => c.id).filter((id) => CARDS[id])
