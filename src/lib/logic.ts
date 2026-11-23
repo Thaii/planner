@@ -116,6 +116,8 @@ export function hMomentum(h: Habit) {
   return Math.round(Math.min(100, m))
 }
 export const momentum = (s: State) => (s.habits.length ? Math.round(s.habits.reduce((a, h) => a + hMomentum(h), 0) / s.habits.length) : 0)
+/** An identity as "I'm …" without doubling up when the name already starts with I'm / I am, and without a double full stop. */
+export const imLine = (name: string) => "I'm " + name.trim().replace(/^(i['’]?m|i am)\s+/i, '').replace(/[.!]+$/, '') + '.'
 export const idById = (s: State, id?: string) => s.identities.find((x) => x.id === id)
 export const votesOn = (s: State, iid: string, d: DateStr) =>
   s.habits.filter((h) => h.identity === iid && kept(h, d)).length + (s.settings.taskIdentity === iid ? tasksOn(s, d).filter((x) => x.done).length : 0)

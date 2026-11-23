@@ -12,7 +12,7 @@ import { MaybePal } from '@/components/pals'
 import { getS, useS, update } from '@/lib/store'
 import { go } from '@/lib/ui'
 import { addD, DOWN, fmt, pd, range, today, ym, ds } from '@/lib/date'
-import { hDue, hMomentum, hRate, hSched, idById, isMin, kept, momentum, votesOn, weekStart } from '@/lib/logic'
+import { imLine, hDue, hMomentum, hRate, hSched, idById, isMin, kept, momentum, votesOn, weekStart } from '@/lib/logic'
 import { cycleHabit } from '@/lib/actions'
 import { habitForm, identityForm } from '@/lib/forms'
 import type { Habit, State } from '@/lib/types'
@@ -166,7 +166,7 @@ export function HabitsPage() {
           {s.identities.map((x) => (
             <button key={x.id} onClick={() => identityForm(x.id)} className="flex items-center gap-2.5 rounded-2xl bg-tint-lav px-3.5 py-2.5 text-left">
               <div className="min-w-0 flex-1">
-                <div className="font-serif text-[18px] leading-tight">I'm {x.name}.</div>
+                <div className="font-serif text-[18px] leading-tight">{imLine(x.name)}</div>
                 <div className="text-[12.5px] text-mute">{x.does || 'Tap to add what this person does'} · {s.habits.filter((h) => h.identity === x.id).length} habits</div>
               </div>
               <div className="min-w-[48px] text-center"><b className="block font-serif text-2xl font-normal text-accent"><Num value={range(addD(t, -29), 30).reduce((a, d) => a + votesOn(s, x.id, d), 0)} /></b><span className="text-[10.5px] text-mute">votes</span></div>

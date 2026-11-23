@@ -19,7 +19,7 @@ import { useS, update, undoable } from '@/lib/store'
 import { go, openDay } from '@/lib/ui'
 import { addD, diffD, fmt, mins, nowMins, t12, hourLabel, minsLabel, today, ym, type DateStr } from '@/lib/date'
 import {
-  eventsOn, workoutsOn, tasksOn, hDue, kept, hRate, momentum, idById, votesOn, nextUp, lowEnergy, roughDay,
+  eventsOn, workoutsOn, tasksOn, hDue, imLine, kept, hRate, momentum, idById, votesOn, nextUp, lowEnergy, roughDay,
   weekStart, weekOf, monthOf, periodKey, labColor, tint,
 } from '@/lib/logic'
 import { addTask, logHabit, markDone, setPrio, setWell, togglePrio, toggleWorkout, weekItem, monthTodo } from '@/lib/actions'
@@ -179,13 +179,13 @@ const CARDS: Record<string, CardFn> = {
   identity: ({ d, s }) => (
     <Card>
       <CardHeader title="Who I'm becoming" action={<Button variant="link" className="text-[12.5px]" onClick={() => go('habits')}>Edit</Button>} />
-      <div>{s.identities.length ? s.identities.map((x) => {
+      <div className="grid gap-2 min-[760px]:grid-cols-2 min-[1100px]:grid-cols-3">{s.identities.length ? s.identities.map((x) => {
         const v = votesOn(s, x.id, d)
         return (
-          <div key={x.id} className="flex items-center gap-2.5 border-t border-line py-2 first:border-t-0">
+          <div key={x.id} className="flex items-center gap-2.5 rounded-2xl bg-soft px-3.5 py-2.5">
             <div className="min-w-0 flex-1">
-              <div className="font-serif text-[19px] leading-tight">I'm {x.name}.</div>
-              {x.does && <div className="text-[12.5px] text-mute">{cap(x.name)}: {x.does[0].toLowerCase() + x.does.slice(1)}</div>}
+              <div className="font-serif text-[18px] leading-tight">{imLine(x.name)}</div>
+              {x.does && <div className="text-[12.5px] text-mute">{cap(x.does)}</div>}
             </div>
             <div className="min-w-[52px] text-center"><b className="block font-serif text-2xl font-normal text-accent"><Num value={v} /></b><span className="text-[10.5px] text-mute">vote{v === 1 ? '' : 's'}{d === today() ? ' today' : ''}</span></div>
           </div>
@@ -439,7 +439,7 @@ export function TodayPage({ d, isToday }: { d: DateStr; isToday?: boolean }) {
         </div>
       )}
       <Banners d={d} s={s} />
-      {hero.length > 0 && <div className={cn('mb-3 grid gap-3', hero.length === 2 && 'min-[760px]:grid-cols-[1.4fr_1fr]')}>{hero.map((id) => <div key={id} className="self-start">{CARDS[id]({ d, s })}</div>)}</div>}
+      {hero.length > 0 && <div className="mb-3 grid gap-3">{hero.map((id) => <div key={id}>{CARDS[id]({ d, s })}</div>)}</div>}
       {arranging && n < 3 ? <ArrangeList items={rest} onDone={() => setArranging(false)} /> : arranging ? <ArrangeGrid cols={cols} d={d} s={s} render={(id) => CARDS[id]({ d, s })} onDone={() => setArranging(false)} /> : (
         <div className="grid grid-cols-1 gap-3 min-[760px]:grid-cols-2 min-[1100px]:grid-cols-[1.15fr_1fr_1fr]">
           {cols.map((c, i) => (c.length || wide) && <div key={i} className="flex min-w-0 flex-col gap-3">{c.map((id) => <React.Fragment key={id}>{CARDS[id]({ d, s })}</React.Fragment>)}</div>)}
