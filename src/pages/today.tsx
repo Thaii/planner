@@ -1,3 +1,4 @@
+import { toast } from 'sonner'
 import { MaybePal, Pal, usePals } from '@/components/pals'
 import { ArrangeGrid, ArrangeList } from './arrange'
 import { AddToDay } from '@/components/welcome'
@@ -17,7 +18,7 @@ import { useS, update, undoable } from '@/lib/store'
 import { go, openDay } from '@/lib/ui'
 import { addD, diffD, fmt, mins, nowMins, t12, hourLabel, minsLabel, today, ym, type DateStr } from '@/lib/date'
 import {
-  eventsOn, workoutsOn, tasksOn, hDue, kept, hRate, momentum, dayStreak, idById, votesOn, nextUp, lowEnergy, roughDay,
+  eventsOn, workoutsOn, tasksOn, hDue, kept, hRate, momentum, idById, votesOn, nextUp, lowEnergy, roughDay,
   weekStart, weekOf, monthOf, periodKey, labColor, tint,
 } from '@/lib/logic'
 import { addTask, logHabit, markDone, setPrio, setWell, togglePrio, toggleWorkout, weekItem, monthTodo } from '@/lib/actions'
@@ -95,18 +96,16 @@ function Timeline({ d }: { d: DateStr }) {
 /* ---------- Cute style: Sprig grows with your habit streak ---------- */
 function SprigIntro({ s }: { s: State }) {
   if (!usePals()) return null
-  // Days in a row with at least one habit kept (today counts once you've kept one).
-  let d = today(), n = 0
-  const any = (x: DateStr) => s.habits.some((h) => kept(h, x))
-  if (!any(d)) d = addD(d, -1)
-  while (any(d) && n < 3650) { n++; d = addD(d, -1) }
+  // Sprig grows with momentum, so one missed day never resets it.
+  const n = momentum(s)
+  const stage = n >= 90 ? 'fully grown – amazing' : n >= 60 ? 'growing strong' : n >= 25 ? 'sprouting nicely' : 'just a seedling'
   return (
     <div className="mb-2 flex items-center gap-3.5">
       <span className="pal-bubble size-[72px] flex-none bg-tint-mint"><Pal name="sprig" size={62} /></span>
       <div className="text-[14px] text-mute">
         {!s.habits.length ? <>Sprig is waiting for your first habit. Add one on the <button className="text-accent underline" onClick={() => go('habits')}>Habits page</button>.</>
-          : n ? <>Sprig grows a little every day you keep a habit. <b className="text-ink">{n} day{n === 1 ? '' : 's'}</b> so far.</>
-          : <>Keep one habit today and Sprig starts growing.</>}
+          : n ? <>Sprig grows each time you keep a habit. <b className="text-ink">{n}% grown</b> – {stage}.</>
+          : <>Keep a habit today and Sprig starts growing.</>}
       </div>
     </div>
   )
@@ -429,8 +428,9 @@ export function TodayPage({ d, isToday }: { d: DateStr; isToday?: boolean }) {
           <span className="rounded-full bg-tint-mint px-3 py-1.5"><Num value={tk.filter((x) => x.done).length} /> of {tk.length} done</span>
           <span className="rounded-full bg-tint-sky px-3 py-1.5">{ml((s.well[d]?.water || 0) * glassMl(s.settings))} water</span>
           <span className="rounded-full bg-tint-lav px-3 py-1.5"><Num value={hr.pct} suffix="%" /> of habits</span>
-          <span className="rounded-full bg-tint-peach px-3 py-1.5">momentum <Num value={momentum(s)} /></span>
-          {isToday && (() => { const n = dayStreak(s); return <span className="rounded-full bg-tint-butter px-3 py-1.5">{n ? `${n}-day streak` : 'Start a streak today'}</span> })()}
+          <button className="rounded-full bg-tint-peach px-3 py-1.5 font-bold" aria-label="What is momentum?" onClick={() => toast('Momentum builds each day you keep a habit and dips gently when you miss one – one slip barely dents it.', { duration: 7000 })}>
+            momentum <Num value={momentum(s)} /> <span className="ml-0.5 inline-grid size-4 place-items-center rounded-full bg-card/70 text-[10px] text-mute">?</span>
+          </button>
         </div>
       ) : (
         <div className="mb-3.5 text-[13.5px] text-mute">

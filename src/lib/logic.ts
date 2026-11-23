@@ -166,15 +166,3 @@ export function periodKey(s: State, f: Freq, d: DateStr) {
 export const lab = (s: State, id?: string) => s.settings.labels.find((l) => l.id === id)
 export const labColor = (s: State, id?: string) => lab(s, id)?.color || ''
 export const tint = (c: string, p = 18) => (c ? `color-mix(in srgb, ${c} ${p}%, var(--card))` : 'var(--soft)')
-
-/** Days in a row you did something: kept a habit or ticked a to-do. Today counts once you've done something; until then the streak runs to yesterday. */
-export function dayStreak(s: State): number {
-  const active = (d: DateStr) =>
-    s.habits.some((h) => kept(h, d)) ||
-    s.tasks.some((t) => t.doneOn === d || !!t.doneDates?.[d]) ||
-    Object.values(s.prio[d]?.done || {}).some(Boolean)
-  let d = today(), n = 0
-  if (!active(d)) d = addD(d, -1)
-  while (active(d) && n < 3650) { n++; d = addD(d, -1) }
-  return n
-}
