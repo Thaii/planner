@@ -363,7 +363,9 @@ function Banners({ d, s }: { d: DateStr; s: State }) {
     <>
       {missed.map((h) => {
         const idn = idById(s, h.identity)
-        return <div key={h.id} className={cn(box, 'bg-warn/20')}><span className="flex-1"><b>{idn ? cap(idn.name) + " doesn't miss twice." : "Don't miss twice."}</b> You skipped {h.name} {prevDue(h, d) === addD(d, -1) ? 'yesterday' : 'on ' + fmt(prevDue(h, d)!, { weekday: 'long' })}. {h.min ? `The minimum today: ${h.min}.` : 'Any version counts today.'}</span>
+        const when = prevDue(h, d) === addD(d, -1) ? 'yesterday' : 'on ' + fmt(prevDue(h, d)!, { weekday: 'long' })
+        return <div key={h.id} className={cn(box, 'bg-warn/20')}><span className="flex-1"><b>{idn ? cap(idn.name) + " doesn't miss twice." : "Don't miss twice."}</b> {h.name} slipped {when} – no stress. {h.min ? `${cap(h.min.trim())} today keeps it going.` : 'Any version today keeps it going.'}
+          <button className="ml-1.5 inline-grid size-4 place-items-center rounded-full bg-card/70 align-[1px] text-[10px] font-bold text-mute" aria-label="Why am I seeing this?" onClick={() => toast("This shows when a habit's last day was missed and it's due again today – even first thing in the morning. Tick it, or do the minimum, and it goes away. Missing once is normal; the trick is not missing twice in a row.", { duration: 9000 })}>?</button></span>
           <Button onClick={() => logHabit(h.id, d, h.min ? 'm' : 1)}>{h.min ? 'Do the minimum' : 'Done'}</Button></div>
       })}
       {lowEnergy(s) && <div className={cn(box, 'bg-accent-soft')}><span><b>Low energy for a few days.</b> Minimums only today, and just your must-do. That still counts.</span></div>}

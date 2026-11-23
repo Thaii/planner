@@ -67,11 +67,11 @@ export function habitForm(id?: string) {
   openForm({
     title: h ? 'Edit habit' : 'New habit',
     fields: [
-      { k: 'name', l: 'Habit', v: h?.name, ph: 'e.g. Read 20 pages' },
+      { k: 'name', l: 'Habit', v: h?.name, ph: 'e.g. Read 20 pages', help: () => <p className="mt-1 mb-0 text-[12px] text-mute">Twice a day, like brushing your teeth? Make two habits – “Brush teeth (AM)” and “Brush teeth (PM)” – so each gets its own tick.</p> },
       { k: 'mode', l: 'How often', t: 'select', o: [['days', 'On set days'], ['weekly', 'A number of times a week']], v: h?.mode || 'days', half: true },
       { k: 'perWeek', l: 'Times a week', t: 'number', min: 1, max: 7, v: h?.perWeek || 3, half: true },
       { k: 'days', l: 'Days (for “on set days”)', t: 'days', v: h?.days || [0, 1, 2, 3, 4, 5, 6] },
-      { k: 'min', l: 'Minimum for bad days', v: h?.min, ph: 'e.g. 2 pages, 1 glass, 5 minutes' },
+      { k: 'min', l: 'Minimum for bad days', v: h?.min, ph: 'e.g. 2 pages, 1 glass, 5 minutes', help: () => <p className="mt-1 mb-0 text-[12px] text-mute">If you miss a day, Today suggests just the minimum next time, so one slip doesn't turn into two.</p> },
       { k: 'cue', l: 'Cue – when you will do it', v: h?.cue, ph: 'e.g. after lunch' },
       { k: 'identity', l: 'Builds who you are becoming', t: 'select', o: [['', 'None'], ...s.identities.map((x) => [x.id, cap(x.name)] as [string, string])], v: h?.identity || '', half: true },
       { k: 'color', l: 'Colour', t: 'color', v: h?.color || accentColor(s.settings), half: true },
