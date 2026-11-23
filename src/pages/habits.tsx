@@ -6,7 +6,7 @@ import { Card, CardHeader, Empty } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { InlineAdd } from '@/components/ui/field'
 import { Num } from '@/components/ui/num'
-import { PageHead, HabitRow } from '@/components/bits'
+import { PageHead, HabitRow, NotDueToday } from '@/components/bits'
 import { Stat, StatGrid } from '@/components/stat'
 import { MaybePal } from '@/components/pals'
 import { getS, useS, update } from '@/lib/store'
@@ -57,6 +57,7 @@ function TodayCard({ s }: { s: State }) {
       )}
       {!due.length && <Empty>Nothing due today – enjoy the rest.</Empty>}
       {due.length > 0 && !todo.length && <div className="mt-2 rounded-2xl bg-tint-mint px-3 py-2 text-[13.5px] font-semibold">All done for today. Lovely work.</div>}
+      <NotDueToday habits={s.habits} d={t} />
     </Card>
   )
 }

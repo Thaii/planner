@@ -6,8 +6,8 @@ import * as React from 'react'
 import { X, CornerUpRight } from 'lucide-react'
 import { Check } from './ui/check'
 import { useS } from '@/lib/store'
-import { fmt, t12, type DateStr } from '@/lib/date'
-import { idById, isMin, isRep, kept, lab, labColor, type TaskOcc } from '@/lib/logic'
+import { addD, dow, DOWN, fmt, t12, type DateStr } from '@/lib/date'
+import { hDue, idById, isMin, isRep, kept, lab, labColor, type TaskOcc } from '@/lib/logic'
 import { REPEATS, MOODS, MOODW } from '@/lib/constants'
 import { deleteTask, logHabit, setWell, skipTask, toggleTask } from '@/lib/actions'
 import { taskForm } from '@/lib/forms'
@@ -41,6 +41,18 @@ export function TaskRow({ x, compact }: { x: TaskOcc; compact?: boolean }) {
       </button>
       {!compact && isRep(k) && !done && <button className="p-1 text-mute" title="Skip this one" aria-label="Skip this one" onClick={() => skipTask(k.id, occ)}><CornerUpRight className="size-4" /></button>}
       {!compact && <button className="p-1 text-mute" aria-label="Delete" onClick={() => deleteTask(k.id)}><X className="size-4" /></button>}
+    </div>
+  )
+}
+
+/** Habits that exist but aren't due on this day, so they don't look like they've gone missing. */
+export function NotDueToday({ habits, d }: { habits: Habit[]; d: DateStr }) {
+  const off = habits.filter((h) => !hDue(h, d))
+  if (!off.length) return null
+  const next = (h: Habit) => { for (let i = 1; i <= 7; i++) { const x = addD(d, i); if (hDue(h, x)) return i === 1 ? 'back tomorrow' : 'back on ' + DOWN[dow(x)] } return '' }
+  return (
+    <div className="mt-2 rounded-2xl bg-soft px-3 py-2 text-[12.5px] text-mute">
+      <span className="font-semibold">Not due today:</span> {off.map((h) => `${h.name}${next(h) ? ` (${next(h)})` : ''}`).join(' · ')}
     </div>
   )
 }

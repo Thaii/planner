@@ -13,7 +13,7 @@ import { Check } from '@/components/ui/check'
 import { CommitInput, AutoTextarea, InlineAdd, Input } from '@/components/ui/field'
 import { Num } from '@/components/ui/num'
 import { Progress } from '@/components/ui/progress'
-import { TaskRow, HabitRow, Drops, Moods } from '@/components/bits'
+import { TaskRow, HabitRow, NotDueToday, Drops, Moods } from '@/components/bits'
 import { startFive } from '@/components/five'
 import { useS, update, undoable } from '@/lib/store'
 import { go, openDay } from '@/lib/ui'
@@ -243,7 +243,8 @@ const CARDS: Record<string, CardFn> = {
     const hs = s.habits.filter((h) => hDue(h, d))
     return <Card><CardHeader title="Habits" action={<Button variant="link" className="text-[12.5px]" onClick={() => go('habits')}>Tracker</Button>} />
       <SprigIntro s={s} />
-      <div className="rows">{hs.length ? hs.map((h) => <HabitRow key={h.id} h={h} d={d} />) : !s.habits.length && s.settings.style === 'cute' && s.settings.pals !== false ? null : <Empty>{s.habits.length ? 'Rest day – nothing due.' : 'No habits yet.'}</Empty>}</div></Card>
+      <div className="rows">{hs.length ? hs.map((h) => <HabitRow key={h.id} h={h} d={d} />) : !s.habits.length && s.settings.style === 'cute' && s.settings.pals !== false ? null : <Empty>{s.habits.length ? 'Rest day – nothing due.' : 'No habits yet.'}</Empty>}</div>
+      <NotDueToday habits={s.habits} d={d} /></Card>
   },
 
   meals: ({ d, s }) => {
