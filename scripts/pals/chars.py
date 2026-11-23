@@ -68,6 +68,45 @@ def tick(size=120):  # timer
             f'<path d="M60 66 L78 72" stroke="#E58FA5" stroke-width="4" stroke-linecap="round"/>')
     return svg(body + face(60, 84, 0.75), 'Tick the timer', size)
 
+
+# ---- Timer alternatives ----
+def bellsy(size=120):  # alarm clock with bells and little feet
+    s = (f'<path d="M30 30 a14 14 0 0 1 22-10 z" fill="#FFD27A" {LINE}/>'
+         f'<path d="M90 30 a14 14 0 0 0-22-10 z" fill="#FFD27A" {LINE}/>'
+         f'<path d="M40 100 l-8 10 M80 100 l8 10" stroke="{INK}" stroke-width="5" stroke-linecap="round"/>'
+         f'<circle cx="60" cy="64" r="38" fill="#CDB8F2" {LINE}/>'
+         f'<circle cx="60" cy="64" r="28" fill="#FFFDF8" {LINE}/>'
+         f'<rect x="56" y="18" width="8" height="8" rx="2" fill="#CDB8F2" {LINE}/>')
+    return svg(s + face(60, 62, 0.85), 'Bellsy the alarm clock', size)
+
+def pom(size=120):  # tomato timer
+    import math
+    body = f'<ellipse cx="60" cy="70" rx="43" ry="37" fill="#F7A1A1" {LINE}/>'
+    shine = '<ellipse cx="38" cy="56" rx="7" ry="4" fill="#fff" opacity=".55" transform="rotate(-30 38 56)"/>'
+    # Rounded leaves fanned across the crown. Outline layer first, fill layer on top,
+    # so overlaps merge into one clean shape with no lines crossing inside.
+    shapes = []
+    for ang in (160, 205, 250, 290, 335, 20):
+        r = math.radians(ang)
+        cx, cy = 60 + 13 * math.cos(r), 38 + 6 * math.sin(r)
+        shapes.append(f'<ellipse cx="{cx:.1f}" cy="{cy:.1f}" rx="13" ry="6.5" transform="rotate({ang} {cx:.1f} {cy:.1f})"/>')
+    shapes.append('<ellipse cx="60" cy="38" rx="9" ry="6"/>')
+    leaves = (f'<g fill="{INK}" stroke="{INK}" stroke-width="6" stroke-linejoin="round">' + ''.join(shapes) + '</g>'
+              + '<g fill="#8FD0A6">' + ''.join(shapes) + '</g>'
+              + '<path d="M50 36 q10 5 20 0" stroke="#6FBF8E" stroke-width="2" fill="none" stroke-linecap="round"/>')
+    stem = (f'<path d="M60 35 C60 25 64 19 70 18" stroke="{INK}" stroke-width="8" fill="none" stroke-linecap="round"/>'
+            '<path d="M60 35 C60 25 64 19 70 18" stroke="#8FD0A6" stroke-width="4" fill="none" stroke-linecap="round"/>')
+    return svg(body + shine + leaves + stem + face(60, 70, 0.95, mouth='w'), 'Pom the tomato timer', size)
+
+def sandy(size=120):  # hourglass
+    s = (f'<rect x="30" y="12" width="60" height="12" rx="6" fill="#F7C9A8" {LINE}/>'
+         f'<rect x="30" y="96" width="60" height="12" rx="6" fill="#F7C9A8" {LINE}/>'
+         f'<path d="M38 24 h44 c0 22 -18 28 -18 36 c0 8 18 14 18 36 h-44 c0 -22 18 -28 18 -36 c0 -8 -18 -14 -18 -36 z" fill="#EAF5FF" {LINE}/>'
+         f'<path d="M44 92 c4 -12 12 -16 16 -18 c4 2 12 6 16 18 z" fill="#F6B3C3"/>'
+         f'<path d="M48 34 h24 c-2 8 -8 12 -12 16 c-4 -4 -10 -8 -12 -16 z" fill="#F6B3C3"/>'
+         f'<path d="M60 52 v24" stroke="#F6B3C3" stroke-width="2.5" stroke-dasharray="2 4" stroke-linecap="round"/>')
+    return svg(s + face(60, 40, 0.6), 'Sandy the hourglass', size)
+
 ALL = [('Snoozy', 'The sleepy cloud', 'Empty states: "You\'re clear", nothing scheduled, all done.', snoozy),
        ('Pip', 'The pill buddy', 'Medications card and the "Take your …" Next up.', pip),
        ('Dewy', 'The water drop', 'Water check-in. Fills up as you log drinks.', dewy),
@@ -75,4 +114,4 @@ ALL = [('Snoozy', 'The sleepy cloud', 'Empty states: "You\'re clear", nothing sc
        ('Sunny', 'The morning sun', 'Morning greeting and morning routine.', sunny),
        ('Luna', 'The sleepy moon', 'Evening greeting, bedtime doses, night themes.', luna),
        ('Twinkle', 'The star', 'Top 3 priorities and little celebrations.', twinkle),
-       ('Tick', 'The timer', 'The 5-minute start and the Focus timer.', tick)]
+       ('Pom', 'The tomato timer', 'The 5-minute start and the Focus timer.', pom)]
