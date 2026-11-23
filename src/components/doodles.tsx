@@ -1,6 +1,8 @@
 // Doodle icons for the Cute style, drawn to match the pals. Generated from scripts/pals/doodles.py – edit that, not this file.
 import { useS } from '@/lib/store'
+import { AlarmClock, Bath, BedDouble, Brain, CalendarDays, CalendarRange, ChartColumn, CircleArrowRight, CircleCheck, Clock, CloudSun, Droplet, HandHeart, Hash, House, Image, Lightbulb, Luggage, Map, MapPin, MessageCircle, Moon, Mountain, NotebookPen, PenLine, Pill, Pin, Popcorn, Receipt, Repeat, ScanFace, ShoppingCart, Sparkle, Sprout, Sunrise, Target, Ticket, TrendingUp, type LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { palSvg, type PalName } from './pals'
 
 const DOODLES: Record<string, string> = {
 "mood1": "<svg width=\"100%\" height=\"100%\" viewBox=\"0.0 0.0 48.0 48.0\" role=\"img\" aria-label=\"Rough\" xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"24\" cy=\"24\" r=\"19\" fill=\"#DCD3F7\" stroke=\"#4A3B45\" stroke-width=\"2.4\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><path d=\"M14.5 20 q3 2.5 6 0 M27.5 20 q3 2.5 6 0\" fill=\"none\" stroke=\"#4A3B45\" stroke-width=\"2.4\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><path d=\"M18.5 32 q5.5 -4.5 11 0\" fill=\"none\" stroke=\"#4A3B45\" stroke-width=\"2.4\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/></svg>",
@@ -34,10 +36,27 @@ const DOODLES: Record<string, string> = {
 /** Which emoji each doodle replaces. */
 const FOR_EMOJI: Record<string, string> = {"💰": "payday", "🌴": "holiday", "🛌": "rest", "🕒": "appointment", "😞": "mood1", "😕": "mood2", "😐": "mood3", "🙂": "mood4", "😄": "mood5", "📚": "books", "🎬": "movies", "📺": "tv", "🎧": "podcasts", "🍽️": "restaurants", "📍": "places", "✦": "bucket", "🎁": "gifts", "🎂": "birthday", "🎄": "christmas", "💫": "wishlist", "⭐": "favourites", "❝": "quotes", "🥟": "course-app", "🍲": "course-main", "🥗": "course-side", "🍰": "course-dessert", "✨": "course-special"}
 
+/** Emoji with no doodle yet: a soft line icon, so they look the same on every phone (iPhone forces some emoji into full colour). */
+const LINE: Record<string, LucideIcon> = {'⏰': AlarmClock, '✅': CircleCheck, '🌅': Sunrise, '🌙': Moon, '🌟': Sparkle, '🌤️': CloudSun, '🌱': Sprout, '🎟️': Ticket, '🎯': Target, '🏔️': Mountain, '💊': Pill, '💡': Lightbulb, '💭': MessageCircle, '📅': CalendarDays, '📈': TrendingUp, '📊': ChartColumn, '📔': NotebookPen, '📝': PenLine, '🔁': Repeat, '🔢': Hash, '🖼️': Image, '🗓️': CalendarRange, '🗺️': Map, '😴': BedDouble, '🙏': HandHeart, '🛁': Bath, '🧳': Luggage, '🧾': Receipt, '🪞': ScanFace, '🍟': Popcorn, '🏠': House, '👉': CircleArrowRight, '💧': Droplet, '📌': Pin, '🛒': ShoppingCart, '🧠': Brain, '🕘': Clock, '📍': MapPin}
+/** Emoji that one of the pals already stands for: reuse the pal rather than a new drawing. */
+const PAL_FOR: Record<string, PalName> = {'🌱': 'sprig', '💊': 'pip', '💧': 'dewy', '🙏': 'hugs', '🏔️': 'summit', '😴': 'puff', '🌙': 'luna', '🌤️': 'sunny', '🌅': 'sunny', '🌟': 'twinkle', '⏰': 'bellsy', '🗓️': 'dottie', '📅': 'dottie', '✅': 'stickle', '🍟': 'mimi', '💭': 'snoozy', '🧠': 'snoozy', '🛁': 'chai', '📈': 'flaggy', '📊': 'flaggy', '🔁': 'inchy'}
+const TINTS = ['bg-tint-peach', 'bg-tint-mint', 'bg-tint-sky', 'bg-tint-lav', 'bg-tint-butter']
+
 /** An emoji, drawn as a matching doodle in the Cute style. Emoji without a doodle (e.g. ones people type) stay as they are. */
 export function Ico({ e, className }: { e: string; className?: string }) {
   const cute = useS().settings.style === 'cute'
   const d = cute && DOODLES[FOR_EMOJI[e] ?? FOR_EMOJI[e.replace('\ufe0f', '')]]
+  const pal = cute && !d && (PAL_FOR[e] || PAL_FOR[e.replace('\ufe0f', '')])
+  if (pal) return <span className={cn('doodle inline-block size-[1.25em] flex-none align-[-0.25em]', className)} aria-hidden dangerouslySetInnerHTML={{ __html: palSvg(pal) }} />
+  const Line = cute && !d && (LINE[e] || LINE[e.replace('\ufe0f', '')] || LINE[e + '\ufe0f'])
+  if (Line) return <span className={cn('doodle inline-grid size-[1.25em] flex-none place-items-center align-[-0.25em]', className)} aria-hidden><Line className="size-[85%] text-ink" strokeWidth={2} /></span>
   if (!d) return <span className={className}>{e}</span>
   return <span className={cn('doodle inline-block size-[1.25em] flex-none align-[-0.25em]', className)} role="img" aria-hidden dangerouslySetInnerHTML={{ __html: d }} />
+}
+
+/** An icon in a small pastel circle (Cute style), or the plain emoji (Classic). Tints cycle by `i` so lists stay colourful but calm. */
+export function IcoBubble({ e, i = 0, size = 34 }: { e: string; i?: number; size?: number }) {
+  const cute = useS().settings.style === 'cute'
+  if (!cute) return <span className="text-lg leading-none">{e}</span>
+  return <span className={cn('grid flex-none place-items-center rounded-full', TINTS[i % TINTS.length])} style={{ width: size, height: size }}><Ico e={e} className="size-[62%]" /></span>
 }

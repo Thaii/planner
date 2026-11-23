@@ -37,6 +37,9 @@ const DEWY: Record<string, string> = {
 
 export type PalName = 'snoozy' | 'pip' | 'sprig' | 'sunny' | 'luna' | 'twinkle' | 'bellsy' | 'dewy' | 'dottie' | 'stickle' | 'inchy' | 'mimi' | 'brocco' | 'cuppy' | 'bloom' | 'zip' | 'puff' | 'chai' | 'hugs' | 'summit' | 'champ' | 'flaggy' | 'sandy'
 
+/** A pal's drawing as SVG markup (for inline icons). */
+export const palSvg = (name: PalName, level = 0.6) => name === 'dewy' ? DEWY[String(Math.round(level * 4) * 25)] : PALS[name]
+
 /** True when the Cute style is on and the pals haven't been switched off. */
 export function usePals() { const s = useS().settings; return s.style === 'cute' && s.pals !== false }
 

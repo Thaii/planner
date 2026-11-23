@@ -1,3 +1,4 @@
+import { Ico, IcoBubble } from '@/components/doodles'
 import * as React from 'react'
 import { DndContext, KeyboardSensor, MouseSensor, TouchSensor, closestCenter, useSensor, useSensors } from '@dnd-kit/core'
 import { SortableContext, arrayMove, rectSortingStrategy, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
@@ -45,7 +46,7 @@ function Row({ sec, i, last, move, on, toggle }: { sec: Sec; i: number; last: nu
     <div ref={setNodeRef} style={{ transform: CSS.Translate.toString(transform), transition }}
       className={cn('flex items-center gap-1 rounded-xl border border-line bg-card px-2 py-1', !on && 'opacity-55', isDragging && 'z-10 shadow-[0_10px_28px_rgba(0,0,0,.18)] ring-2 ring-accent')}>
       <div {...attributes} {...listeners} aria-label={'Hold and drag to move ' + sec.title} className="flex min-w-0 flex-1 cursor-grab items-center gap-2 py-1.5 select-none [-webkit-touch-callout:none] active:cursor-grabbing">
-        <GripVertical className="size-4 flex-none text-accent" /><span className="text-base">{sec.icon}</span>
+        <GripVertical className="size-4 flex-none text-accent" /><IcoBubble e={sec.icon} i={i} size={28} />
         <span className="truncate text-[13.5px] font-semibold">{sec.title}</span>
       </div>
       <button className={btn} aria-label={'Move ' + sec.title + ' to the top'} disabled={i === 0} onClick={() => move(i, 0)}><ChevronsUp className="size-4" /></button>
@@ -93,7 +94,7 @@ function CardItem({ sec, onHide }: { sec: Sec; onHide: () => void }) {
       className={cn('relative min-w-0 rounded-card ring-2 ring-accent/35 ring-offset-2 ring-offset-bg', sec.wide && 'col-span-2', isDragging && 'z-10 opacity-80 shadow-[0_16px_40px_rgba(0,0,0,.2)]')}>
       <div className="flex items-center gap-1 rounded-t-card bg-accent-soft px-2 py-1">
         <button ref={setActivatorNodeRef} {...attributes} {...listeners} aria-label={'Move ' + sec.title} className="flex flex-1 cursor-grab touch-none items-center gap-1.5 py-1 text-left text-[13px] font-semibold active:cursor-grabbing">
-          <GripVertical className="size-4 text-accent" /><span>{sec.icon}</span>{sec.title}
+          <GripVertical className="size-4 text-accent" /><Ico e={sec.icon} />{sec.title}
         </button>
         <button className="flex items-center gap-1 rounded-md px-1.5 py-1 text-[12px] text-mute hover:text-ink" onClick={onHide}><EyeOff className="size-3.5" />Hide</button>
       </div>
@@ -129,7 +130,7 @@ function ArrangeCards({ items, order: start, hidden: startHidden, onSave, onRese
           <span className="text-mute">Hidden:</span>
           {order.filter((id) => hidden.has(id)).map((id) => (
             <button key={id} className="flex items-center gap-1 rounded-full bg-soft px-2.5 py-1" onClick={() => setHidden((h) => { const n = new Set(h); n.delete(id); return n })}>
-              {byId.get(id)!.icon} {byId.get(id)!.title} <Plus className="size-3.5 text-accent" />
+              <Ico e={byId.get(id)!.icon} /> {byId.get(id)!.title} <Plus className="size-3.5 text-accent" />
             </button>
           ))}
         </div>
@@ -190,9 +191,9 @@ export function Sections({ page, items, className }: { page: string; items: Sec[
         <section className="mt-4 rounded-card border border-dashed border-line px-4 py-3.5">
           <div className="lbl mb-2 text-mute">Add to this page</div>
           <div className="grid gap-1.5 min-[640px]:grid-cols-2 min-[1100px]:grid-cols-3">
-            {(all ? off : off.slice(0, 4)).map((x) => (
+            {(all ? off : off.slice(0, 4)).map((x, i) => (
               <button key={x.id} onClick={() => { const h = new Set(hidden); h.delete(x.id); save(order, h) }} className="flex items-center gap-2.5 rounded-xl bg-soft px-3 py-2 text-left hover:bg-accent-soft">
-                <span className="text-lg">{x.icon}</span>
+                <IcoBubble e={x.icon} i={i} />
                 <span className="min-w-0 flex-1"><span className="block text-[13.5px] font-semibold">{x.title}</span>{x.desc && <span className="block truncate text-[12px] text-mute">{x.desc}</span>}</span>
                 <Plus className="size-4 flex-none text-accent" />
               </button>

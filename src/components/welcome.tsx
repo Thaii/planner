@@ -1,3 +1,4 @@
+import { IcoBubble } from '@/components/doodles'
 import { Pal, usePals, type PalName } from './pals'
 import * as React from 'react'
 import { CalendarDays, Check, LayoutDashboard, Plus, Search, Settings2, ShieldCheck, Sparkles } from 'lucide-react'
@@ -165,11 +166,11 @@ export function AddToDay() {
         <button className="text-[12px] text-mute underline" onClick={() => update((d) => { d.settings.trayHidden = true })}>Hide this</button>
       </div>
       <div className="grid gap-1.5 min-[640px]:grid-cols-2 min-[1100px]:grid-cols-3">
-        {(all ? off : off.slice(0, 4)).map((c) => {
+        {(all ? off : off.slice(0, 4)).map((c, i) => {
           const [icon, desc] = CARD_INFO[c.id], name = (CARDS_DEF.find((x) => x[0] === c.id) || [c.id, c.id])[1]
           return (
             <button key={c.id} onClick={() => show(c.id)} className="flex items-center gap-2.5 rounded-xl bg-soft px-3 py-2 text-left hover:bg-accent-soft">
-              <span className="text-lg">{icon}</span>
+              <IcoBubble e={icon} i={i} />
               <span className="min-w-0 flex-1"><span className="block text-[13.5px] font-semibold">{name}</span><span className="block truncate text-[12px] text-mute">{desc}</span></span>
               <Plus className="size-4 flex-none text-accent" />
             </button>

@@ -16,3 +16,7 @@ Ideas we've agreed are good but parked for later.
    - Merge item by item when two devices changed things offline (never last-save-wins).
    - Optional passphrase so data is encrypted before it leaves the device (can't be recovered if forgotten).
 3. Apple / Outlook calendar links via a Cloudflare Worker.
+
+## App name (parked 23 Nov)
+- Rename from "Life Planner" / "Planner" (max ~12 characters under the icon).
+- Ideas floated: Daydot, Kindday, Pocket Day, Little Days, Nook, Pebble, Mochi, Snug, Bloomday, Steady, Dayly, Oh Today. Thai hasn't settled on one.

@@ -1,3 +1,4 @@
+import { IcoBubble } from '@/components/doodles'
 import * as React from 'react'
 import { DndContext, DragOverlay, PointerSensor, KeyboardSensor, MouseSensor, TouchSensor, closestCorners, pointerWithin, useDroppable, type CollisionDetection, useSensor, useSensors, type DragEndEvent, type DragOverEvent, type DragStartEvent } from '@dnd-kit/core'
 import { SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable'
@@ -127,7 +128,7 @@ function Row({ id, i, last, move, onHide }: { id: string; i: number; last: numbe
       {/* Hold anywhere on the name to pick it up (a quick swipe still scrolls the page). */}
       <div {...attributes} {...listeners} aria-label={'Hold and drag to move ' + nameOf(id)} className="flex min-w-0 flex-1 cursor-grab items-center gap-2 py-1.5 select-none [-webkit-touch-callout:none] active:cursor-grabbing">
         <GripVertical className="size-4 flex-none text-accent" />
-        <span className="text-base">{icon}</span>
+        <IcoBubble e={icon} i={Object.keys(CARD_INFO).indexOf(id)} size={28} />
         <span className="truncate text-[13.5px] font-semibold">{nameOf(id)}</span>
       </div>
       <button className={btn} aria-label={'Move ' + nameOf(id) + ' to the top'} disabled={i === 0} onClick={() => move(i, 0)}><ChevronsUp className="size-4" /></button>
