@@ -1,3 +1,4 @@
+import { AppIconPicker } from '@/components/app-icon-picker'
 import { ColourPicker } from '@/components/colour-picker'
 import { Pal } from '@/components/pals'
 import { askNotify, testSound } from '@/lib/sound'
@@ -248,6 +249,8 @@ function Look() {
         <ColourPicker value={accentColor(s)} active={!s.themeAccent && custom} className={cn('size-8 ring-offset-2 ring-offset-card', !s.themeAccent && custom && 'ring-2 ring-ink')}
           onChange={(h) => setS((st) => { st.accent = h; st.themeAccent = false })} />
       </div>
+      <div className="lbl mb-1.5 text-mute">App icon</div>
+      <div className="mb-3.5"><AppIconPicker /></div>
       <div className="lbl mb-1.5 text-mute">Paper</div>
       <Segmented value={s.paper} onChange={(v) => setS((st) => { st.paper = v })} options={PAPERS} />
       <div className="lbl mb-1.5 text-mute">The day's schedule</div>

@@ -62,6 +62,8 @@ export interface Settings {
   sound?: 'gentle' | 'repeat' | 'off'; timerNotify?: boolean
   /** Classic look, or the Cute style (rounded fonts, softer cards, the planner pals). */
   style?: 'classic' | 'cute'; pals?: boolean
+  /** Home-screen icon to install with (a–d); d = Strawberry milk. */
+  appIcon?: 'a' | 'b' | 'c' | 'd'
   /** Theme choices to go back to when switching Cute off. */
   classicThemes?: { day: string; night: string; themeAccent: boolean }
   /** Per page: the order of its sections and which are hidden (set by Arrange). */

@@ -1,3 +1,4 @@
+import { applyAppIcon } from './app-icon'
 import type { Settings } from './types'
 import { ALL_ACCENTS as ACCENTS, DAY_THEMES, NIGHT_THEMES } from './constants'
 
@@ -20,6 +21,7 @@ export const isPale = (hex: string) => {
 }
 
 export function applyTheme(s: Settings) {
+  applyAppIcon(s.appIcon)
   const root = document.documentElement, dark = isNight(s)
   const pal = dark ? NIGHT_THEMES[s.nightTheme] || NIGHT_THEMES.ember : DAY_THEMES[s.dayTheme] || DAY_THEMES.linen
   root.dataset.theme = dark ? 'dark' : 'light'
