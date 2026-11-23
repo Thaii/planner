@@ -1,3 +1,4 @@
+import { MaybePal } from './pals'
 import { waterForm } from './water-form'
 import { dropsFor, glassMl, ml } from '@/lib/water'
 import * as React from 'react'
@@ -80,9 +81,12 @@ export function Drops({ d, small }: { d: DateStr; small?: boolean }) {
   )
   if (small) return row
   return (
-    <div>
+    <div className="flex items-center gap-3">
+      <MaybePal name="dewy" level={Math.min(1, (n * g) / goal)} size={56} />
+      <div className="min-w-0 flex-1">
       {row}
       <div className="mt-1 text-[12.5px] text-mute"><b className={n * g >= goal ? 'text-accent' : 'text-ink'}>{ml(n * g)}</b> of {ml(goal)}{n * g >= goal ? ' · goal reached' : ''} · each drop is {ml(g)} · <button className="text-accent underline" onClick={waterForm}>Change</button></div>
+      </div>
     </div>
   )
 }

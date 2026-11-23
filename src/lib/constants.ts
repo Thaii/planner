@@ -10,7 +10,19 @@ export const ACCENTS: Record<string, [string, string]> = {
   peach: ['Peach', '#e0916b'], seafoam: ['Seafoam', '#55a39b'], mocha: ['Mocha', '#9a7b66'], graphite: ['Graphite', '#6b7280'],
 }
 
-export interface Palette { n: string; d: string; bg: string; card: string; ink: string; mute: string; line: string; soft: string; field?: string; accent?: string; lockAccent?: boolean }
+export interface Palette { n: string; d: string; bg: string; card: string; ink: string; mute: string; line: string; soft: string; field?: string; accent?: string; lockAccent?: boolean
+  /** Part of the Cute style; `pure` keeps the accent exactly as given at night (no dimming). */
+  cute?: boolean; pure?: boolean }
+
+/** Cute style themes: soft pastels by day, two cosy nights. */
+export const CUTE_DAY: Record<string, Palette> = {
+  cuteBlush: { n: 'Strawberry milk', d: 'Cream and blush', cute: true, bg: '#fff8f3', card: '#ffffff', ink: '#4a3b45', mute: '#7a6872', line: '#f1e2da', soft: '#fcefea', field: '#fff5f0', accent: '#c2557a' },
+  cuteLilac: { n: 'Lilac dream', d: 'Lavender and mint', cute: true, bg: '#f8f5ff', card: '#ffffff', ink: '#3f3651', mute: '#706685', line: '#e7e0f5', soft: '#f1ecfb', field: '#f8f5ff', accent: '#7e57c2' },
+}
+export const CUTE_NIGHT: Record<string, Palette> = {
+  cutePlum: { n: 'Cosy night', d: 'Plum and rose', cute: true, pure: true, bg: '#241c2a', card: '#33293b', ink: '#f7ebf1', mute: '#c7b6c1', line: '#46394f', soft: '#3e3346', field: '#2b2231', accent: '#f4a7c0' },
+  cuteStarry: { n: 'Starry night', d: 'Navy and lamplight', cute: true, pure: true, bg: '#151b2e', card: '#1f2840', ink: '#eef2fb', mute: '#b4bed6', line: '#33405f', soft: '#2a3452', field: '#19203a', accent: '#ffd27a' },
+}
 export const DAY_THEMES: Record<string, Palette> = {
   linen: { n: 'Linen', d: 'Warm paper', bg: '#f7f4ef', card: '#ffffff', ink: '#2b2a28', mute: '#7d7870', line: '#e9e4dc', soft: '#f3efe9' },
   paper: { n: 'Paper', d: 'Crisp and neutral', bg: '#f5f6f8', card: '#ffffff', ink: '#1f2328', mute: '#6b7280', line: '#e4e7eb', soft: '#eff1f4' },
@@ -42,3 +54,5 @@ export const CARD_IDS = CARDS_DEF.map((c) => c[0])
 export const MINIMAL = ['nextup', 'schedule', 'priorities', 'tasks', 'checkin']
 
 export const PERIOD_WORD: Record<Freq, string> = { daily: 'today', weekly: 'this week', fortnightly: 'this fortnight', monthly: 'this month', quarterly: 'this quarter' }
+Object.assign(DAY_THEMES, CUTE_DAY)
+Object.assign(NIGHT_THEMES, CUTE_NIGHT)

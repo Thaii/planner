@@ -1,3 +1,4 @@
+import { Pal, usePals } from './pals'
 import * as React from 'react'
 import { CalendarDays, Check, LayoutDashboard, Plus, Search, Settings2, ShieldCheck, Sparkles } from 'lucide-react'
 import { Button } from './ui/button'
@@ -51,6 +52,7 @@ const TOUR: [React.ElementType, string, string][] = [
 /** First-run welcome: name → a quick tour → pick what to help with (or skip and keep it minimal). */
 export function Welcome() {
   const s = useS()
+  const pals = usePals()
   const [step, setStep] = React.useState(0)
   const [name, setName] = React.useState(s.settings.name || '')
   const [picked, setPicked] = React.useState<string[]>([])
@@ -74,7 +76,7 @@ export function Welcome() {
         <div className="overflow-y-auto px-7 pt-6 pb-5">
           {step === 0 && (
             <form id="w0" onSubmit={(e) => { e.preventDefault(); setStep(1) }}>
-              <Sparkles className="mb-4 size-8 text-accent" />
+              {pals ? <div className="mb-3 flex justify-center"><Pal name="snoozy" size={110} /></div> : <Sparkles className="mb-4 size-8 text-accent" />}
               <h2 className="mb-3 text-[30px] leading-tight">Welcome to your planner</h2>
               <p className="mt-0 text-[15px] leading-relaxed text-mute">A calm place for your day, your plans and the small habits that add up. It starts simple – you can add more whenever you like.</p>
               <label className="mt-7 block"><span className="mb-2 block text-[12.5px] font-medium text-mute">What should we call you? (optional)</span>

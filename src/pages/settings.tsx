@@ -1,3 +1,4 @@
+import { Pal } from '@/components/pals'
 import { askNotify, testSound } from '@/lib/sound'
 import { replayWelcome } from '@/components/welcome'
 import { waterForm } from '@/components/water-form'
@@ -155,12 +156,29 @@ function Pages() {
   )
 }
 
+/** Switch style. Cute starts on its own themes; going back restores the classic ones you had. */
+function setStyle(v: 'classic' | 'cute') {
+  setS((st) => {
+    if ((st.style || 'classic') === v) return
+    if (v === 'cute') {
+      st.classicThemes = { day: st.dayTheme, night: st.nightTheme, themeAccent: st.themeAccent }
+      st.dayTheme = 'cuteBlush'; st.nightTheme = 'cutePlum'; st.themeAccent = true
+    } else {
+      const c = st.classicThemes
+      st.dayTheme = c?.day && !c.day.startsWith('cute') ? c.day : 'linen'
+      st.nightTheme = c?.night && !c.night.startsWith('cute') ? c.night : 'ember'
+      st.themeAccent = c?.themeAccent ?? false
+    }
+    st.style = v
+  })
+}
+
 function ThemeGrid({ themes, k }: { themes: Record<string, Palette>; k: 'dayTheme' | 'nightTheme' }) {
   const s = useS().settings
   const acc = accentColor(s)
   return (
     <div className="mb-3.5 grid grid-cols-[repeat(auto-fill,minmax(132px,1fr))] gap-2">
-      {Object.entries(themes).map(([id, p]) => (
+      {Object.entries(themes).filter(([, p]) => !!p.cute === (s.style === 'cute')).map(([id, p]) => (
         <button key={id} onClick={() => setS((st) => { st[k] = id })} aria-pressed={s[k] === id}
           className={cn('rounded-xl border-2 p-2 text-left', s[k] === id ? 'border-accent' : 'border-transparent')} style={{ background: p.bg, color: p.ink }}>
           <div className="flex items-center justify-between rounded-lg px-2 py-1.5 font-serif" style={{ background: p.card, border: `1px solid ${p.line}` }}>
@@ -180,6 +198,26 @@ function Look() {
   return (
     <Card>
       <CardHeader title="How it looks" />
+      <div className="lbl mb-1.5 text-mute">Style</div>
+      <div className="mb-3 grid gap-2 min-[520px]:grid-cols-2">
+        {([['classic', 'Classic', 'Calm and clean, with serif headings', null], ['cute', 'Cute', 'Rounded and soft, with the planner pals', 'snoozy']] as const).map(([v, n, d, pal]) => {
+          const on = (s.style || 'classic') === v
+          return (
+            <button key={v} aria-pressed={on} onClick={() => setStyle(v)}
+              className={cn('flex items-center gap-3 rounded-2xl border-2 p-3 text-left', on ? 'border-accent bg-accent-soft' : 'border-line bg-card')}>
+              {pal ? <Pal name={pal} size={46} /> : <span className="grid size-[46px] flex-none place-items-center rounded-xl bg-soft font-[DM_Serif_Display,serif] text-2xl">Aa</span>}
+              <span><span className="block font-semibold">{n}</span><span className="block text-[12.5px] text-mute">{d}</span></span>
+            </button>
+          )
+        })}
+      </div>
+      {s.style === 'cute' && (
+        <div className="row mb-2 border-0 px-0">
+          <Check on={s.pals !== false} label="Show the planner pals" onClick={() => setS((st) => { st.pals = st.pals === false })} />
+          <div className="flex-1"><div className="tt">Show the planner pals</div><div className="text-[12.5px] text-mute">Snoozy, Pip, Dewy and friends on Today, in empty spots and on the timer.</div></div>
+          <span className="flex -space-x-2"><Pal name="pip" size={30} /><Pal name="dewy" size={30} level={0.75} /><Pal name="sprig" size={30} /></span>
+        </div>
+      )}
       <div className="lbl mb-1.5 text-mute">When to use night</div>
       <Segmented value={s.theme} onChange={(v) => setS((st) => { st.theme = v as ThemeMode })} options={[['light', 'Always day'], ['dark', 'Always night'], ['schedule', 'By time'], ['auto', 'Match device']]} />
       {s.theme === 'schedule' && (

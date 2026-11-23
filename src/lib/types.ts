@@ -59,7 +59,11 @@ export interface Settings {
   /** The "Add to your day" list on Today was hidden. */
   trayHidden?: boolean
   /** End-of-timer alert: a few chimes, keep ringing, or silent; and a system notification when the page is in the background. */
-  sound?: 'gentle' | 'repeat' | 'off'; timerNotify?: boolean; name: string
+  sound?: 'gentle' | 'repeat' | 'off'; timerNotify?: boolean
+  /** Classic look, or the Cute style (rounded fonts, softer cards, the planner pals). */
+  style?: 'classic' | 'cute'; pals?: boolean
+  /** Theme choices to go back to when switching Cute off. */
+  classicThemes?: { day: string; night: string; themeAccent: boolean }; name: string
   weekStart: 0 | 1; dayStart: number; dayEnd: number; goalAreas: string[]; dayTheme: string; nightTheme: string
   nightFrom: number; nightTo: number; themeAccent: boolean; taskIdentity?: string
   /** Show "<Name>'s Planner" (true) or "Life Planner" (false). */

@@ -1,3 +1,4 @@
+import { MaybePal } from './pals'
 import * as React from 'react'
 import { create } from 'zustand'
 import { toast } from 'sonner'
@@ -59,6 +60,7 @@ export function FiveTimer() {
     <div className="fixed inset-0 z-[70] flex flex-col items-center justify-center bg-bg p-6 text-center">
       <span className="lbl text-accent">{f.lead}</span>
       <h2 className="mt-2 max-w-[560px] text-[28px]">{f.title}</h2>
+      <MaybePal name="tick" size={110} className="mt-4" />
       <div className="my-5 font-mono text-[clamp(64px,18vw,120px)] leading-none" aria-live="polite">
         {f.ended ? (f.kind === 'dopa' ? "Time's up." : 'Nice.') : `${Math.floor(f.left / 60)}:${pad(f.left % 60)}`}
       </div>

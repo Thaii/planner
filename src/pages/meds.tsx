@@ -1,3 +1,4 @@
+import { MaybePal } from '@/components/pals'
 import * as React from 'react'
 import { Pencil, Pill, Plus, X } from 'lucide-react'
 import { toast } from 'sonner'
@@ -115,9 +116,10 @@ export function MedNextUp({ d, cls, btn, fallback }: { d: DateStr; cls: string; 
     toast(`${m.name} ticked off`, { action: { label: 'Undo', onClick: () => { if (getS().medLog[d]?.[k]?.s === 'taken') toggleTaken(m, d, t) } } })
   }
   return (
-    <Card className={cls}>
+    <Card className={cn(cls, 'hero-pad')}>
+      <MaybePal name="pip" size={84} className="hero-pal" />
       <span className="lbl opacity-85 in-data-[theme=dark]:text-accent">Medication · {when}</span>
-      <h2 className="mt-1.5 mb-0.5 flex items-center gap-2 text-[26px] leading-tight"><Pill className="size-6 flex-none" />Take {m.name}</h2>
+      <h2 className="mt-1.5 mb-0.5 flex items-center gap-2 text-[26px] leading-tight"><Pill className="size-6 flex-none [html.pals_&]:hidden" />Take {m.name}</h2>
       <div className="text-[13px] opacity-85">{[m.dose, slotLabel(t), m.notes, due.length > 1 && `+${due.length - 1} more due`].filter(Boolean).join(' · ')}</div>
       <div className="mt-3.5 flex flex-wrap gap-2">
         <button className={cn(btn, 'bg-on-accent font-semibold text-accent in-data-[theme=dark]:bg-accent in-data-[theme=dark]:text-on-accent')} onClick={took}>✓ Took it</button>
@@ -207,7 +209,7 @@ export function MedsToday({ d }: { d: DateStr }) {
   const done = doses.filter(({ m, t }) => log[m.id + '|' + t]).length
   return (
     <Card>
-      <CardHeader title="Medications" action={
+      <CardHeader title="Medications" pal="pip" action={
         <span className="flex items-center gap-3">
           {!!doses.length && <span className="text-[12.5px] text-mute">{done}/{doses.length}</span>}
           <Button variant="link" className="text-[12.5px]" onClick={() => medForm()}>+ Add</Button>

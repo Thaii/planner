@@ -26,11 +26,13 @@ export function applyTheme(s: Settings) {
   ;(['bg', 'card', 'ink', 'mute', 'line', 'soft'] as const).forEach((k) => root.style.setProperty('--' + k, pal[k]))
   root.style.setProperty('--field', pal.field || pal.soft)
   root.classList.toggle('lamp', dark && s.nightTheme === 'lamp')
+  root.classList.toggle('cute', s.style === 'cute')
+  root.classList.toggle('pals', s.style === 'cute' && s.pals !== false)
   let c = accentColor(s)
   if (pal.lockAccent || (s.themeAccent && pal.accent)) c = pal.accent!
-  root.style.setProperty('--accent', dark ? `color-mix(in srgb, ${c} 82%, ${pal.bg})` : c)
+  root.style.setProperty('--accent', dark && !pal.pure ? `color-mix(in srgb, ${c} 82%, ${pal.bg})` : c)
   root.style.setProperty('--accent-soft', `color-mix(in srgb, ${c} ${dark ? 20 : 16}%, ${pal.card})`)
-  root.style.setProperty('--on-accent', dark ? pal.bg : /^#[0-9a-f]{6}$/i.test(c) && isPale(c) ? '#2a2420' : '#fff')
+  root.style.setProperty('--on-accent', dark ? pal.bg : pal.cute && pal.accent && c === pal.accent ? '#ffffff' : /^#[0-9a-f]{6}$/i.test(c) && isPale(c) ? '#2a2420' : '#fff')
   document.body.className = s.paper === 'plain' ? '' : 'paper-' + s.paper
   document.querySelector('meta[name=theme-color]')?.setAttribute('content', pal.bg)
   return dark

@@ -1,3 +1,4 @@
+import { MaybePal } from '@/components/pals'
 import { ArrangeGrid, ArrangeList } from './arrange'
 import { AddToDay } from '@/components/welcome'
 import { MedNextUp, MedsToday } from './meds'
@@ -25,7 +26,7 @@ import { PERIOD_WORD } from '@/lib/constants'
 import { showDopa, scPick, logSelf } from '@/lib/menus'
 import type { State } from '@/lib/types'
 import { cap, uid, cn } from '@/lib/utils'
-import { greeting } from '@/lib/greeting'
+import { greeting, dayPart } from '@/lib/greeting'
 import { fmtSleep, parseSleep } from '@/lib/sleep'
 import { personaliseForm } from '@/components/personalise'
 
@@ -139,10 +140,11 @@ const CARDS: Record<string, CardFn> = {
     const cls = 'border-0 bg-accent text-on-accent shadow-[0_10px_30px_color-mix(in_srgb,var(--accent)_35%,transparent)] in-data-[theme=dark]:border in-data-[theme=dark]:border-accent/45 in-data-[theme=dark]:bg-accent-soft in-data-[theme=dark]:text-ink in-data-[theme=dark]:shadow-none'
     // A dose that's due comes first – it's time-sensitive. Tasks show again once it's ticked, skipped or put off.
     const withMeds = (task: React.ReactNode) => <MedNextUp d={d} cls={cls} btn={btn0} fallback={task} />
-    if (!n) return withMeds(<Card className={cls}><span className="lbl opacity-85">Next up</span><h2 className="mt-1.5 text-[26px]">You're clear.</h2><div className="text-[13px] opacity-85">Everything for today is done. Rest counts too.</div></Card>)
+    if (!n) return withMeds(<Card className={cn(cls, 'hero-pad')}><MaybePal name="snoozy" size={84} className="hero-pal" /><span className="lbl opacity-85">Next up</span><h2 className="mt-1.5 text-[26px]">You're clear.</h2><div className="text-[13px] opacity-85">Everything for today is done. Rest counts too.</div></Card>)
     const btn = 'rounded-[10px] px-3.5 py-2 text-[13.5px] font-medium bg-on-accent/15 in-data-[theme=dark]:bg-soft'
     return withMeds(
-      <Card className={cls}>
+      <Card className={cn(cls, 'hero-pad')}>
+        <MaybePal name={n.kind === 'habit' ? 'sprig' : 'twinkle'} size={80} className="hero-pal" />
         <span className="lbl opacity-85 in-data-[theme=dark]:text-accent">{n.eyebrow}</span>
         <h2 className="mt-1.5 mb-0.5 text-[26px] leading-tight">{n.title}</h2>
         {n.sub && <div className="text-[13px] opacity-85">{n.sub}</div>}
@@ -176,7 +178,7 @@ const CARDS: Record<string, CardFn> = {
   priorities: ({ d, s }) => {
     const p = s.prio[d] || { items: ['', '', ''], done: [] }
     return (
-      <Card><CardHeader title="Top 3 priorities" />
+      <Card><CardHeader title="Top 3 priorities" pal="twinkle" />
         {[0, 1, 2].map((i) => (
           <div key={i} className={cn('flex items-center gap-2.5 py-1', p.done?.[i] && '[&_input]:text-mute [&_input]:line-through')}>
             <span className="grid size-[22px] flex-none place-items-center rounded-full bg-accent-soft text-xs font-bold text-accent">{i + 1}</span>
@@ -220,7 +222,7 @@ const CARDS: Record<string, CardFn> = {
 
   habits: ({ d, s }) => {
     const hs = s.habits.filter((h) => hDue(h, d))
-    return <Card><CardHeader title="Habits" action={<Button variant="link" className="text-[12.5px]" onClick={() => go('habits')}>Tracker</Button>} />
+    return <Card><CardHeader title="Habits" pal="sprig" action={<Button variant="link" className="text-[12.5px]" onClick={() => go('habits')}>Tracker</Button>} />
       <div className="rows">{hs.length ? hs.map((h) => <HabitRow key={h.id} h={h} d={d} />) : <Empty>{s.habits.length ? 'Rest day – nothing due.' : 'No habits yet.'}</Empty>}</div></Card>
   },
 
@@ -399,7 +401,7 @@ export function TodayPage({ d, isToday }: { d: DateStr; isToday?: boolean }) {
         {isToday && !arranging && <Button size="mono" onClick={() => setArranging(true)}>Arrange</Button>}
         <Button size="mono" onClick={() => go('settings', { setTab: 'day' })}>Customise</Button>
       </div>
-      {isToday && <div className="group mt-2.5 mb-1 flex items-baseline gap-2"><div className="font-serif text-[34px] leading-tight">{greeting(s.settings)}</div><button className="rounded-md p-1 text-mute opacity-60 hover:opacity-100" aria-label="Change your name and greeting" title="Change your name and greeting" onClick={personaliseForm}><Pencil className="size-4" /></button></div>}
+      {isToday && <div className="group mt-2.5 mb-1 flex items-center gap-2"><MaybePal name={dayPart(s.settings) === 'evening' ? 'luna' : 'sunny'} size={58} /><div className="font-serif text-[34px] leading-tight">{greeting(s.settings)}</div><button className="rounded-md p-1 text-mute opacity-60 hover:opacity-100" aria-label="Change your name and greeting" title="Change your name and greeting" onClick={personaliseForm}><Pencil className="size-4" /></button></div>}
       <div className="mb-3.5 text-[13.5px] text-mute">
         <Num value={tk.filter((x) => x.done).length} /> of {tk.length} done · {ml((s.well[d]?.water || 0) * glassMl(s.settings))} water · <Num value={hr.pct} suffix="%" /> of habits · momentum <Num value={momentum(s)} />
       </div>
