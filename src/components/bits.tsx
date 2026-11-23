@@ -101,7 +101,7 @@ export function Moods({ d, small }: { d: DateStr; small?: boolean }) {
     <div className={cn('flex', small ? 'gap-0.5' : 'gap-1.5')}>
       {MOODS.map((e, i) => (
         <button key={i} aria-label={MOODW[i + 1]} aria-pressed={m === i + 1} onClick={() => setWell(d, 'mood', i + 1)}
-          className={cn('rounded-full border-[1.5px] border-transparent opacity-55 grayscale', small ? 'size-6 text-sm' : 'size-[38px] text-[22px]', !small && MOODTINT[i], m === i + 1 && 'border-accent bg-accent-soft opacity-100 grayscale-0', !small && m === i + 1 && '[html.cute_&]:border-2')}>{e}</button>
+          className={cn('mood-btn grid place-items-center rounded-full border-[1.5px] border-transparent leading-none opacity-55 grayscale', small ? 'size-6 text-sm' : 'size-[38px] text-[22px]', !small && MOODTINT[i], m === i + 1 && 'border-accent bg-accent-soft opacity-100 grayscale-0', !small && m === i + 1 && '[html.cute_&]:border-2')}>{e}</button>
       ))}
     </div>
   )
