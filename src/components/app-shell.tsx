@@ -1,3 +1,4 @@
+import { SyncChip } from './sync-ui'
 import { Calendar, CalendarRange, Candy, FolderKanban, HeartPulse, House, LayoutDashboard, ListChecks, Mountain, NotebookPen, Plane, RotateCcw, Settings2, Sprout, Timer, Utensils } from 'lucide-react'
 /** An icon for each page, so the menu can be scanned at a glance. */
 const NAV_ICONS: Record<string, React.ElementType> = {
@@ -51,7 +52,7 @@ export function AppShell({ children, dark }: { children: React.ReactNode; dark: 
         <div className="mb-3.5 flex items-center gap-2">
           <div className="min-w-0 flex-1"><a href="#today" onClick={(e) => { e.preventDefault(); go('today') }} title="Go to Today" className="block truncate font-serif text-xl min-[900px]:invisible">{brand} <span className="text-accent">{brand2}</span></a></div>
           <InstallButton />
-          <span className="flex items-center gap-1.5 rounded-full max-[480px]:hidden border border-line bg-card px-2.5 py-1 text-[11px] text-mute"><i className="size-[7px] rounded-full bg-[#5aa36a]" />Saved on this device</span>
+          <SyncChip />
           <button className="grid size-9 place-items-center rounded-[11px] border border-line bg-card" onClick={() => useUI.setState({ cmdOpen: true })} aria-label="Search (Ctrl K)" title="Search · Ctrl/⌘ K"><Search className="size-4" /></button>
           <button className="grid size-9 place-items-center rounded-[11px] border border-line bg-card" onClick={() => go('settings')} aria-label="Customise"><Settings className="size-4" /></button>
         </div>

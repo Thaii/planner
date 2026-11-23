@@ -1,3 +1,4 @@
+import { SyncCard } from '@/components/sync-ui'
 import { checkForUpdates } from '@/lib/pwa-update'
 import { AppIconPicker } from '@/components/app-icon-picker'
 import { ColourPicker } from '@/components/colour-picker'
@@ -358,6 +359,7 @@ function Data() {
   }
   return (
     <div className="grid gap-3 min-[900px]:grid-cols-2">
+      <SyncCard />
       <Card>
         <CardHeader title="Calendars" />
         <p className="mt-0 text-[13.5px] text-mute">Bring in a calendar file (.ics) exported from Google Calendar, Apple Calendar or Outlook. Its events show read-only; import the file again to refresh it. Live Google Calendar sync is coming with sign-in.</p>
