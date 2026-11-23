@@ -71,13 +71,15 @@ def tick(size=120):  # timer
 
 # ---- Timer alternatives ----
 def bellsy(size=120):  # alarm clock with bells and little feet
-    s = (f'<path d="M30 30 a14 14 0 0 1 22-10 z" fill="#FFD27A" {LINE}/>'
-         f'<path d="M90 30 a14 14 0 0 0-22-10 z" fill="#FFD27A" {LINE}/>'
-         f'<path d="M40 100 l-8 10 M80 100 l8 10" stroke="{INK}" stroke-width="5" stroke-linecap="round"/>'
-         f'<circle cx="60" cy="64" r="38" fill="#CDB8F2" {LINE}/>'
-         f'<circle cx="60" cy="64" r="28" fill="#FFFDF8" {LINE}/>'
-         f'<rect x="56" y="18" width="8" height="8" rx="2" fill="#CDB8F2" {LINE}/>')
-    return svg(s + face(60, 62, 0.85), 'Bellsy the alarm clock', size)
+    bell = lambda x, rot: (f'<g transform="rotate({rot} {x} 30)"><path d="M{x-15} 34 a15 15 0 0 1 30 0 z" fill="#FFD27A" {LINE}/>'
+                           f'<circle cx="{x}" cy="17" r="3" fill="#FFD27A" {LINE}/></g>')
+    feet = (f'<ellipse cx="38" cy="104" rx="10" ry="6" fill="#B9A2E8" {LINE} transform="rotate(25 38 104)"/>'
+            f'<ellipse cx="82" cy="104" rx="10" ry="6" fill="#B9A2E8" {LINE} transform="rotate(-25 82 104)"/>')
+    body = (f'<circle cx="60" cy="64" r="38" fill="#CDB8F2" {LINE}/>'
+            f'<circle cx="60" cy="64" r="28" fill="#FFFDF8" {LINE}/>')
+    dots = ''.join(f'<circle cx="{x}" cy="{y}" r="2" fill="#CDB8F2"/>' for x, y in [(60, 41), (83, 64), (60, 87), (37, 64)])
+    hammer = f'<path d="M60 26 V20" stroke="{INK}" stroke-width="3" stroke-linecap="round"/><circle cx="60" cy="18" r="3.5" fill="#CDB8F2" {LINE}/>'
+    return svg(feet + bell(34, -28) + bell(86, 28) + hammer + body + dots + face(60, 62, 0.85), 'Bellsy the alarm clock', size)
 
 def pom(size=120):  # tomato timer
     import math
@@ -114,4 +116,4 @@ ALL = [('Snoozy', 'The sleepy cloud', 'Empty states: "You\'re clear", nothing sc
        ('Sunny', 'The morning sun', 'Morning greeting and morning routine.', sunny),
        ('Luna', 'The sleepy moon', 'Evening greeting, bedtime doses, night themes.', luna),
        ('Twinkle', 'The star', 'Top 3 priorities and little celebrations.', twinkle),
-       ('Pom', 'The tomato timer', 'The 5-minute start and the Focus timer.', pom)]
+       ('Bellsy', 'The alarm clock', 'The 5-minute start and the Focus timer.', bellsy)]
