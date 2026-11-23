@@ -15,7 +15,7 @@ export function CardHeader({ title, action, className, pal, level }: { title: Re
     </header>
   )
 }
-const BUBBLE: Partial<Record<PalName, string>> = { twinkle: 'bg-tint-butter', sprig: 'bg-tint-mint', pip: 'bg-tint-peach', dewy: 'bg-tint-sky', snoozy: 'bg-tint-lav', bellsy: 'bg-tint-lav' }
+const BUBBLE: Partial<Record<PalName, string>> = { twinkle: 'bg-tint-butter', sprig: 'bg-tint-mint', pip: 'bg-tint-peach', dewy: 'bg-tint-sky', snoozy: 'bg-tint-lav', bellsy: 'bg-tint-lav', sunny: 'bg-tint-butter', luna: 'bg-tint-lav', bloom: 'bg-tint-peach', chai: 'bg-tint-peach', hugs: 'bg-tint-peach', puff: 'bg-tint-lav', zip: 'bg-tint-butter', dottie: 'bg-tint-mint', stickle: 'bg-tint-sky', inchy: 'bg-tint-butter', mimi: 'bg-tint-peach', brocco: 'bg-tint-mint', cuppy: 'bg-tint-lav' }
 /** A pal on a little pastel bubble, for card headers. */
 function PalBubble({ name, level }: { name: PalName; level?: number }) {
   if (!usePals()) return null

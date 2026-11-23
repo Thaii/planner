@@ -293,7 +293,7 @@ export function MedsSection() {
   return (
     <div className="mb-3 grid gap-3 min-[900px]:grid-cols-[1fr_1.4fr]">
       <Card>
-        <CardHeader title="Medications" action={<Button variant="link" className="text-[12.5px]" onClick={() => medForm()}>+ Add</Button>} />
+        <CardHeader title="Medications" pal="pip" action={<Button variant="link" className="text-[12.5px]" onClick={() => medForm()}>+ Add</Button>} />
         <div className="rows">
           {s.meds.map((m) => {
             const dl = daysLeft(m)

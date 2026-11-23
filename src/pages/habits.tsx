@@ -107,10 +107,10 @@ export function HabitsPage() {
         { id: 'stats', title: "Your numbers", icon: '📊', desc: "30 days, momentum, today and this week", wide: true, node: (<>
       {s.habits.length > 0 && (
         <StatGrid>
-          <Stat tint="mint" label="Last 30 days" value={<Num value={l30.pct} suffix="%" />} note={`${l30.done} of ${l30.due} kept when due`} icon={<MaybePal name="luna" size={34} />} />
+          <Stat tint="mint" label="Last 30 days" value={<Num value={l30.pct} suffix="%" />} note={`${l30.done} of ${l30.due} kept when due`} icon={<MaybePal name="dottie" size={34} />} />
           <Stat tint="peach" label="Momentum" value={<Num value={momentum(s)} />} note={`A miss dents it, never resets it · ${thisM.pct}% this month`} icon={<MaybePal name="sprig" size={34} />} />
-          <Stat tint="sky" label="Due today" value={`${dueT.filter((h) => kept(h, t)).length}/${dueT.length}`} note="Tick them below or on Today" icon={<MaybePal name="sunny" size={34} />} />
-          <Stat tint="butter" label="This week" value={<Num value={thisWeek} />} note={`habit${thisWeek === 1 ? '' : 's'} kept so far`} icon={<MaybePal name="twinkle" size={34} />} />
+          <Stat tint="sky" label="Due today" value={`${dueT.filter((h) => kept(h, t)).length}/${dueT.length}`} note="Tick them below or on Today" icon={<MaybePal name="stickle" size={34} />} />
+          <Stat tint="butter" label="This week" value={<Num value={thisWeek} />} note={`habit${thisWeek === 1 ? '' : 's'} kept so far`} icon={<MaybePal name="inchy" size={34} />} />
         </StatGrid>
       )}
         </>) },

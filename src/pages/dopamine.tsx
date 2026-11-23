@@ -126,9 +126,9 @@ export function DopaminePage() {
         { id: 'how', title: 'How this works', icon: '💡', desc: 'A quick, friendly explainer', wide: true, node: <Explainer /> },
         { id: 'stats', title: 'This week', icon: '📊', desc: 'What you ordered from the menu', wide: true, node: (<>
       <StatGrid>
-        <Stat label="This week" value={<Num value={Object.values(wk).reduce((a, b) => a + b, 0)} />} note="things ordered from the menu" icon={<MaybePal name="twinkle" size={34} />} />
-        <Stat label="Healthy picks" value={<Num value={(wk.app || 0) + (wk.main || 0) + (wk.side || 0)} />} note="appetizers, mains and sides" icon={<MaybePal name="sprig" size={34} />} />
-        <Stat label="Desserts" value={<Num value={wk.dessert || 0} />} note="this week, all on a timer" icon={<MaybePal name="bellsy" size={34} />} />
+        <Stat label="This week" value={<Num value={Object.values(wk).reduce((a, b) => a + b, 0)} />} note="things ordered from the menu" icon={<MaybePal name="mimi" size={34} />} />
+        <Stat label="Healthy picks" value={<Num value={(wk.app || 0) + (wk.main || 0) + (wk.side || 0)} />} note="appetizers, mains and sides" icon={<MaybePal name="brocco" size={34} />} />
+        <Stat label="Desserts" value={<Num value={wk.dessert || 0} />} note="this week, all on a timer" icon={<MaybePal name="cuppy" size={34} />} />
         <div className="rounded-card bg-accent-soft px-3.5 py-3"><span className="lbl text-accent">Your favourites</span><div className="mt-1.5 text-[13px]">{fav.length ? fav.map((f) => <div key={f}>{f}</div>) : 'Tick things off to see what you reach for most'}</div></div>
       </StatGrid>
         </>) },

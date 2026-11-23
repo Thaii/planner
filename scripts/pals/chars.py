@@ -115,3 +115,83 @@ ALL = [('Snoozy', 'The sleepy cloud', 'Empty states: "You\'re clear", nothing sc
        ('Luna', 'The sleepy moon', 'Evening greeting, bedtime doses, night themes.', luna),
        ('Twinkle', 'The star', 'Top 3 priorities and little celebrations.', twinkle),
        ('Bellsy', 'The alarm clock', 'The 5-minute start and the Focus timer.', bellsy)]
+
+
+# ---- Section pals (Habits, Dopamine menu, Wellness) ----
+def dottie(size=120):  # calendar page: "Last 30 days"
+    s = (f'<rect x="20" y="26" width="80" height="76" rx="14" fill="#FFFDF8" {LINE}/>'
+         f'<path d="M20 40 a14 14 0 0 1 14-14 h52 a14 14 0 0 1 14 14 v10 h-80 z" fill="#B9E4C9" {LINE}/>'
+         f'<rect x="38" y="16" width="8" height="20" rx="4" fill="#FFFDF8" {LINE}/><rect x="74" y="16" width="8" height="20" rx="4" fill="#FFFDF8" {LINE}/>'
+         + ''.join(f'<circle cx="{x}" cy="92" r="3" fill="#9AD7B1"/>' for x in (34, 48, 72, 86)))
+    return svg(s + face(60, 70, 0.85), 'Dottie the calendar', size)
+
+def stickle(size=120):  # sticky note with a checkbox: "Due today"
+    s = (f'<path d="M22 20 h76 v62 l-18 18 h-58 z" fill="#BFE0F7" {LINE}/>'
+         f'<path d="M98 82 h-18 v18 z" fill="#9CCBF2" {LINE}/>'
+         f'<rect x="52" y="12" width="16" height="16" rx="4" fill="#F6B3C3" {LINE} transform="rotate(8 60 20)"/>')
+    return svg(s + face(58, 56, 0.9), 'Stickle the sticky note', size)
+
+def inchy(size=120):  # caterpillar with an arched back: "This week"
+    segs = [(20, 84, '#FFD27A'), (36, 72, '#FFE08A'), (54, 68, '#FFD27A'), (70, 76, '#FFE08A')]
+    body = ''.join(f'<circle cx="{x}" cy="{y}" r="14" fill="{c}" {LINE}/>' for x, y, c in segs)
+    feet = ''.join(f'<path d="M{x} {y+14} v6" stroke="{INK}" stroke-width="3" stroke-linecap="round"/>' for x, y, _ in segs)
+    head = (f'<path d="M84 44 l-5 -14 M100 44 l5 -14" stroke="{INK}" stroke-width="3" stroke-linecap="round"/>'
+            f'<circle cx="78" cy="28" r="4" fill="#F6B3C3" {LINE}/><circle cx="106" cy="28" r="4" fill="#F6B3C3" {LINE}/>'
+            f'<circle cx="92" cy="64" r="21" fill="#FFF0B8" {LINE}/>')
+    return svg(feet + body + head + face(92, 62, 0.7), 'Inchy the caterpillar', size)
+
+def mimi(size=120):  # little folded menu: "This week" on the Dopamine menu
+    s = (f'<path d="M16 26 l44 8 v74 l-44 -8 z" fill="#F7D6E0" {LINE}/>'
+         f'<path d="M104 26 l-44 8 v74 l44 -8 z" fill="#FFFDF8" {LINE}/>'
+         f'<path d="M70 82 h24 M70 92 h18" stroke="#E7A9BC" stroke-width="3.5" stroke-linecap="round"/>'
+         f'<path d="M26 46 h22 M26 56 h16" stroke="#FFFDF8" stroke-width="3.5" stroke-linecap="round"/>')
+    return svg(s + face(82, 58, 0.7), 'Mimi the menu', size)
+
+def brocco(size=120):  # broccoli: "Healthy picks"
+    s = (f'<path d="M48 70 l-4 36 h32 l-4 -36 z" fill="#D8F0C8" {LINE}/>'
+         f'<g fill="#8FD0A6" {LINE}><circle cx="38" cy="54" r="18"/><circle cx="82" cy="54" r="18"/><circle cx="60" cy="36" r="22"/><circle cx="60" cy="62" r="20"/></g>'
+         f'<g fill="#8FD0A6"><circle cx="38" cy="54" r="15"/><circle cx="82" cy="54" r="15"/><circle cx="60" cy="36" r="19"/><circle cx="60" cy="62" r="17"/></g>')
+    return svg(s + face(60, 54, 0.8), 'Brocco the broccoli', size)
+
+def cuppy(size=120):  # cupcake: "Desserts"
+    s = (f'<path d="M30 62 h60 l-8 42 h-44 z" fill="#CDB8F2" {LINE}/>'
+         f'<path d="M44 66 l3 36 M60 66 v36 M76 66 l-3 36" stroke="#B49FE3" stroke-width="2.5" stroke-linecap="round"/>'
+         f'<path d="M24 64 c0 -10 8 -14 14 -14 c0 -14 12 -22 22 -22 c10 0 22 8 22 22 c6 0 14 4 14 14 z" fill="#FBE3EC" {LINE}/>'
+         f'<circle cx="60" cy="22" r="7" fill="#F7A1A1" {LINE}/>'
+         f'<path d="M42 44 l4 -2 M70 38 l3 3 M80 52 l4 -1 M54 34 l2 3" stroke="#9CCBF2" stroke-width="3" stroke-linecap="round"/>')
+    return svg(s + face(60, 80, 0.7, blush='#F6B3C3'), 'Cuppy the cupcake', size)
+
+def bloom(size=120):  # flower: mood
+    petals = ''.join(f'<ellipse cx="60" cy="28" rx="15" ry="20" fill="#F7C9DA" {LINE} transform="rotate({a} 60 60)"/>' for a in range(0, 360, 60))
+    return svg(petals + f'<circle cx="60" cy="60" r="24" fill="#FFE7A8" {LINE}/>' + face(60, 58, 0.75), 'Bloom the flower', size)
+
+def zip_(size=120):  # battery: energy
+    s = (f'<rect x="26" y="22" width="64" height="86" rx="14" fill="#FFFDF8" {LINE}/>'
+         f'<rect x="46" y="12" width="24" height="12" rx="4" fill="#F7C9A8" {LINE}/>'
+         f'<rect x="33" y="58" width="50" height="43" rx="8" fill="#F7C9A8"/>'
+         f'<path d="M96 40 l8 -10 M100 56 h10" stroke="#FFD27A" stroke-width="4" stroke-linecap="round"/>')
+    return svg(s + face(58, 76, 0.8), 'Zip the battery', size)
+
+def puff(size=120):  # pillow: sleep
+    s = (f'<path d="M18 40 q0 -12 12 -12 q30 6 60 0 q12 0 12 12 q-4 22 0 44 q0 12 -12 12 q-30 -6 -60 0 q-12 0 -12 -12 q4 -22 0 -44 z" fill="#E3D9FA" {LINE}/>'
+         f'<path d="M30 40 q30 5 60 0" stroke="#CDB8F2" stroke-width="2.5" fill="none" stroke-linecap="round"/>'
+         f'<text x="92" y="24" font-family="Fredoka, sans-serif" font-weight="600" font-size="14" fill="#9C8FD6">z</text>')
+    return svg(s + face(60, 64, 0.9, sleepy=True), 'Puff the pillow', size)
+
+def chai(size=120):  # teacup: self-care
+    s = (f'<path d="M86 56 a14 14 0 0 1 0 28 h-4" stroke="{INK}" stroke-width="3" fill="none"/>'
+         f'<path d="M86 56 a14 14 0 0 1 0 28" stroke="#FFF4E8" stroke-width="0" fill="none"/>'
+         f'<path d="M22 48 h66 v22 a30 30 0 0 1 -30 30 h-6 a30 30 0 0 1 -30 -30 z" fill="#FFF4E8" {LINE}/>'
+         f'<path d="M26 54 h58" stroke="#F7C9A8" stroke-width="5" stroke-linecap="round"/>'
+         f'<rect x="14" y="98" width="84" height="10" rx="5" fill="#F7C9DA" {LINE}/>'
+         f'<path d="M44 38 q-6 -8 0 -16 q6 -8 0 -16 M62 38 q-6 -8 0 -16" stroke="#CDB8F2" stroke-width="3" fill="none" stroke-linecap="round"/>')
+    return svg(s + face(55, 72, 0.8), 'Chai the teacup', size)
+
+def hugs(size=120):  # heart: gratitude
+    s = f'<path d="M60 102 C30 82 14 64 14 44 a22 22 0 0 1 46 -10 a22 22 0 0 1 46 10 C106 64 90 82 60 102 z" fill="#F7A9BE" {LINE}/>'
+    s += '<ellipse cx="34" cy="40" rx="6" ry="4" fill="#fff" opacity=".55" transform="rotate(-35 34 40)"/>'
+    return svg(s + face(60, 58, 0.85, mouth='w', blush='#F07A98'), 'Hugs the heart', size)
+
+SECTION = [('Dottie', 'calendar', dottie), ('Stickle', 'sticky note', stickle), ('Inchy', 'caterpillar', inchy),
+           ('Mimi', 'menu', mimi), ('Brocco', 'broccoli', brocco), ('Cuppy', 'cupcake', cuppy),
+           ('Bloom', 'flower', bloom), ('Zip', 'battery', zip_), ('Puff', 'pillow', puff), ('Chai', 'teacup', chai), ('Hugs', 'heart', hugs)]

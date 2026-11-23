@@ -1,3 +1,4 @@
+import { MaybePal } from '@/components/pals'
 import { Sections } from '@/components/sections'
 import { MedsSection } from './meds'
 import { glassMl, ml } from '@/lib/water'
@@ -31,7 +32,8 @@ function Summary({ s, k, label, max, big, small }: { s: State; k: 'mood' | 'ener
   const dl = avg != null && pavg != null ? avg - pavg : null
   const W = 200, H = 50, bw = W / 30
   return (
-    <div className="summary-box">
+    <div className="summary-box relative">
+      <MaybePal name={({ mood: 'bloom', energy: 'zip', water: 'dewy', sleep: 'puff' } as const)[k]} level={0.6} size={34} className="absolute top-2.5 right-2.5" />
       <span className="lbl text-mute">{label}</span>
       <div className="font-serif text-2xl">{avg == null ? '–' : big(avg)}</div>
       <div className="text-xs text-mute">{dl == null ? `${have.length} of 30 days logged` : `${dl >= 0 ? '↑ up' : '↓ down'} ${small(Math.abs(Math.round(dl * 10) / 10))} on the 30 days before`}</div>
@@ -66,7 +68,7 @@ function SelfCareCard({ s }: { s: State }) {
   const avg = (a: number[]) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : null)
   const mOn = avg(on.map((d) => s.well[d]?.mood).filter((v): v is number => !!v)), mOff = avg(d30.filter((d) => !(s.selfLog[d] || []).length).map((d) => s.well[d]?.mood).filter((v): v is number => !!v))
   return (
-    <Card><CardHeader title="Self-care menu" action={<span className="text-[12.5px] text-mute">For the days you cannot decide</span>} />
+    <Card><CardHeader title="Self-care menu" pal="chai" action={<span className="text-[12.5px] text-mute">For the days you cannot decide</span>} />
       <div className="flex flex-wrap gap-1.5">
         <Button variant="primary" onClick={() => showSelfCare()}>Pick one for me</Button>
         {TIERS.map(([k, l]) => <Button key={k} onClick={() => showSelfCare(k)}>{l}</Button>)}
@@ -105,7 +107,7 @@ function Routine({ s, k, title }: { s: State; k: 'morning' | 'evening'; title: s
   const t = today(), items = s.routines[k], log = s.routines.log[t] || {}
   const dn = items.filter((i) => log[i.id]).length
   return (
-    <Card><CardHeader title={`${title} · ${fmt(t, { day: 'numeric', month: 'short' })}`} action={<span className="text-[12.5px] text-mute">{dn}/{items.length}</span>} />
+    <Card><CardHeader pal={k === 'morning' ? 'sunny' : 'luna'} title={`${title} · ${fmt(t, { day: 'numeric', month: 'short' })}`} action={<span className="text-[12.5px] text-mute">{dn}/{items.length}</span>} />
       <div className="rows">{items.map((i) => (
         <div key={i.id} className={cn('row', log[i.id] && 'done')}>
           <Check on={!!log[i.id]} label={i.text} onClick={() => update((d) => { const l = (d.routines.log[t] = d.routines.log[t] || {}); if (l[i.id]) delete l[i.id]; else l[i.id] = 1 })} />
@@ -150,7 +152,7 @@ export function WellnessPage() {
       <MedsSection />
         </>) },
         { id: 'mood', title: "Mood & energy", icon: '🙂', desc: "Today's check-in", node: (<>
-        <Card><CardHeader title="Mood & energy" />
+        <Card><CardHeader title="Mood & energy" pal="bloom" />
           <Moods d={t} />
           <div className="lbl mt-3.5 mb-1.5 text-mute">Energy</div>
           <div className="flex text-[13px]"><span className="flex-1">How much is in the tank?</span><span>{w.energy ?? '–'}%</span></div>
@@ -164,13 +166,13 @@ export function WellnessPage() {
         <SelfCareCard s={s} />
         </>) },
         { id: 'gratitude', title: "Gratitude", icon: '🙏', desc: "A few good things", node: (<>
-        <Card><CardHeader title="Gratitude" />
+        <Card><CardHeader title="Gratitude" pal="hugs" />
           <div className="rows">{grat.length ? grat.map((i) => <div key={i.id} className="row"><span>♡</span><div className="flex-1">{i.text}</div><button className="p-1 text-mute" aria-label="Remove" onClick={() => update((d) => { d.journal.grat[t] = (d.journal.grat[t] || []).filter((z) => z.id !== i.id) })}><X className="size-4" /></button></div>) : <Empty>Something good, however small.</Empty>}</div>
           <InlineAdd placeholder="Something good" onAdd={(v) => update((d) => { (d.journal.grat[t] = d.journal.grat[t] || []).push({ id: uid(), text: v }) })} />
         </Card>
         </>) },
         { id: 'sleep', title: "Sleep", icon: '😴', desc: "The last 7 nights", hide: true, node: (<>
-        <Card><CardHeader title="Sleep · last 7 days" />
+        <Card><CardHeader title="Sleep · last 7 days" pal="puff" />
           <div className="rows">{[...d7].reverse().map((d) => {
             const x = s.well[d] || {}
             return (
