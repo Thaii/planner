@@ -81,7 +81,7 @@ export function Drops({ d, small }: { d: DateStr; small?: boolean }) {
   )
   if (small) return row
   return (
-    <div className="flex items-center gap-3">
+    <div className="tinted sky flex items-center gap-3">
       <MaybePal name="dewy" level={Math.min(1, (n * g) / goal)} size={56} />
       <div className="min-w-0 flex-1">
       {row}
@@ -91,6 +91,9 @@ export function Drops({ d, small }: { d: DateStr; small?: boolean }) {
   )
 }
 
+/** Cute style: each mood sits on its own pastel bubble. */
+const MOODTINT = ['[html.cute_&]:bg-tint-lav [html.cute_&]:opacity-80', '[html.cute_&]:bg-tint-sky [html.cute_&]:opacity-80', '[html.cute_&]:bg-tint-butter [html.cute_&]:opacity-80', '[html.cute_&]:bg-tint-mint [html.cute_&]:opacity-80', '[html.cute_&]:bg-tint-peach [html.cute_&]:opacity-80']
+
 export function Moods({ d, small }: { d: DateStr; small?: boolean }) {
   const s = useS()
   const m = s.well[d]?.mood
@@ -98,7 +101,7 @@ export function Moods({ d, small }: { d: DateStr; small?: boolean }) {
     <div className={cn('flex', small ? 'gap-0.5' : 'gap-1.5')}>
       {MOODS.map((e, i) => (
         <button key={i} aria-label={MOODW[i + 1]} aria-pressed={m === i + 1} onClick={() => setWell(d, 'mood', i + 1)}
-          className={cn('rounded-full border-[1.5px] border-transparent opacity-55 grayscale', small ? 'size-6 text-sm' : 'size-[38px] text-[22px]', m === i + 1 && 'border-accent bg-accent-soft opacity-100 grayscale-0')}>{e}</button>
+          className={cn('rounded-full border-[1.5px] border-transparent opacity-55 grayscale', small ? 'size-6 text-sm' : 'size-[38px] text-[22px]', !small && MOODTINT[i], m === i + 1 && 'border-accent bg-accent-soft opacity-100 grayscale-0', !small && m === i + 1 && '[html.cute_&]:border-2')}>{e}</button>
       ))}
     </div>
   )

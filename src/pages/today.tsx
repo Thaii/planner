@@ -17,7 +17,7 @@ import { useS, update, undoable } from '@/lib/store'
 import { go, openDay } from '@/lib/ui'
 import { addD, diffD, fmt, mins, nowMins, t12, hourLabel, minsLabel, today, ym, type DateStr } from '@/lib/date'
 import {
-  eventsOn, workoutsOn, tasksOn, hDue, kept, hRate, momentum, idById, votesOn, nextUp, lowEnergy, roughDay,
+  eventsOn, workoutsOn, tasksOn, hDue, kept, hRate, momentum, dayStreak, idById, votesOn, nextUp, lowEnergy, roughDay,
   weekStart, weekOf, monthOf, periodKey, labColor, tint,
 } from '@/lib/logic'
 import { addTask, logHabit, markDone, setPrio, setWell, togglePrio, toggleWorkout, weekItem, monthTodo } from '@/lib/actions'
@@ -137,7 +137,7 @@ const CARDS: Record<string, CardFn> = {
   nextup: ({ d, s }) => {
     const n = nextUp(s, d)
     const btn0 = 'rounded-[10px] px-3.5 py-2 text-[13.5px] font-medium bg-on-accent/15 in-data-[theme=dark]:bg-soft'
-    const cls = 'border-0 bg-accent text-on-accent shadow-[0_10px_30px_color-mix(in_srgb,var(--accent)_35%,transparent)] in-data-[theme=dark]:border in-data-[theme=dark]:border-accent/45 in-data-[theme=dark]:bg-accent-soft in-data-[theme=dark]:text-ink in-data-[theme=dark]:shadow-none'
+    const cls = 'hero border-0 bg-accent text-on-accent shadow-[0_10px_30px_color-mix(in_srgb,var(--accent)_35%,transparent)] in-data-[theme=dark]:border in-data-[theme=dark]:border-accent/45 in-data-[theme=dark]:bg-accent-soft in-data-[theme=dark]:text-ink in-data-[theme=dark]:shadow-none'
     // A dose that's due comes first – it's time-sensitive. Tasks show again once it's ticked, skipped or put off.
     const withMeds = (task: React.ReactNode) => <MedNextUp d={d} cls={cls} btn={btn0} fallback={task} />
     if (!n) return withMeds(<Card className={cn(cls, 'hero-pad')}><MaybePal name="snoozy" size={84} className="hero-pal" /><span className="lbl opacity-85">Next up</span><h2 className="mt-1.5 text-[26px]">You're clear.</h2><div className="text-[13px] opacity-85">Everything for today is done. Rest counts too.</div></Card>)
@@ -402,9 +402,19 @@ export function TodayPage({ d, isToday }: { d: DateStr; isToday?: boolean }) {
         <Button size="mono" onClick={() => go('settings', { setTab: 'day' })}>Customise</Button>
       </div>
       {isToday && <div className="group mt-2.5 mb-1 flex items-center gap-2"><MaybePal name={dayPart(s.settings) === 'evening' ? 'luna' : 'sunny'} size={58} /><div className="font-serif text-[34px] leading-tight">{greeting(s.settings)}</div><button className="rounded-md p-1 text-mute opacity-60 hover:opacity-100" aria-label="Change your name and greeting" title="Change your name and greeting" onClick={personaliseForm}><Pencil className="size-4" /></button></div>}
-      <div className="mb-3.5 text-[13.5px] text-mute">
-        <Num value={tk.filter((x) => x.done).length} /> of {tk.length} done · {ml((s.well[d]?.water || 0) * glassMl(s.settings))} water · <Num value={hr.pct} suffix="%" /> of habits · momentum <Num value={momentum(s)} />
-      </div>
+      {s.settings.style === 'cute' ? (
+        // Cute style: the day at a glance as soft coloured chips.
+        <div className="mb-3.5 flex flex-wrap gap-2 text-[13px] font-bold">
+          <span className="rounded-full bg-tint-mint px-3 py-1.5"><Num value={tk.filter((x) => x.done).length} /> of {tk.length} done</span>
+          <span className="rounded-full bg-tint-sky px-3 py-1.5">{ml((s.well[d]?.water || 0) * glassMl(s.settings))} water</span>
+          {isToday && (() => { const n = dayStreak(s); return <span className="rounded-full bg-tint-butter px-3 py-1.5">{n ? `${n}-day streak` : 'Start a streak today'}</span> })()}
+          {s.habits.length > 0 && <span className="rounded-full bg-tint-lav px-3 py-1.5"><Num value={hr.pct} suffix="%" /> of habits</span>}
+        </div>
+      ) : (
+        <div className="mb-3.5 text-[13.5px] text-mute">
+          <Num value={tk.filter((x) => x.done).length} /> of {tk.length} done · {ml((s.well[d]?.water || 0) * glassMl(s.settings))} water · <Num value={hr.pct} suffix="%" /> of habits · momentum <Num value={momentum(s)} />
+        </div>
+      )}
       <Banners d={d} s={s} />
       {hero.length > 0 && <div className={cn('mb-3 grid gap-3', hero.length === 2 && 'min-[760px]:grid-cols-[1.4fr_1fr]')}>{hero.map((id) => <div key={id} className="self-start">{CARDS[id]({ d, s })}</div>)}</div>}
       {arranging && n < 3 ? <ArrangeList items={rest} onDone={() => setArranging(false)} /> : arranging ? <ArrangeGrid cols={cols} d={d} s={s} render={(id) => CARDS[id]({ d, s })} onDone={() => setArranging(false)} /> : (
