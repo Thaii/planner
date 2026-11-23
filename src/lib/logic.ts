@@ -57,7 +57,7 @@ export const weekOf = (s: State, ws: DateStr): WeekPlan => {
 export const ensureWeek = (d: State, ws: DateStr) => (d.weeks[ws] = { ...weekOf(d, ws), ...(d.weeks[ws] || {}) })
 export const monthOf = (s: State, m: string): MonthPlan => {
   const x = s.months[m]
-  return { todo: x?.todo || [], refl: x?.refl || {}, colors: x?.colors || {} }
+  return { todo: x?.todo || [], refl: x?.refl || {}, colors: x?.colors || {}, stickers: x?.stickers || {} }
 }
 export const ensureMonth = (d: State, m: string) => (d.months[m] = { ...monthOf(d, m), ...(d.months[m] || {}) })
 

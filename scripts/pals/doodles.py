@@ -41,4 +41,11 @@ COURSES = {
   'dessert': svg(f'<path d="M15 24 l9 19 l9 -19 z" fill="#F7C9A8" {L}/><path d="M19 29 l8 6 M17.5 26 l11 8 M29 29 l-8 6" stroke="#E0A27E" stroke-width="1.6" stroke-linecap="round"/><path d="M12 24 a12 12 0 0 1 24 0 q-3 3 -6 0 q-3 3 -6 0 q-3 3 -6 0 q-3 3 -6 0 z" fill="#FBD3DF" {L}/><circle cx="24" cy="8" r="3.2" fill="#F7A1A1" {L}/><path d="M18 17 l1 1 M28 15 l1 1.5 M23 19 v1.5" stroke="#9CCBF2" stroke-width="2" stroke-linecap="round"/>', 'Desserts'),
   'special': svg(f'<path d="M20 8 q2 11 13 13 q-11 2 -13 13 q-2 -11 -13 -13 q11 -2 13 -13 z" fill="#FFE08A" {L}/><path d="M36 26 q1 6 7 7 q-6 1 -7 7 q-1 -6 -7 -7 q6 -1 7 -7 z" fill="#FBD3DF" {L}/><path d="M37 6 v6 M34 9 h6" {L}/>', 'Specials'),
 }
-ALL = {**MOODS, **LISTS, **{'course-' + k: v for k, v in COURSES.items()}}
+# ---- Day stickers (Monthly) ----
+STICKERS = {
+  'payday': svg(f'<circle cx="24" cy="24" r="17" fill="#FFE08A" {L}/><circle cx="24" cy="24" r="11.5" fill="none" stroke="#E8B94A" stroke-width="2"/><path d="M27.5 18.5 q-2 -2 -4.5 -1.5 q-3.5 .5 -3.2 3.2 q.4 2.3 3.7 2.8 q3.8 .6 3.8 3.3 q0 2.8 -3.6 2.9 q-2.8 0 -4.4 -1.9 M23.6 14.5 v19" fill="none" {L}/>', 'Payday'),
+  'holiday': svg(f'<path d="M24 22 v19" {L}/><path d="M6 22 a18 14 0 0 1 36 0 q-3 -3 -6 0 q-3 -3 -6 0 q-3 -3 -6 0 q-3 -3 -6 0 q-3 -3 -6 0 q-3 -3 -6 0 z" fill="#F7A9BE" {L}/><path d="M18 22 q2 -10 6 -14 q4 4 6 14" fill="#FFFDF8" {L}/><path d="M10 41 h28" stroke="#F7C9A8" stroke-width="4" stroke-linecap="round"/>', 'Holiday'),
+  'rest': svg(f'<path d="M6 16 v24 M42 28 v12" {L}/><rect x="6" y="28" width="36" height="7" rx="2" fill="#E3D9FA" {L}/><rect x="9" y="21" width="12" height="7" rx="3.5" fill="#FFFDF8" {L}/><path d="M21 28 q8 -7 21 -4 v4 z" fill="#CDB8F2" {L}/><text x="30" y="16" font-family="Fredoka, sans-serif" font-weight="600" font-size="10" fill="#9C8FD6">z</text><text x="37" y="10" font-family="Fredoka, sans-serif" font-weight="600" font-size="7" fill="#9C8FD6">z</text>', 'Rest day'),
+  'appointment': svg(f'<path d="M13 10 l-5 5 M35 10 l5 5" {L}/><circle cx="24" cy="26" r="15" fill="#BFE0F7" {L}/><circle cx="24" cy="26" r="10.5" fill="#FFFDF8" {L}/><path d="M24 20 v6 l4 3" fill="none" {L}/><path d="M15 41 l-2 3 M33 41 l2 3" {L}/>', 'Appointment'),
+}
+ALL = {**STICKERS, **MOODS, **LISTS, **{'course-' + k: v for k, v in COURSES.items()}}

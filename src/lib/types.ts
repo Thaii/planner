@@ -28,7 +28,7 @@ export interface DopaItem { id: string; text: string; course: 'app' | 'main' | '
 export interface Wellness { mood?: number; energy?: number; water?: number; sleep?: number; e100?: 1 }
 export interface Meals { breakfast?: string; lunch?: string; dinner?: string; snacks?: string }
 export interface WeekPlan { prio: string[]; pdone: boolean[]; goals: Item[]; todo: Item[] }
-export interface MonthPlan { todo: Item[]; refl: Record<string, string>; colors: Record<DateStr, string> }
+export interface MonthPlan { todo: Item[]; refl: Record<string, string>; colors: Record<DateStr, string>; stickers?: Record<DateStr, string> }
 
 export interface Trip {
   id: string; name: string; dest?: string; start?: DateStr; end?: DateStr; currency?: string; total?: number | ''

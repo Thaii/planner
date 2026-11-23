@@ -9,10 +9,14 @@ import { closeSheet, openSheet } from '@/components/sheet'
 import { useS, update, undoable, getS } from '@/lib/store'
 import { go, openDay, useUI } from '@/lib/ui'
 import { ds, DOWN, fmt, pad, pd, today, weekOrder, ym, type DateStr } from '@/lib/date'
-import { ensureMonth, eventsOn, labColor, monthOf, tasksOn, tint, workoutsOn, wsDay } from '@/lib/logic'
+import { ensureMonth, eventsOn, labColor, monthOf, tasksOn, workoutsOn, wsDay } from '@/lib/logic'
 import { monthTodo } from '@/lib/actions'
 import type { State } from '@/lib/types'
 import { cn, uid } from '@/lib/utils'
+import { Ico } from '@/components/doodles'
+
+/** Little markers for what kind of day it is – quicker than colouring, and they don't clash with event colours. */
+export const DAY_STICKERS: [string, string][] = [['💰', 'Payday'], ['🌴', 'Holiday'], ['🛌', 'Rest day'], ['⭐', 'Big day'], ['🎂', 'Birthday'], ['🕒', 'Appointment']]
 
 /** Month grid. `mini` is the small version used on the Yearly page. */
 export function MonthGrid({ s, y, mo, mini, colorMode }: { s: State; y: number; mo: number; mini?: boolean; colorMode?: boolean }) {
@@ -29,13 +33,14 @@ export function MonthGrid({ s, y, mo, mini, colorMode }: { s: State; y: number; 
           return <button key={d} title={ev.map((e) => e.title).join(', ')} onClick={() => go('monthly', { monthRef: d })}
             className={cn('rounded-[5px] py-0.5 text-center text-[10px]', ev.length && 'bg-accent-soft font-bold', bd && 'text-danger', d === t && 'bg-accent font-bold text-on-accent')}>{i + 1}</button>
         }
-        const tk = tasksOn(s, d).filter((x) => !x.over), wo = workoutsOn(s, d), col = mm.colors[d]
+        const tk = tasksOn(s, d).filter((x) => !x.over), wo = workoutsOn(s, d), stk = mm.stickers?.[d]
         const items = ev.map((e) => [e.title, e.ro ? '#8a857d' : labColor(s, e.label) || 'var(--accent)'] as const).concat(wo.map((w) => [w.name, '#e0916b'] as const))
         return (
-          <button key={d} onClick={() => (colorMode ? colorDay(d) : openDay(d))}
-            className={cn('flex min-h-[60px] min-w-0 flex-col gap-0.5 overflow-hidden rounded-[9px] border border-line bg-soft p-[3px] text-left min-[600px]:min-h-[78px] min-[600px]:p-[5px]', d === t && 'border-accent bg-card shadow-[inset_0_0_0_1.5px_var(--accent)]')}
-            style={col ? { background: tint(labColor(s, col), 28) } : undefined}>
+          <button key={d} onClick={() => (colorMode ? stickerDay(d) : openDay(d))} aria-label={fmt(d, { weekday: 'long', day: 'numeric', month: 'long' }) + (stk ? ', ' + DAY_STICKERS.find((x) => x[0] === stk)?.[1] : '')}
+            className={cn('relative flex min-h-[60px] min-w-0 flex-col gap-0.5 overflow-hidden rounded-[9px] border border-line bg-soft p-[3px] text-left min-[600px]:min-h-[78px] min-[600px]:p-[5px]', d === t && 'border-accent bg-card shadow-[inset_0_0_0_1.5px_var(--accent)]')}
+            >
             <b className="text-[13px] font-semibold">{i + 1}</b>
+            {stk && <Ico e={stk} className="absolute top-[3px] right-[3px] size-[18px] text-[13px] leading-none min-[600px]:top-[5px] min-[600px]:right-[5px] min-[600px]:size-[24px] min-[600px]:text-[17px]" />}
             <div className="flex flex-wrap gap-0.5 min-[600px]:block">
               {items.slice(0, 2).map(([x, c], j) => (
                 <div key={j} className="flex items-center gap-1 overflow-hidden text-[10.5px] whitespace-nowrap"><i className="lamp-warm size-2 flex-none rounded-full" style={{ background: c }} /><span className="hidden truncate min-[600px]:inline">{x}</span></div>
@@ -50,17 +55,22 @@ export function MonthGrid({ s, y, mo, mini, colorMode }: { s: State; y: number; 
   )
 }
 
-function colorDay(d: DateStr) {
-  const st0 = getS(), labels = st0.settings.labels, cur = monthOf(st0, ym(d)).colors[d]
-  const set = (v: string) => { update((st) => { const m = ensureMonth(st, ym(d)); if (v) m.colors[d] = v; else delete m.colors[d] }); closeSheet() }
+function stickerDay(d: DateStr) {
+  const cur = monthOf(getS(), ym(d)).stickers?.[d]
+  const set = (v: string) => { update((st) => { const m = ensureMonth(st, ym(d)); m.stickers = m.stickers || {}; if (v) m.stickers[d] = v; else delete m.stickers[d] }); closeSheet() }
   openSheet(
     <div>
-      <h3 className="mb-3 text-[21px]">Colour {fmt(d, { weekday: 'long', day: 'numeric', month: 'short' })}</h3>
-      <div className="flex flex-wrap gap-1.5">
-        {labels.map((l) => <button key={l.id} onClick={() => set(l.id)} className={cn('rounded-full border border-line px-3 py-1.5 text-[13px]', cur === l.id && 'border-accent font-semibold')} style={{ background: tint(l.color, 30) }}>{l.name}</button>)}
-        <button onClick={() => set('')} className="rounded-full border border-line bg-card px-3 py-1.5 text-[13px]">No colour</button>
+      <h3 className="mb-1 text-[21px]">{fmt(d, { weekday: 'long', day: 'numeric', month: 'long' })}</h3>
+      <p className="mt-0 mb-3 text-[13px] text-mute">Pick a sticker for this day.</p>
+      <div className="grid grid-cols-3 gap-2">
+        {DAY_STICKERS.map(([e, n]) => (
+          <button key={e} onClick={() => set(e)} className={cn('flex flex-col items-center gap-1 rounded-2xl border-[1.5px] px-2 py-2.5 text-[13px]', cur === e ? 'border-accent bg-accent-soft font-semibold' : 'border-line bg-card')}>
+            <Ico e={e} className="size-9 text-[26px] leading-none" />{n}
+          </button>
+        ))}
       </div>
-    </div>, 'Colour a day')
+      {cur && <Button className="mt-3 w-full" onClick={() => set('')}>Remove sticker</Button>}
+    </div>, 'Day sticker')
 }
 
 const REFL: [string, string][] = [['well', 'What went well'], ['achieve', 'An achievement'], ['challenge', 'A challenge'], ['learned', 'What I learned'], ['change', 'One change for next month']]
@@ -69,7 +79,7 @@ export function MonthlyPage() {
   const s = useS()
   const { monthRef, colorMode } = useUI()
   const r = pd(monthRef), y = r.getFullYear(), mo = r.getMonth(), key = `${y}-${pad(mo + 1)}`, m = monthOf(s, key)
-  const used = [...new Set(Object.values(m.colors))].filter((id) => s.settings.labels.some((l) => l.id === id))
+  const used = DAY_STICKERS.filter(([e]) => Object.values(m.stickers || {}).includes(e))
   const shift = (n: number) => { const x = pd(monthRef); x.setDate(1); x.setMonth(x.getMonth() + n); useUI.setState({ monthRef: ds(x) }) }
   return (
     <div>
@@ -81,14 +91,14 @@ export function MonthlyPage() {
         <Button size="mono" onClick={() => useUI.setState({ monthRef: today() })}>This month</Button>
         <Button size="mono" onClick={() => go('weekly')}>Weekly</Button>
         <span className="flex-1" />
-        <Button size={colorMode ? 'md' : 'mono'} variant={colorMode ? 'primary' : 'outline'} onClick={() => useUI.setState({ colorMode: !colorMode })}>{colorMode ? 'Done colouring' : 'Colour days'}</Button>
+        <Button size={colorMode ? 'md' : 'mono'} variant={colorMode ? 'primary' : 'outline'} onClick={() => useUI.setState({ colorMode: !colorMode })}>{colorMode ? 'Done' : 'Add stickers'}</Button>
       </div>
-      {colorMode && <div className="mb-2 rounded-[10px] bg-accent-soft px-3 py-2 text-[13px]">Tap a day to colour it with one of your labels.</div>}
+      {colorMode && <div className="mb-2 rounded-[10px] bg-accent-soft px-3 py-2 text-[13px]">Tap a day to give it a sticker – payday, a holiday, a rest day…</div>}
       <Sections page="monthly" items={[
         { id: 'calendar', title: "The month", icon: '📅', desc: "Your month at a glance", wide: true, node: (<>
       <Card>
         <MonthGrid s={s} y={y} mo={mo} colorMode={colorMode} />
-        {used.length > 0 && <div className="mt-2.5 flex flex-wrap gap-1.5">{used.map((id) => <span key={id} className="rounded-full border border-line px-2.5 py-1 text-[12.5px]" style={{ background: tint(labColor(s, id), 28) }}>{s.settings.labels.find((l) => l.id === id)!.name}</span>)}</div>}
+        {used.length > 0 && <div className="mt-2.5 flex flex-wrap gap-1.5">{used.map(([e, n]) => <span key={e} className="flex items-center gap-1.5 rounded-full border border-line bg-card px-2.5 py-1 text-[12.5px]"><Ico e={e} className="size-[18px] text-[14px] leading-none" />{n}</span>)}</div>}
       </Card>
         </>) },
         { id: 'todo', title: "Month to-do", icon: '✅', desc: "Things to get done this month", node: (<>
