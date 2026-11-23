@@ -1,7 +1,7 @@
 import { useViewportWidth } from '@/lib/use-width'
 import { Ico } from '@/components/doodles'
 import { toast } from 'sonner'
-import { MaybePal, Pal, usePals } from '@/components/pals'
+import { GrowingSprig, MaybePal, usePals } from '@/components/pals'
 import { ArrangeGrid, ArrangeList } from './arrange'
 import { AddToDay } from '@/components/welcome'
 import { MedNextUp, MedsToday } from './meds'
@@ -20,7 +20,7 @@ import { useS, update, undoable } from '@/lib/store'
 import { go, openDay } from '@/lib/ui'
 import { addD, diffD, fmt, mins, nowMins, t12, hourLabel, minsLabel, today, ym, type DateStr } from '@/lib/date'
 import {
-  eventsOn, workoutsOn, tasksOn, hDue, imLine, prevDue, kept, hRate, momentum, idById, votesOn, nextUp, lowEnergy, roughDay,
+  eventsOn, workoutsOn, tasksOn, hDue, imLine, prevDue, sprigLook, kept, hRate, momentum, idById, votesOn, nextUp, lowEnergy, roughDay,
   weekStart, weekOf, monthOf, periodKey, labColor, tint,
 } from '@/lib/logic'
 import { addTask, logHabit, markDone, setPrio, setWell, togglePrio, toggleWorkout, weekItem, monthTodo } from '@/lib/actions'
@@ -99,14 +99,13 @@ function Timeline({ d }: { d: DateStr }) {
 function SprigIntro({ s }: { s: State }) {
   if (!usePals()) return null
   // Sprig grows with momentum, so one missed day never resets it.
-  const n = momentum(s)
-  const stage = n >= 90 ? 'fully grown – amazing' : n >= 60 ? 'growing strong' : n >= 25 ? 'sprouting nicely' : 'just a seedling'
+  const { look, n, stage } = sprigLook(s)
   return (
     <div className="mb-2 flex items-center gap-3.5">
-      <span className="pal-bubble size-[72px] flex-none bg-tint-mint"><Pal name="sprig" size={62} /></span>
+      <span className="pal-bubble size-[72px] flex-none bg-tint-mint" title={`Sprig is ${stage}`}><GrowingSprig look={look} size={62} /></span>
       <div className="text-[14px] text-mute">
         {!s.habits.length ? <>Sprig is waiting for your first habit. Add one on the <button className="text-accent underline" onClick={() => go('habits')}>Habits page</button>.</>
-          : n ? <>Sprig grows each time you keep a habit. <b className="text-ink">{n}% grown</b> – {stage}.</>
+          : n ? <>Sprig grows each time you keep a habit{look.startsWith('b') ? ', and keeps flowering while you keep going' : ''}. <b className="text-ink">{n}% grown</b> – {stage}.</>
           : <>Keep a habit today and Sprig starts growing.</>}
       </div>
     </div>

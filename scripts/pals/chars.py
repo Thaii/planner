@@ -214,3 +214,45 @@ def flaggy(size=120):  # progress flag: average progress
     s = (f'<path d="M30 106 V16" stroke="{INK}" stroke-width="5" stroke-linecap="round"/>'
          f'<path d="M32 20 q20 -8 36 0 t36 0 v44 q-18 8 -36 0 t-36 0 z" fill="#BFE0F7" {LINE}/>')
     return svg(s + face(68, 42, 0.8), 'Flaggy the flag', size)
+
+
+# ---- Sprig growing with momentum: seedling → sprout → bushy → blooming (1–6 flowers) ----
+def _leaf(x, y, side, size, fill):
+    # A leaf whose base sits on the stem at (x, y), pointing up and out to one side.
+    dx = size * side
+    return f'<path d="M{x} {y} C{x} {y-size*0.55} {x+dx*0.45} {y-size*0.95} {x+dx} {y-size*0.9} C{x+dx} {y-size*0.35} {x+dx*0.5} {y} {x} {y} z" fill="{fill}" {LINE}/>'
+
+def _flower(x, y, r, petal, centre='#FFE08A'):
+    p = ''.join(f'<circle cx="{x + r*0.95*__import__("math").cos(a*__import__("math").pi/180):.1f}" cy="{y + r*0.95*__import__("math").sin(a*__import__("math").pi/180):.1f}" r="{r*0.62:.1f}" fill="{petal}" stroke="{INK}" stroke-width="2.2"/>' for a in range(-90, 270, 72))
+    return p + f'<circle cx="{x}" cy="{y}" r="{r*0.5:.1f}" fill="{centre}" stroke="{INK}" stroke-width="2.2"/>'
+
+FLOWER_SPOTS = [(60, 14, 9, '#F7A9BE'), (34, 34, 7.5, '#CDB8F2'), (86, 32, 7.5, '#9CCBF2'), (24, 54, 6.5, '#FBD3DF'), (96, 52, 6.5, '#FFE08A'), (42, 17, 6, '#F7C9A8')]
+
+def sprig_stage(stage, flowers=0, size=120):
+    pot = f'<path d="M34 80 h52 l-5 28 a7 7 0 0 1-7 6 h-28 a7 7 0 0 1-7-6 z" fill="#F7C9A8" {LINE}/><rect x="30" y="74" width="60" height="9" rx="4" fill="#F2B894" {LINE}/>'
+    top = [64, 48, 34, 24][stage]
+    stem = f'<path d="M60 74 V{top}" stroke="{INK}" stroke-width="3" stroke-linecap="round"/>'
+    leaves = ''
+    if stage == 0:
+        leaves = _leaf(60, top + 2, -1, 18, '#B9E4C9') + _leaf(60, top + 2, 1, 18, '#9AD7B1')
+    else:
+        rows = {1: [(62, 20), (48, 18)], 2: [(66, 22), (52, 20), (38, 17)], 3: [(66, 24), (52, 22), (38, 19)]}[stage]
+        for i, (y, sz) in enumerate(rows):
+            leaves += _leaf(60, y, -1, sz, '#B9E4C9' if i % 2 else '#9AD7B1') + _leaf(60, y - 4, 1, sz, '#9AD7B1' if i % 2 else '#B9E4C9')
+        leaves += _leaf(60, top + 4, -1, 12, '#B9E4C9') + _leaf(60, top + 4, 1, 12, '#9AD7B1')
+    if stage == 3:
+        # side twigs for the extra flowers
+        twigs = f'<path d="M60 52 Q44 46 34 36 M60 50 Q76 44 86 34 M60 62 Q38 60 25 55 M60 60 Q82 58 95 53 M60 40 Q52 32 48 28" stroke="{INK}" stroke-width="2.6" fill="none" stroke-linecap="round"/>'
+        used = FLOWER_SPOTS[:max(1, flowers)]
+        twig_paths = twigs.split(' M')
+        # only draw the twigs that lead to a flower that is shown
+        segs = ['M60 52 Q44 46 34 36', 'M60 50 Q76 44 86 34', 'M60 62 Q38 60 25 55', 'M60 60 Q82 58 95 53', 'M60 38 Q50 28 42 17']
+        tw = ''.join(f'<path d="{segs[i-1]}" stroke="{INK}" stroke-width="2.6" fill="none" stroke-linecap="round"/>' for i in range(1, len(used)))
+        fl = ''.join(_flower(x, y, r, c) for x, y, r, c in used)
+        leaves = tw + leaves + fl
+    return svg(stem + leaves + pot + face(60, 94, 0.75), 'Sprig', size)
+
+def sprig_all():
+    out = {'s0': sprig_stage(0), 's1': sprig_stage(1), 's2': sprig_stage(2)}
+    for n in range(1, 7): out[f'b{n}'] = sprig_stage(3, n)
+    return out

@@ -102,8 +102,7 @@ export function hRate(s: State, days: DateStr[]) {
   return { due, done, pct: due ? Math.round((done / due) * 100) : 0 }
 }
 /** Momentum: rises with every kept day (less for a minimum), dents on a miss, never resets to zero. */
-export function hMomentum(h: Habit) {
-  const t = today()
+export function hMomentum(h: Habit, t: DateStr = today()) {
   let m = 0
   for (let i = 59; i >= 0; i--) {
     const d = addD(t, -i)
@@ -115,7 +114,18 @@ export function hMomentum(h: Habit) {
   }
   return Math.round(Math.min(100, m))
 }
-export const momentum = (s: State) => (s.habits.length ? Math.round(s.habits.reduce((a, h) => a + hMomentum(h), 0) / s.habits.length) : 0)
+export const momentum = (s: State, t: DateStr = today()) => (s.habits.length ? Math.round(s.habits.reduce((a, h) => a + hMomentum(h, t), 0) / s.habits.length) : 0)
+/** How Sprig looks: grows with momentum, then blooms – one more flower for every 5 days momentum stays at 75 or more (up to 6). */
+export function sprigLook(s: State) {
+  const n = momentum(s)
+  if (n < 25) return { look: 's0', n, flowers: 0, stage: 'just a seedling' }
+  if (n < 50) return { look: 's1', n, flowers: 0, stage: 'sprouting nicely' }
+  if (n < 75) return { look: 's2', n, flowers: 0, stage: 'growing strong' }
+  let days = 1
+  while (days < 30 && momentum(s, addD(today(), -days)) >= 75) days++
+  const flowers = Math.min(6, 1 + Math.floor((days - 1) / 5))
+  return { look: 'b' + flowers, n, flowers, stage: flowers === 6 ? 'in full bloom – amazing' : `blooming with ${flowers} flower${flowers === 1 ? '' : 's'}` }
+}
 /** Tidy an identity name: no leading "I'm" / "I am" and no full stop, so it reads well in "vote for …" and "… doesn't miss twice". */
 export const cleanId = (name: string) => name.trim().replace(/^(i['’]?m|i am)\s+/i, '').replace(/[.!]+$/, '').trim()
 /** The last day before `d` (within a week) that a habit was due. */

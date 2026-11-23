@@ -8,11 +8,11 @@ import { InlineAdd } from '@/components/ui/field'
 import { Num } from '@/components/ui/num'
 import { PageHead, HabitRow, NotDueToday } from '@/components/bits'
 import { Stat, StatGrid } from '@/components/stat'
-import { MaybePal } from '@/components/pals'
+import { MaybePal, GrowingSprig, usePals } from '@/components/pals'
 import { getS, useS, update } from '@/lib/store'
 import { go } from '@/lib/ui'
 import { addD, DOWN, fmt, pd, range, today, ym, ds } from '@/lib/date'
-import { cleanId, imLine, hDue, hMomentum, hRate, hSched, idById, isMin, kept, momentum, votesOn, weekStart } from '@/lib/logic'
+import { sprigLook, cleanId, imLine, hDue, hMomentum, hRate, hSched, idById, isMin, kept, momentum, votesOn, weekStart } from '@/lib/logic'
 import { cycleHabit } from '@/lib/actions'
 import { habitForm, identityForm } from '@/lib/forms'
 import type { Habit, State } from '@/lib/types'
@@ -92,7 +92,7 @@ function YourHabits({ s }: { s: State }) {
 }
 
 export function HabitsPage() {
-  const s = useS()
+  const s = useS(), pals = usePals()
   const m = useMonth((x) => x.m)
   const t = today(), [y, mo] = m.split('-').map(Number), n = new Date(y, mo, 0).getDate(), days = range(m + '-01', n)
   const l30 = hRate(s, range(addD(t, -29), 30)), thisM = hRate(s, range(ym(t) + '-01', +t.slice(8)))
@@ -109,7 +109,7 @@ export function HabitsPage() {
       {s.habits.length > 0 && (
         <StatGrid>
           <Stat tint="mint" label="Last 30 days" value={<Num value={l30.pct} suffix="%" />} note={`${l30.done} of ${l30.due} kept when due`} icon={<MaybePal name="dottie" size={34} />} />
-          <Stat tint="peach" label="Momentum" value={<Num value={momentum(s)} />} note={`A miss dents it, never resets it · ${thisM.pct}% this month`} icon={<MaybePal name="sprig" size={34} />} />
+          <Stat tint="peach" label="Momentum" value={<Num value={momentum(s)} />} note={`A miss dents it, never resets it · ${thisM.pct}% this month`} icon={pals ? <GrowingSprig look={sprigLook(s).look} size={38} /> : undefined} />
           <Stat tint="sky" label="Due today" value={`${dueT.filter((h) => kept(h, t)).length}/${dueT.length}`} note="Tick them below or on Today" icon={<MaybePal name="stickle" size={34} />} />
           <Stat tint="butter" label="This week" value={<Num value={thisWeek} />} note={`habit${thisWeek === 1 ? '' : 's'} kept so far`} icon={<MaybePal name="inchy" size={34} />} />
         </StatGrid>
