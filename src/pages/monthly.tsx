@@ -1,3 +1,5 @@
+import { toast } from 'sonner'
+import * as React from 'react'
 import { Sections } from '@/components/sections'
 import { X } from 'lucide-react'
 import { Card, CardHeader, Empty } from '@/components/ui/card'
@@ -5,8 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Check } from '@/components/ui/check'
 import { AutoTextarea, InlineAdd } from '@/components/ui/field'
 import { PageHead } from '@/components/bits'
-import { closeSheet, openSheet } from '@/components/sheet'
-import { useS, update, undoable, getS } from '@/lib/store'
+import { useS, update, undoable } from '@/lib/store'
 import { go, openDay, useUI } from '@/lib/ui'
 import { ds, DOWN, fmt, pad, pd, today, weekOrder, ym, type DateStr } from '@/lib/date'
 import { ensureMonth, eventsOn, labColor, monthOf, tasksOn, workoutsOn, wsDay } from '@/lib/logic'
@@ -19,9 +20,8 @@ import { Ico } from '@/components/doodles'
 export const DAY_STICKERS: [string, string][] = [['💰', 'Payday'], ['🌴', 'Holiday'], ['🛌', 'Rest day'], ['⭐', 'Big day'], ['🎂', 'Birthday'], ['🕒', 'Appointment']]
 
 /** Month grid. `mini` is the small version used on the Yearly page. */
-export function MonthGrid({ s, y, mo, mini, colorMode }: { s: State; y: number; mo: number; mini?: boolean; colorMode?: boolean }) {
+export function MonthGrid({ s, y, mo, mini, colorMode, stamp }: { s: State; y: number; mo: number; mini?: boolean; colorMode?: boolean; stamp?: string | null }) {
   const first = new Date(y, mo, 1), off = (first.getDay() - wsDay(s) + 7) % 7, n = new Date(y, mo + 1, 0).getDate(), t = today()
-  const mm = monthOf(s, `${y}-${pad(mo + 1)}`)
   return (
     <div className={cn('grid grid-cols-7', mini ? 'gap-px' : 'gap-[5px]')}>
       {weekOrder(wsDay(s)).map((i) => <div key={i} className={cn('text-center font-mono text-mute uppercase', mini ? 'text-[8.5px]' : 'py-1 text-[10.5px]')}>{mini ? DOWN[i][0] : DOWN[i]}</div>)}
@@ -33,14 +33,16 @@ export function MonthGrid({ s, y, mo, mini, colorMode }: { s: State; y: number; 
           return <button key={d} title={ev.map((e) => e.title).join(', ')} onClick={() => go('monthly', { monthRef: d })}
             className={cn('rounded-[5px] py-0.5 text-center text-[10px]', ev.length && 'bg-accent-soft font-bold', bd && 'text-danger', d === t && 'bg-accent font-bold text-on-accent')}>{i + 1}</button>
         }
-        const tk = tasksOn(s, d).filter((x) => !x.over), wo = workoutsOn(s, d), stk = mm.stickers?.[d]
+        const tk = tasksOn(s, d).filter((x) => !x.over), wo = workoutsOn(s, d), stk = stickersOn(s, d)
         const items = ev.map((e) => [e.title, e.ro ? '#8a857d' : labColor(s, e.label) || 'var(--accent)'] as const).concat(wo.map((w) => [w.name, '#e0916b'] as const))
         return (
-          <button key={d} onClick={() => (colorMode ? stickerDay(d) : openDay(d))} aria-label={fmt(d, { weekday: 'long', day: 'numeric', month: 'long' }) + (stk ? ', ' + DAY_STICKERS.find((x) => x[0] === stk)?.[1] : '')}
+          <button key={d} onClick={() => (colorMode ? stampDay(d, stamp ?? null) : openDay(d))} aria-label={[fmt(d, { weekday: 'long', day: 'numeric', month: 'long' }), ...stk.map((e) => DAY_STICKERS.find((x) => x[0] === e)?.[1] || e)].join(', ')}
             className={cn('relative flex min-h-[60px] min-w-0 flex-col gap-0.5 overflow-hidden rounded-[9px] border border-line bg-soft p-[3px] text-left min-[600px]:min-h-[78px] min-[600px]:p-[5px]', d === t && 'border-accent bg-card shadow-[inset_0_0_0_1.5px_var(--accent)]')}
             >
             <b className="text-[13px] font-semibold">{i + 1}</b>
-            {stk && <Ico e={stk} className="absolute top-[3px] right-[3px] size-[18px] text-[13px] leading-none min-[600px]:top-[5px] min-[600px]:right-[5px] min-[600px]:size-[24px] min-[600px]:text-[17px]" />}
+            {stk.length > 0 && <span className="absolute right-[3px] bottom-[3px] flex -space-x-1 min-[600px]:top-[5px] min-[600px]:bottom-auto min-[600px]:right-[5px] min-[600px]:space-x-0.5">
+              {stk.slice(0, 3).map((e, j) => <Ico key={e} e={e} className={cn('size-[16px] text-[12px] leading-none min-[600px]:size-[22px] min-[600px]:text-[16px]', j === 2 && 'max-[599px]:hidden')} />)}
+            </span>}
             <div className="flex flex-wrap gap-0.5 min-[600px]:block">
               {items.slice(0, 2).map(([x, c], j) => (
                 <div key={j} className="flex items-center gap-1 overflow-hidden text-[10.5px] whitespace-nowrap"><i className="lamp-warm size-2 flex-none rounded-full" style={{ background: c }} /><span className="hidden truncate min-[600px]:inline">{x}</span></div>
@@ -55,22 +57,18 @@ export function MonthGrid({ s, y, mo, mini, colorMode }: { s: State; y: number; 
   )
 }
 
-function stickerDay(d: DateStr) {
-  const cur = monthOf(getS(), ym(d)).stickers?.[d]
-  const set = (v: string) => { update((st) => { const m = ensureMonth(st, ym(d)); m.stickers = m.stickers || {}; if (v) m.stickers[d] = v; else delete m.stickers[d] }); closeSheet() }
-  openSheet(
-    <div>
-      <h3 className="mb-1 text-[21px]">{fmt(d, { weekday: 'long', day: 'numeric', month: 'long' })}</h3>
-      <p className="mt-0 mb-3 text-[13px] text-mute">Pick a sticker for this day.</p>
-      <div className="grid grid-cols-3 gap-2">
-        {DAY_STICKERS.map(([e, n]) => (
-          <button key={e} onClick={() => set(e)} className={cn('flex flex-col items-center gap-1 rounded-2xl border-[1.5px] px-2 py-2.5 text-[13px]', cur === e ? 'border-accent bg-accent-soft font-semibold' : 'border-line bg-card')}>
-            <Ico e={e} className="size-9 text-[26px] leading-none" />{n}
-          </button>
-        ))}
-      </div>
-      {cur && <Button className="mt-3 w-full" onClick={() => set('')}>Remove sticker</Button>}
-    </div>, 'Day sticker')
+/** A day's stickers (older saves kept one as a plain string). */
+export const stickersOn = (s: State, d: DateStr): string[] => { const v = monthOf(s, ym(d)).stickers?.[d]; return !v ? [] : Array.isArray(v) ? v : [v] }
+
+/** Sticker mode: tap a day to add the chosen sticker, tap again to take it off. */
+function stampDay(d: DateStr, e: string | null) {
+  if (!e) { toast('Pick a sticker first, then tap the days'); return }
+  update((st) => {
+    const m = ensureMonth(st, ym(d)), cur = stickersOn(st, d)
+    const next = cur.includes(e) ? cur.filter((x) => x !== e) : [...cur, e]
+    m.stickers = m.stickers || {}
+    if (next.length) m.stickers[d] = next; else delete m.stickers[d]
+  })
 }
 
 const REFL: [string, string][] = [['well', 'What went well'], ['achieve', 'An achievement'], ['challenge', 'A challenge'], ['learned', 'What I learned'], ['change', 'One change for next month']]
@@ -79,7 +77,8 @@ export function MonthlyPage() {
   const s = useS()
   const { monthRef, colorMode } = useUI()
   const r = pd(monthRef), y = r.getFullYear(), mo = r.getMonth(), key = `${y}-${pad(mo + 1)}`, m = monthOf(s, key)
-  const used = DAY_STICKERS.filter(([e]) => Object.values(m.stickers || {}).includes(e))
+  const used = DAY_STICKERS.filter(([e]) => Object.values(m.stickers || {}).some((v) => (Array.isArray(v) ? v : [v]).includes(e)))
+  const [stamp, setStamp] = React.useState<string | null>(null)
   const shift = (n: number) => { const x = pd(monthRef); x.setDate(1); x.setMonth(x.getMonth() + n); useUI.setState({ monthRef: ds(x) }) }
   return (
     <div>
@@ -93,11 +92,23 @@ export function MonthlyPage() {
         <span className="flex-1" />
         <Button size={colorMode ? 'md' : 'mono'} variant={colorMode ? 'primary' : 'outline'} onClick={() => useUI.setState({ colorMode: !colorMode })}>{colorMode ? 'Done' : 'Add stickers'}</Button>
       </div>
-      {colorMode && <div className="mb-2 rounded-[10px] bg-accent-soft px-3 py-2 text-[13px]">Tap a day to give it a sticker – payday, a holiday, a rest day…</div>}
+      {colorMode && (
+        <div className="mb-2 rounded-2xl bg-accent-soft px-3 py-2.5">
+          <div className="mb-2 text-[13px]">{stamp ? <>Tap days to add <b>{DAY_STICKERS.find((x) => x[0] === stamp)![1]}</b>. Tap a day again to take it off.</> : 'Pick a sticker, then tap as many days as you like.'}</div>
+          <div className="flex flex-wrap gap-1.5">
+            {DAY_STICKERS.map(([e, n]) => (
+              <button key={e} aria-pressed={stamp === e} onClick={() => setStamp(stamp === e ? null : e)}
+                className={cn('flex items-center gap-1.5 rounded-full border-[1.5px] bg-card px-2.5 py-1 text-[13px]', stamp === e ? 'border-accent font-semibold' : 'border-transparent')}>
+                <Ico e={e} className="size-[20px] text-[15px] leading-none" />{n}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
       <Sections page="monthly" items={[
         { id: 'calendar', title: "The month", icon: '📅', desc: "Your month at a glance", wide: true, node: (<>
       <Card>
-        <MonthGrid s={s} y={y} mo={mo} colorMode={colorMode} />
+        <MonthGrid s={s} y={y} mo={mo} colorMode={colorMode} stamp={stamp} />
         {used.length > 0 && <div className="mt-2.5 flex flex-wrap gap-1.5">{used.map(([e, n]) => <span key={e} className="flex items-center gap-1.5 rounded-full border border-line bg-card px-2.5 py-1 text-[12.5px]"><Ico e={e} className="size-[18px] text-[14px] leading-none" />{n}</span>)}</div>}
       </Card>
         </>) },
