@@ -12,7 +12,7 @@ import { MaybePal, GrowingSprig, usePals } from '@/components/pals'
 import { getS, useS, update } from '@/lib/store'
 import { go } from '@/lib/ui'
 import { addD, DOWN, fmt, pd, range, today, ym, ds } from '@/lib/date'
-import { allDone, stackOrder, sprigLook, cleanId, imLine, hDue, hMomentum, hRate, hSched, idById, isMin, kept, momentum, votesOn, weekStart } from '@/lib/logic'
+import { allDone, stackOrder, sprigLook, imLine, hDue, hMomentum, hRate, hSched, idById, isMin, kept, momentum, votesOn, weekStart } from '@/lib/logic'
 import { cycleHabit } from '@/lib/actions'
 import { habitForm, identityForm } from '@/lib/forms'
 import type { Habit, State } from '@/lib/types'
@@ -162,6 +162,7 @@ export function HabitsPage() {
         </>) },
         { id: 'ids', title: "Who you're becoming", icon: '🪞', desc: "Every habit is a vote for who you are becoming", wide: true, node: (<>
       <Card><CardHeader title="Who you're becoming" pal="twinkle" />
+        {!s.identities.length && <p className="mt-0 text-[13.5px] text-mute">Instead of “I want to get fit”, try “I’m someone who moves every day”. Habits stick better when they’re part of who you are.</p>}
         <div className="grid gap-2 min-[760px]:grid-cols-3">
           {s.identities.map((x) => (
             <button key={x.id} onClick={() => identityForm(x.id)} className="flex items-center gap-2.5 rounded-2xl bg-tint-lav px-3.5 py-2.5 text-left">
@@ -174,7 +175,7 @@ export function HabitsPage() {
             </button>
           ))}
         </div>
-        {s.identities.length < 3 && <InlineAdd placeholder="Add who you're becoming, e.g. a calm person" onAdd={(v) => update((d) => { d.identities.push({ id: uid(), name: cleanId(v), does: '' }) })} />}
+        {s.identities.length < 3 && <Button className="mt-2.5" onClick={() => identityForm()}><Plus className="size-4" />{s.identities.length ? 'Add who else you’re becoming' : 'Add who you’re becoming'}</Button>}
         <p className="mt-1.5 mb-0 text-[12.5px] text-mute">Every habit you keep is a vote for who you're becoming. Pick which one each habit builds when you edit it. Votes are from the last 30 days.</p>
       </Card>
         </>) },

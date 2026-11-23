@@ -1,3 +1,5 @@
+import { cleanId } from '@/lib/logic'
+import { IdentityNameHelper, IdentityDoesHelper } from '@/components/identity-helper'
 import { toast } from 'sonner'
 import { WhyHelper } from '@/components/why-helper'
 import { accentColor } from './theme'
@@ -121,19 +123,20 @@ export function goalForm(id?: string, area?: string) {
   })
 }
 
-export function identityForm(id: string) {
-  const x = getS().identities.find((i) => i.id === id)
-  if (!x) return
+export function identityForm(id?: string) {
+  const x = id ? getS().identities.find((i) => i.id === id) : undefined
+  if (id && !x) return
   openForm({
-    title: 'Who you are becoming',
+    title: x ? 'Who you are becoming' : 'Who are you becoming?',
     fields: [
-      { k: 'name', l: "I'm…", v: x.name, ph: 'a fit person' },
-      { k: 'does', l: 'What this person does', t: 'textarea', rows: 2, v: x.does, ph: 'Walks every day, eats real food' },
+      { k: 'name', l: "I'm…", v: x?.name, ph: 'someone who moves every day', help: (v, set) => <IdentityNameHelper value={v.name || ''} onChange={(n) => set('name', n)} /> },
+      { k: 'does', l: 'What this person does', t: 'textarea', rows: 2, v: x?.does, ph: 'Walks every day, eats real food', help: (v, set) => <IdentityDoesHelper name={cleanId(v.name || '')} value={v.does || ''} onChange={(n) => set('does', n)} /> },
     ],
     onSave: (v) => {
-      if (!v.name) return false
-      update((d) => { const i = d.identities.find((k) => k.id === id); if (i) { i.name = v.name.replace(/^i'?m\s+/i, ''); i.does = v.does } })
+      if (!v.name?.trim()) return false
+      const name = cleanId(v.name)
+      update((d) => { const i = id && d.identities.find((k) => k.id === id); if (i) { i.name = name; i.does = v.does } else d.identities.push({ id: uid(), name, does: v.does || '' }) })
     },
-    onDelete: () => update((d) => { d.identities = d.identities.filter((i) => i.id !== id); d.habits.forEach((h) => { if (h.identity === id) h.identity = '' }) }),
+    onDelete: id ? () => update((d) => { d.identities = d.identities.filter((i) => i.id !== id); d.habits.forEach((h) => { if (h.identity === id) h.identity = '' }) }) : undefined,
   })
 }
