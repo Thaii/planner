@@ -60,8 +60,8 @@ export function FiveTimer() {
     <div className="fixed inset-0 z-[70] flex flex-col items-center justify-center bg-bg p-6 text-center">
       <span className="lbl text-accent">{f.lead}</span>
       <h2 className="mt-2 max-w-[560px] text-[28px]">{f.title}</h2>
-      <MaybePal name="bellsy" size={110} className="mt-4" />
-      <div className="my-5 font-mono text-[clamp(64px,18vw,120px)] leading-none" aria-live="polite">
+      <MaybePal name="bellsy" size={170} className="mt-4 mb-1 size-[clamp(190px,52vw,240px)]! -mb-2" />
+      <div className="my-3 font-mono text-[clamp(64px,18vw,120px)] leading-none" aria-live="polite">
         {f.ended ? (f.kind === 'dopa' ? "Time's up." : 'Nice.') : `${Math.floor(f.left / 60)}:${pad(f.left % 60)}`}
       </div>
       <div className="flex flex-wrap justify-center gap-2">
