@@ -32,7 +32,8 @@ export function YearlyPage() {
         <Button size="mono" onClick={() => go('goals')}>Goals</Button>
       </div>
       <Card className="mb-3"><CardHeader title="Word of the year" />
-        <CommitInput value={yy.word || ''} placeholder="One word to steer by" className="border-0 bg-transparent px-0 font-serif text-[22px]"
+        <p className="mt-0 mb-2 text-[13px] text-mute">One word for how you want this year to feel – something to check your choices against.</p>
+        <CommitInput value={yy.word || ''} placeholder="e.g. Calm, Brave, Growth" aria-label="Word of the year" className="px-4 py-2.5 font-serif text-[22px]"
           onCommit={(v) => update((d) => { ensureY(d).word = v.trim() })} />
       </Card>
       <Card className="mb-3"><CardHeader title="Year at a glance" />
