@@ -12,15 +12,22 @@ export const ACCENTS: Record<string, [string, string]> = {
 
 export interface Palette { n: string; d: string; bg: string; card: string; ink: string; mute: string; line: string; soft: string; field?: string; accent?: string; lockAccent?: boolean
   /** Part of the Cute style; `pure` keeps the accent exactly as given at night (no dimming). */
-  cute?: boolean; pure?: boolean }
+  cute?: boolean; pure?: boolean
+  /** Text colour on the accent, when white wouldn't read (e.g. a butter-yellow accent). */
+  onAccent?: string }
 
 /** Cute style themes: soft pastels by day, two cosy nights. */
 export const CUTE_DAY: Record<string, Palette> = {
-  cuteBlush: { n: 'Strawberry milk', d: 'Cream and blush', cute: true, bg: '#fff8f3', card: '#ffffff', ink: '#4a3b45', mute: '#7a6872', line: '#f1e2da', soft: '#fcefea', field: '#fff5f0', accent: '#c2557a' },
+  cuteBlush: { n: 'Strawberry milk', d: 'Cream and blush', cute: true, bg: '#fff8f3', card: '#ffffff', ink: '#4a3b45', mute: '#7a6872', line: '#f1e2da', soft: '#fcefea', field: '#fff5f0', accent: '#ea95b4' },
   cuteLilac: { n: 'Lilac dream', d: 'Lavender and mint', cute: true, bg: '#f8f5ff', card: '#ffffff', ink: '#3f3651', mute: '#706685', line: '#e7e0f5', soft: '#f1ecfb', field: '#f8f5ff', accent: '#7e57c2' },
+  cuteMint: { n: 'Mint tea', d: 'Fresh mint and cream', cute: true, bg: '#f3faf5', card: '#ffffff', ink: '#34443b', mute: '#66786d', line: '#d9eee1', soft: '#e9f6ee', field: '#f3faf5', accent: '#7cc5a0' },
+  cutePeach: { n: 'Peach sorbet', d: 'Peach and apricot', cute: true, bg: '#fff7f1', card: '#ffffff', ink: '#4a3a33', mute: '#7d6a60', line: '#f5e0d2', soft: '#fdede2', field: '#fff5ee', accent: '#f0a07f' },
+  cuteBlue: { n: 'Blueberry milk', d: 'Soft sky blue', cute: true, bg: '#f4f7ff', card: '#ffffff', ink: '#343c52', mute: '#69718a', line: '#dde5f6', soft: '#eaf0fc', field: '#f4f7ff', accent: '#88a9e6' },
+  cuteLemon: { n: 'Lemon meringue', d: 'Butter yellow and cream', cute: true, bg: '#fffcef', card: '#ffffff', ink: '#48412c', mute: '#7a7258', line: '#f1e8cb', soft: '#faf4da', field: '#fffcf0', accent: '#ecc95f', onAccent: '#48412c' },
 }
 export const CUTE_NIGHT: Record<string, Palette> = {
   cutePlum: { n: 'Cosy night', d: 'Plum and rose', cute: true, pure: true, bg: '#241c2a', card: '#33293b', ink: '#f7ebf1', mute: '#c7b6c1', line: '#46394f', soft: '#3e3346', field: '#2b2231', accent: '#f4a7c0' },
+  cuteHaze: { n: 'Lavender haze', d: 'Dusky lilac', cute: true, pure: true, bg: '#1f1c2e', card: '#2b2740', ink: '#f2eefc', mute: '#bdb5d8', line: '#3e3958', soft: '#363150', field: '#24213a', accent: '#c9b6f6' },
   cuteStarry: { n: 'Starry night', d: 'Navy and lamplight', cute: true, pure: true, bg: '#151b2e', card: '#1f2840', ink: '#eef2fb', mute: '#b4bed6', line: '#33405f', soft: '#2a3452', field: '#19203a', accent: '#ffd27a' },
 }
 export const DAY_THEMES: Record<string, Palette> = {

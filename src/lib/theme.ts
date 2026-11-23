@@ -32,7 +32,7 @@ export function applyTheme(s: Settings) {
   if (pal.lockAccent || (s.themeAccent && pal.accent)) c = pal.accent!
   root.style.setProperty('--accent', dark && !pal.pure ? `color-mix(in srgb, ${c} 82%, ${pal.bg})` : c)
   root.style.setProperty('--accent-soft', `color-mix(in srgb, ${c} ${dark ? 20 : 16}%, ${pal.card})`)
-  root.style.setProperty('--on-accent', dark ? pal.bg : pal.cute && pal.accent && c === pal.accent ? '#ffffff' : /^#[0-9a-f]{6}$/i.test(c) && isPale(c) ? '#2a2420' : '#fff')
+  root.style.setProperty('--on-accent', dark ? pal.bg : pal.cute && pal.accent && c === pal.accent ? (pal.onAccent || '#ffffff') : /^#[0-9a-f]{6}$/i.test(c) && isPale(c) ? '#2a2420' : '#fff')
   document.body.className = s.paper === 'plain' ? '' : 'paper-' + s.paper
   document.querySelector('meta[name=theme-color]')?.setAttribute('content', pal.bg)
   return dark

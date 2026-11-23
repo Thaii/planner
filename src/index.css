@@ -168,7 +168,7 @@ html.cute .stat-grid > .stat:not(.stat-set):nth-child(5n+4) { background: var(--
 html.cute .stat-grid > .stat:not(.stat-set):nth-child(5n+5) { background: var(--tint-lav); }
 html.cute .stat b { font-family: var(--app-serif); font-weight: 600; }
 /* Tabs become a soft pill bar */
-html.cute [role='tablist'] { border-radius: 999px; background: var(--tint-lav); border-color: transparent; padding: 4px; }
+html.cute [role='tablist'] { border-radius: 999px; background: color-mix(in srgb, var(--accent) 15%, var(--card)); border-color: transparent; padding: 4px; }
 html.cute [role='tablist'] > button { border-radius: 999px; font-weight: 700; }
 html.cute [role='tablist'] > button[aria-selected='true'] { color: var(--accent); }
 /* Progress bars: chunkier and rounder */
@@ -197,3 +197,7 @@ html.cute .summary-grid > .summary-box:nth-child(1) { background: var(--tint-but
 html.cute .summary-grid > .summary-box:nth-child(2) { background: var(--tint-peach); }
 html.cute .summary-grid > .summary-box:nth-child(3) { background: var(--tint-sky); }
 html.cute .summary-grid > .summary-box:nth-child(4) { background: var(--tint-lav); }
+
+/* Pale pastel accents are lovely as fills but too faint as text, so light Cute themes draw accent-coloured words a shade deeper. */
+html.cute[data-theme='light'] { --accent-text: color-mix(in srgb, var(--accent) 62%, var(--ink)); }
+html.cute[data-theme='light'] .text-accent, html.cute[data-theme='light'] .crumb, html.cute[data-theme='light'] [role='tablist'] > button[aria-selected='true'] { color: var(--accent-text); }
