@@ -24,7 +24,7 @@ export const CUTE_DAY: Record<string, Palette> = {
   cuteMint: { n: 'Mint tea', d: 'Fresh mint and cream', cute: true, bg: '#f3faf5', card: '#ffffff', ink: '#34443b', mute: '#66786d', line: '#d9eee1', soft: '#e9f6ee', field: '#f3faf5', accent: '#7cc5a0' },
   cuteSea: { n: 'Sea salt soda', d: 'Soft aqua and sand', cute: true, bg: '#f2fbfa', card: '#ffffff', ink: '#2f4446', mute: '#617a7c', line: '#d6eeec', soft: '#e6f6f4', field: '#f2fbfa', accent: '#74c9c2' },
   cuteBlue: { n: 'Blueberry milk', d: 'Soft sky blue', cute: true, bg: '#f4f7ff', card: '#ffffff', ink: '#343c52', mute: '#69718a', line: '#dde5f6', soft: '#eaf0fc', field: '#f4f7ff', accent: '#88a9e6' },
-  cuteLilac: { n: 'Taro milk tea', d: 'Lilac and cream', cute: true, bg: '#f8f5ff', card: '#ffffff', ink: '#3f3651', mute: '#706685', line: '#e7e0f5', soft: '#f1ecfb', field: '#f8f5ff', accent: '#7e57c2' },
+  cuteLilac: { n: 'Taro milk tea', d: 'Lilac and cream', cute: true, bg: '#f8f5ff', card: '#ffffff', ink: '#3f3651', mute: '#706685', line: '#e7e0f5', soft: '#f1ecfb', field: '#f8f5ff', accent: '#9d82db' },
 }
 export const CUTE_NIGHT: Record<string, Palette> = {
   cutePlum: { n: 'Plum jam', d: 'Deep plum and rose', cute: true, pure: true, bg: '#241c2a', card: '#33293b', ink: '#f7ebf1', mute: '#c7b6c1', line: '#46394f', soft: '#3e3346', field: '#2b2231', accent: '#f4a7c0' },
