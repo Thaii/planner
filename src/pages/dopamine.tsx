@@ -1,4 +1,4 @@
-import { Ico } from '@/components/doodles'
+import { Ico, IcoBubble } from '@/components/doodles'
 import { MaybePal } from '@/components/pals'
 import { Sections } from '@/components/sections'
 import * as React from 'react'
@@ -33,7 +33,7 @@ function dopaForm(i: DopaItem) {
 
 const Tile = ({ e, t, d, x, tag, best }: { e: string; t: string; d: string; x: string; tag?: string; best?: boolean }) => (
   <div className={cn('relative flex flex-col gap-px rounded-xl bg-soft p-2.5', best && 'shadow-[inset_0_0_0_1.5px_var(--accent)]')}>
-    <span className="text-[22px]">{e}</span><b className="text-[14.5px]">{t}</b><small className="text-[12.5px] text-mute">{d}</small><small className="mt-0.5 text-[11.5px] text-mute italic">{x}</small>
+    <IcoBubble e={e} i={2} size={40} /><b className="text-[14.5px]">{t}</b><small className="text-[12.5px] text-mute">{d}</small><small className="mt-0.5 text-[11.5px] text-mute italic">{x}</small>
     {tag && <span className={cn('absolute top-2 right-2 rounded-full px-1.5 py-0.5 font-mono text-[9.5px] tracking-wider uppercase', best ? 'bg-accent text-on-accent' : 'bg-warn/25')}>{tag}</span>}
   </div>
 )
@@ -58,7 +58,7 @@ function Explainer() {
               <React.Fragment key={t}>
                 {i > 0 && <span className="hidden self-center text-mute min-[600px]:block">→</span>}
                 <div className="flex flex-1 items-center gap-2.5 rounded-[14px] bg-soft p-3 min-[600px]:flex-col min-[600px]:items-start min-[600px]:gap-0.5">
-                  <span className="text-2xl">{e}</span><b className="text-[15px]">{t}</b><small className="ml-auto max-w-[55%] text-right text-[12.5px] text-mute min-[600px]:ml-0 min-[600px]:max-w-none min-[600px]:text-left">{d}</small>
+                  <IcoBubble e={e as string} i={0} size={40} /><b className="text-[15px]">{t}</b><small className="ml-auto max-w-[55%] text-right text-[12.5px] text-mute min-[600px]:ml-0 min-[600px]:max-w-none min-[600px]:text-left">{d}</small>
                 </div>
               </React.Fragment>
             ))}
@@ -76,7 +76,7 @@ function Explainer() {
               ['📱', "Evening, you're about to doomscroll.", <>Order a <b>main</b> instead, like a walk. Or have scrolling as a <b>dessert</b>, with a 15-minute timer.</>],
               ['😔', 'Feeling low and run down?', <>That's for your <b>self-care menu</b> on the Wellness page. This menu is for boredom and getting unstuck.</>]].map(([e, t, d], i) => (
               <div key={i} className={cn('flex items-start gap-2.5 rounded-xl bg-soft px-3 py-2.5', i === 3 && 'border border-dashed border-line bg-transparent')}>
-                <span className="text-[22px] leading-tight">{e}</span><p className="m-0 text-sm"><b>{t}</b><br />{d}</p>
+                <IcoBubble e={e as string} i={3} size={40} /><p className="m-0 text-sm"><b>{t}</b><br />{d}</p>
               </div>
             ))}
           </div>

@@ -24,7 +24,7 @@ const areaOf = (s: State, g: Goal) => g.area || s.settings.goalAreas[0]
 
 const toggleDone = (g: Goal) => {
   update((d) => { const x = d.goals.find((z) => z.id === g.id)!; x.done = !x.done; if (x.done) x.pct = 100 })
-  if (!g.done) toast('Goal achieved 🎉')
+  if (!g.done) toast('Goal achieved – well done!')
 }
 
 function GoalRow({ s, g }: { s: State; g: Goal }) {

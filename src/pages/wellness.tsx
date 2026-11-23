@@ -4,7 +4,7 @@ import { Sections } from '@/components/sections'
 import { MedsSection } from './meds'
 import { glassMl, ml } from '@/lib/water'
 import * as React from 'react'
-import { X, Play } from 'lucide-react'
+import { X, Play, Heart } from 'lucide-react'
 import { Card, CardHeader, Empty } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Check } from '@/components/ui/check'
@@ -168,7 +168,7 @@ export function WellnessPage() {
         </>) },
         { id: 'gratitude', title: "Gratitude", icon: '🙏', desc: "A few good things", node: (<>
         <Card><CardHeader title="Gratitude" pal="hugs" />
-          <div className="rows">{grat.length ? grat.map((i) => <div key={i.id} className="row"><span>♡</span><div className="flex-1">{i.text}</div><button className="p-1 text-mute" aria-label="Remove" onClick={() => update((d) => { d.journal.grat[t] = (d.journal.grat[t] || []).filter((z) => z.id !== i.id) })}><X className="size-4" /></button></div>) : <Empty>Something good, however small.</Empty>}</div>
+          <div className="rows">{grat.length ? grat.map((i) => <div key={i.id} className="row"><Heart className="size-4 flex-none text-accent" /><div className="flex-1">{i.text}</div><button className="p-1 text-mute" aria-label="Remove" onClick={() => update((d) => { d.journal.grat[t] = (d.journal.grat[t] || []).filter((z) => z.id !== i.id) })}><X className="size-4" /></button></div>) : <Empty>Something good, however small.</Empty>}</div>
           <InlineAdd placeholder="Something good" onAdd={(v) => update((d) => { (d.journal.grat[t] = d.journal.grat[t] || []).push({ id: uid(), text: v }) })} />
         </Card>
         </>) },

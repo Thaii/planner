@@ -49,7 +49,7 @@ const TOUR: [React.ElementType, string, string][] = [
   [CalendarDays, 'Plan ahead when you want to', 'Week, Month and Year pages for bigger plans, plus Habits, Goals, Wellness, Food, Home, Lists, Travel and a Notebook in the menu.'],
   [Plus, 'Add anything fast', 'The Quick add button adds a to-do, event, habit, goal, brain dump or grocery item from anywhere.'],
   [Search, 'Find and jump', 'The search button (or Ctrl/⌘ K) finds anything in your planner and jumps to any page.'],
-  [Settings2, 'Make it yours', 'The ⚙ button opens Customise: choose cards and their order, colours and themes, your name and greetings, and 12 or 24-hour time.'],
+  [Settings2, 'Make it yours', 'The settings button (top right) opens Customise: choose cards and their order, colours and themes, your name and greetings, and 12 or 24-hour time.'],
   [ShieldCheck, 'Private by default', 'Everything is saved on this device only. Keep a backup now and then from Customise → Calendars & data.'],
 ]
 

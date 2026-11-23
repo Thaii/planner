@@ -1,3 +1,4 @@
+import { Ico } from '@/components/doodles'
 import { toast } from 'sonner'
 import { MaybePal, Pal, usePals } from '@/components/pals'
 import { ArrangeGrid, ArrangeList } from './arrange'
@@ -5,7 +6,7 @@ import { AddToDay } from '@/components/welcome'
 import { MedNextUp, MedsToday } from './meds'
 import { glassMl, ml } from '@/lib/water'
 import * as React from 'react'
-import { X, RotateCw, Pencil } from 'lucide-react'
+import { X, RotateCw, Pencil, Heart } from 'lucide-react'
 import { Card, CardHeader, Empty } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Check } from '@/components/ui/check'
@@ -282,7 +283,7 @@ const CARDS: Record<string, CardFn> = {
   gratitude: ({ d, s }) => {
     const g = s.journal.grat[d] || []
     return <Card><CardHeader title="Gratitude" />
-      <div className="rows">{g.length ? g.map((i) => <div key={i.id} className="row"><span>♡</span><div className="flex-1">{i.text}</div><button className="p-1 text-mute" aria-label="Remove" onClick={() => update((st) => { st.journal.grat[d] = (st.journal.grat[d] || []).filter((x) => x.id !== i.id) })}><X className="size-4" /></button></div>) : <Empty>Something good, however small.</Empty>}</div>
+      <div className="rows">{g.length ? g.map((i) => <div key={i.id} className="row"><Heart className="size-4 flex-none text-accent" /><div className="flex-1">{i.text}</div><button className="p-1 text-mute" aria-label="Remove" onClick={() => update((st) => { st.journal.grat[d] = (st.journal.grat[d] || []).filter((x) => x.id !== i.id) })}><X className="size-4" /></button></div>) : <Empty>Something good, however small.</Empty>}</div>
       <InlineAdd placeholder="Something good" onAdd={(t) => update((st) => { (st.journal.grat[d] = st.journal.grat[d] || []).push({ id: uid(), text: t }) })} /></Card>
   },
 
@@ -333,9 +334,9 @@ const CARDS: Record<string, CardFn> = {
     return <Card><CardHeader title="Dopamine menu" action={<Button variant="link" className="text-[12.5px]" onClick={() => go('dopamine')}>Menu</Button>} />
       <div className="mb-2 text-[13px] text-mute">Bored, stuck or reaching for your phone?</div>
       <div className="flex flex-wrap gap-1.5">
-        <Button onClick={() => showDopa('app')}>🥟 Quick hit</Button>
-        {n && <Button onClick={() => showDopa('side')} className="max-w-full truncate">🥗 Pair a side with “{n.title.length > 22 ? n.title.slice(0, 22) + '…' : n.title}”</Button>}
-        <Button onClick={() => showDopa('main')}>🍲 Something bigger</Button>
+        <Button onClick={() => showDopa('app')}><Ico e="🥟" /> Quick hit</Button>
+        {n && <Button onClick={() => showDopa('side')} className="max-w-full truncate"><Ico e="🥗" /> Pair a side with “{n.title.length > 22 ? n.title.slice(0, 22) + '…' : n.title}”</Button>}
+        <Button onClick={() => showDopa('main')}><Ico e="🍲" /> Something bigger</Button>
       </div></Card>
   },
 
