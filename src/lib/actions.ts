@@ -1,7 +1,8 @@
 import { toast } from 'sonner'
 import { update, getS, undoable } from './store'
 import { today, type DateStr } from './date'
-import { ensureMonth, ensureWeek, hDue, idById, isRep, kept } from './logic'
+import { ensureMonth, ensureWeek, hDue, idById, isRep, kept, partsOn } from './logic'
+import type { Habit, Part } from './types'
 import { uid } from './utils'
 import { confetti } from './confetti'
 
@@ -25,6 +26,32 @@ export function celebrate(d: DateStr) {
   if (due.length && due.every((h) => kept(h, d))) { confetti(); toast('Every habit kept today. That is who you are now.') }
 }
 /** Log a habit as full (1) or minimum ('m'). Tapping the same again clears it. */
+/** Keep a morning-and-evening habit's halves in step with its day tick (1 = both, 'm' = one). */
+function syncParts(h: Habit, d: DateStr) {
+  if (!h.twice) return
+  h.parts = h.parts || {}
+  const v = h.log?.[d], cur = h.parts[d] || []
+  if (v === 1) h.parts[d] = ['am', 'pm']
+  else if (v === 'm') h.parts[d] = cur.length === 1 ? cur : ['am']
+  else delete h.parts[d]
+}
+/** Tick or untick the morning / evening half of a morning-and-evening habit. */
+export function logPart(id: string, d: DateStr, part: Part) {
+  let added = false
+  update((st) => {
+    const h = st.habits.find((x) => x.id === id)
+    if (!h) return
+    h.parts = h.parts || {}; h.log = h.log || {}
+    const cur = h.parts[d]?.length ? h.parts[d] : h.log[d] === 1 ? ['am', 'pm'] as Part[] : []
+    const next = cur.includes(part) ? cur.filter((x) => x !== part) : [...cur, part]
+    added = next.length > cur.length
+    if (next.length) h.parts[d] = next; else delete h.parts[d]
+    if (next.length === 2) h.log[d] = 1; else if (next.length === 1) h.log[d] = 'm'; else delete h.log[d]
+  })
+  const h = getS().habits.find((x) => x.id === id)
+  if (added) { const idn = idById(getS(), h?.identity); if (idn) toast('A vote for ' + idn.name + '.') }
+  if (h?.log[d] === 1 && added) celebrate(d)
+}
 export function logHabit(id: string, d: DateStr, v: 1 | 'm') {
   let logged = false
   update((st) => {
@@ -33,6 +60,7 @@ export function logHabit(id: string, d: DateStr, v: 1 | 'm') {
     h.log = h.log || {}
     if (h.log[d] === v) delete h.log[d]
     else { h.log[d] = v; logged = true }
+    syncParts(h, d)
   })
   if (logged) {
     const s = getS(), h = s.habits.find((x) => x.id === id), idn = idById(s, h?.identity)
@@ -48,8 +76,9 @@ export function cycleHabit(id: string, d: DateStr) {
     h.log = h.log || {}
     const c = h.log[d]
     if (!c) h.log[d] = 1
-    else if (c !== 'm' && h.min) h.log[d] = 'm'
+    else if (c !== 'm' && (h.min || h.twice)) h.log[d] = 'm'
     else delete h.log[d]
+    syncParts(h, d)
   })
   if (getS().habits.find((x) => x.id === id)?.log[d] === 1) celebrate(d)
 }
@@ -73,7 +102,8 @@ export function monthTodo(m: string, fn: (items: { id: string; text: string; don
 }
 export function markDone(kind: string, id: string, d: DateStr, occ?: DateStr) {
   if (kind === 'prio') update((st) => { const p = (st.prio[d] = st.prio[d] || { items: ['', '', ''], done: [] }); p.done = p.done || []; p.done[+id] = true })
-  else if (kind === 'habit') { update((st) => { const h = st.habits.find((x) => x.id === id); if (h) { h.log = h.log || {}; h.log[d] = 1 } }); celebrate(d) }
+  else if (kind === 'habit' && (occ === 'am' || occ === 'pm')) { if (!partsOn(getS().habits.find((x) => x.id === id)!, d).includes(occ)) logPart(id, d, occ) }
+  else if (kind === 'habit') { update((st) => { const h = st.habits.find((x) => x.id === id); if (h) { h.log = h.log || {}; h.log[d] = 1; syncParts(h, d) } }); celebrate(d) }
   else if (kind === 'task') update((st) => {
     const k = st.tasks.find((t) => t.id === id)
     if (!k) return

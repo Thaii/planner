@@ -16,7 +16,12 @@ export interface CalEvent {
 export interface Habit {
   id: string; name: string; mode: 'days' | 'weekly'; days: number[]; perWeek: number; color?: string
   min?: string; cue?: string; identity?: string; created?: DateStr; log: Record<DateStr, 1 | 'm'>
+  /** Morning and evening (e.g. brushing teeth): both ticks = kept, one = the minimum. */
+  twice?: boolean; parts?: Record<DateStr, Part[]>
+  /** Habit stacking: do this right after another habit ("id", or "id:am" / "id:pm" for one half of a twice-a-day habit). */
+  after?: string
 }
+export type Part = 'am' | 'pm'
 export interface Identity { id: string; name: string; does: string }
 export interface Goal { id: string; title: string; area?: string; pct?: number; target?: DateStr; why?: string; next?: string; done?: boolean; label?: string; obstacle?: string; plan?: string }
 export interface Project { id: string; name: string; label?: string; due?: DateStr; status?: 'active' | 'paused' | 'done'; notes?: string; tasks: { id: string; text: string; done: boolean }[] }

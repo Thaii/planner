@@ -1,4 +1,4 @@
-import type { State, Task, CalEvent, Habit, Workout, Freq, WeekPlan, MonthPlan } from './types'
+import type { State, Task, CalEvent, Habit, Workout, Freq, WeekPlan, MonthPlan, Part } from './types'
 import { type DateStr, addD, diffD, dow, pd, range, today, weekStartOf, ym } from './date'
 
 export const wsDay = (s: State): 0 | 1 => (s.settings.weekStart === 0 ? 0 : 1)
@@ -64,6 +64,36 @@ export const ensureMonth = (d: State, m: string) => (d.months[m] = { ...monthOf(
 /* ---------- habits ---------- */
 export const kept = (h: Habit, d: DateStr) => !!(h.log && h.log[d])
 export const isMin = (h: Habit, d: DateStr) => !!h.log && h.log[d] === 'm'
+/** Which halves of a morning-and-evening habit are ticked on a day. */
+export const partsOn = (h: Habit, d: DateStr): Part[] => (h.parts?.[d]?.length ? h.parts[d] : h.log?.[d] === 1 && h.twice ? ['am', 'pm'] : [])
+/** Fully done for the day: both halves for a morning-and-evening habit, otherwise any tick. */
+export const allDone = (h: Habit, d: DateStr) => (h.twice ? partsOn(h, d).length === 2 || h.log?.[d] === 1 : kept(h, d))
+export const PART_NAME: Record<Part, string> = { am: 'morning', pm: 'evening' }
+/** The habit this one is stacked after, and which half of it (for morning-and-evening habits). */
+export const afterOf = (s: State, h: Habit) => {
+  if (!h.after) return undefined
+  const [id, part] = h.after.split(':') as [string, Part | undefined]
+  const p = s.habits.find((x) => x.id === id)
+  return p ? { habit: p, part } : undefined
+}
+/** Has the habit this one follows been done today (or its morning/evening half)? Then it's this one's turn. */
+export const afterDone = (s: State, h: Habit, d: DateStr) => {
+  const a = afterOf(s, h)
+  if (!a) return false
+  return a.part && a.habit.twice ? partsOn(a.habit, d).includes(a.part) : kept(a.habit, d)
+}
+/** Habits in order, with each stacked habit placed straight after the one it follows. */
+export function stackOrder(list: Habit[]) {
+  const ids = new Set(list.map((h) => h.id)), out: Habit[] = [], seen = new Set<string>()
+  const add = (h: Habit, depth = 0) => {
+    if (seen.has(h.id) || depth > 5) return
+    seen.add(h.id); out.push(h)
+    list.filter((c) => c.after && c.after.split(':')[0] === h.id).forEach((c) => add(c, depth + 1))
+  }
+  list.forEach((h) => { const p = h.after?.split(':')[0]; if (!p || !ids.has(p)) add(h) })
+  list.forEach((h) => add(h)) // anything left (e.g. a loop) still shows
+  return out
+}
 export const hDue = (h: Habit, d: DateStr) => (h.mode === 'weekly' ? true : (h.days || []).includes(dow(d)))
 export const hWeekCount = (s: State, h: Habit, d: DateStr) => range(weekStart(s, d), 7).filter((x) => kept(h, x)).length
 export function hStreakN(s: State, h: Habit): [number, 'd' | 'wk'] {
@@ -156,11 +186,15 @@ export function nextUp(s: State, d: DateStr): NextUp | null {
     if ((p.items[i] || '').trim() && !(p.done || [])[i])
       return { kind: 'prio', id: String(i), eyebrow: (i === 0 ? 'Must-do' : `Priority ${i + 1}`) + (ti ? ' · as ' + ti.name : ''), title: p.items[i] }
   const low = lowEnergy(s)
-  const h = s.habits.find((h) => hDue(h, d) && !kept(h, d))
+  // Habits still to do (a morning-and-evening habit until both halves are ticked); a stacked habit whose cue was just done goes first.
+  const todo = stackOrder(s.habits).filter((h) => hDue(h, d) && (h.twice ? partsOn(h, d).length < 2 && h.log?.[d] !== 1 : !kept(h, d)))
+  const h = todo.find((x) => afterDone(s, x, d)) || todo[0]
   if (h) {
-    const idn = idById(s, h.identity)
+    const idn = idById(s, h.identity), a = afterOf(s, h)
+    const got = partsOn(h, d), part: Part | undefined = h.twice ? (!got.includes('am') && (!got.length && new Date().getHours() < 15) ? 'am' : got.includes('pm') ? 'am' : 'pm') : undefined
     return {
-      kind: 'habit', id: h.id, eyebrow: 'Next habit' + (idn ? ' · as ' + idn.name : ''), title: low && h.min ? h.min : h.name, min: h.min,
+      kind: 'habit', id: h.id, occ: part, eyebrow: (afterDone(s, h, d) && a ? 'Now · after ' + a.habit.name : 'Next habit') + (idn ? ' · as ' + idn.name : ''),
+      title: (low && h.min ? h.min : h.name) + (part ? ' · ' + PART_NAME[part] : ''), min: h.min,
       sub: low && h.min ? 'Low-energy day: the minimum counts.' : h.cue ? 'Cue: ' + h.cue : h.min ? 'Bad day? The minimum is: ' + h.min : '',
     }
   }

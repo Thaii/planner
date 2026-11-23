@@ -12,7 +12,7 @@ import { MaybePal, GrowingSprig, usePals } from '@/components/pals'
 import { getS, useS, update } from '@/lib/store'
 import { go } from '@/lib/ui'
 import { addD, DOWN, fmt, pd, range, today, ym, ds } from '@/lib/date'
-import { sprigLook, cleanId, imLine, hDue, hMomentum, hRate, hSched, idById, isMin, kept, momentum, votesOn, weekStart } from '@/lib/logic'
+import { allDone, stackOrder, sprigLook, cleanId, imLine, hDue, hMomentum, hRate, hSched, idById, isMin, kept, momentum, votesOn, weekStart } from '@/lib/logic'
 import { cycleHabit } from '@/lib/actions'
 import { habitForm, identityForm } from '@/lib/forms'
 import type { Habit, State } from '@/lib/types'
@@ -39,16 +39,16 @@ const newHabit = (name: string) => update((d) => { d.habits.push({ id: uid(), na
 /** Today's habits: still-to-do first; done ones fold away once there are lots. */
 function TodayCard({ s }: { s: State }) {
   const t = today()
-  const due = s.habits.filter((h) => hDue(h, t))
-  const todo = due.filter((h) => !kept(h, t)), done = due.filter((h) => kept(h, t))
+  const due = stackOrder(s.habits).filter((h) => hDue(h, t))
+  const todo = due.filter((h) => !allDone(h, t)), done = due.filter((h) => allDone(h, t))
   const [showDone, setShowDone] = React.useState(false)
   const fold = due.length > 5 && done.length > 0
   return (
     <Card>
-      <CardHeader title="Today" pal="sprig" action={<span className="rounded-full bg-tint-sky px-2.5 py-0.5 text-[12.5px] font-bold">{done.length}/{due.length} done</span>} />
+      <CardHeader title="Today" sprig={sprigLook(s).look} action={<span className="rounded-full bg-tint-sky px-2.5 py-0.5 text-[12.5px] font-bold">{done.length}/{due.length} done</span>} />
       <div className="rows">
-        {todo.map((h) => <HabitRow key={h.id} h={h} d={t} />)}
-        {(!fold || showDone) && done.map((h) => <HabitRow key={h.id} h={h} d={t} />)}
+        {/* In order, so a stacked habit stays under the one it follows; done ones fold away when the list is long. */}
+        {due.filter((h) => !fold || showDone || !allDone(h, t)).map((h) => <HabitRow key={h.id} h={h} d={t} />)}
       </div>
       {fold && (
         <button className="mt-2 flex w-full items-center justify-center gap-1 rounded-full bg-tint-mint py-1.5 text-[13px] font-bold" onClick={() => setShowDone(!showDone)}>

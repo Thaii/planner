@@ -1,3 +1,4 @@
+import { toast } from 'sonner'
 import { WhyHelper } from '@/components/why-helper'
 import { accentColor } from './theme'
 import { openForm } from '@/components/sheet'
@@ -71,6 +72,13 @@ export function habitForm(id?: string) {
       { k: 'mode', l: 'How often', t: 'select', o: [['days', 'On set days'], ['weekly', 'A number of times a week']], v: h?.mode || 'days', half: true },
       { k: 'perWeek', l: 'Times a week', t: 'number', min: 1, max: 7, v: h?.perWeek || 3, half: true },
       { k: 'days', l: 'Days (for “on set days”)', t: 'days', v: h?.days || [0, 1, 2, 3, 4, 5, 6] },
+      { k: 'twice', l: 'Times a day', t: 'select', o: [['', 'Once'], ['1', 'Morning and evening']], v: h?.twice ? '1' : '', half: true,
+        help: () => <p className="mt-1 mb-0 text-[12px] text-mute">Morning and evening gives it AM and PM ticks – handy for brushing teeth. One tick counts as the minimum.</p> },
+      { k: 'after', l: 'Do it right after…', t: 'select', half: true, v: h?.after || '',
+        o: [['', 'Nothing – on its own'], ...s.habits.filter((x) => x.id !== id).flatMap((x) => x.twice
+          ? [[x.id + ':am', x.name + ' (morning)'], [x.id + ':pm', x.name + ' (evening)']] as [string, string][]
+          : [[x.id, x.name]] as [string, string][])],
+        help: () => <p className="mt-1 mb-0 text-[12px] text-mute">Link it to a habit you already do, like flossing after brushing. It shows under that habit and pops up once it's done.</p> },
       { k: 'min', l: 'Minimum for bad days', v: h?.min, ph: 'e.g. 2 pages, 1 glass, 5 minutes', help: () => <p className="mt-1 mb-0 text-[12px] text-mute">If you miss a day, Today suggests just the minimum next time, so one slip doesn't turn into two.</p> },
       { k: 'cue', l: 'Cue – when you will do it', v: h?.cue, ph: 'e.g. after lunch' },
       { k: 'identity', l: 'Builds who you are becoming', t: 'select', o: [['', 'None'], ...s.identities.map((x) => [x.id, cap(x.name)] as [string, string])], v: h?.identity || '', half: true },
@@ -79,6 +87,10 @@ export function habitForm(id?: string) {
     onSave: (v) => {
       if (!v.name) return false
       v.perWeek = Math.max(1, Math.min(7, +v.perWeek || 1))
+      v.twice = v.twice === '1'
+      v.after = v.after || undefined
+      // No loops: a habit can't come after a habit that comes after it.
+      if (v.after && id) { let p = s.habits.find((x) => x.id === v.after.split(':')[0]); for (let i = 0; p && i < 10; i++) { if (p.id === id) { toast("That would make a loop – pick a different habit to follow."); return false } p = s.habits.find((x) => x.id === p!.after?.split(':')[0]) } }
       update((d) => { const x = id && d.habits.find((k) => k.id === id); if (x) Object.assign(x, v); else d.habits.push({ id: uid(), created: today(), log: {}, ...v } as any) })
     },
     onDelete: id ? () => update((d) => del(d.habits, id)) : undefined,

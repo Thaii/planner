@@ -3,15 +3,15 @@ import { MaybePal } from './pals'
 import { waterForm } from './water-form'
 import { dropsFor, glassMl, ml } from '@/lib/water'
 import * as React from 'react'
-import { X, CornerUpRight } from 'lucide-react'
+import { X, CornerUpRight, Sun, Moon } from 'lucide-react'
 import { Check } from './ui/check'
 import { useS } from '@/lib/store'
 import { addD, dow, DOWN, fmt, t12, type DateStr } from '@/lib/date'
-import { hDue, idById, isMin, isRep, kept, lab, labColor, type TaskOcc } from '@/lib/logic'
+import { afterDone, afterOf, hDue, idById, partsOn, PART_NAME, isMin, isRep, kept, lab, labColor, type TaskOcc } from '@/lib/logic'
 import { REPEATS, MOODS, MOODW } from '@/lib/constants'
-import { deleteTask, logHabit, setWell, skipTask, toggleTask } from '@/lib/actions'
+import { deleteTask, logHabit, logPart, setWell, skipTask, toggleTask } from '@/lib/actions'
 import { taskForm } from '@/lib/forms'
-import type { Habit } from '@/lib/types'
+import type { Habit, Part } from '@/lib/types'
 import { cn } from '@/lib/utils'
 
 export function PageHead({ crumb, title, right }: { crumb: string; title: React.ReactNode; right?: React.ReactNode }) {
@@ -59,19 +59,26 @@ export function NotDueToday({ habits, d }: { habits: Habit[]; d: DateStr }) {
 
 export function HabitRow({ h, d }: { h: Habit; d: DateStr }) {
   const s = useS()
-  const k = kept(h, d), mn = isMin(h, d), idn = idById(s, h.identity)
+  const parts = partsOn(h, d), k = h.twice ? parts.length === 2 : kept(h, d), mn = !h.twice && isMin(h, d), idn = idById(s, h.identity)
+  const a = afterOf(s, h), now = !k && afterDone(s, h, d)
   const pill = 'habit-pill whitespace-nowrap rounded-full border border-line bg-card px-3 py-1 text-xs font-semibold'
   return (
-    <div className={cn('row', k && 'done')}>
+    <div className={cn('row', k && 'done', a && 'ml-3 border-l-2 border-l-accent/35 pl-3', now && 'rounded-xl bg-accent-soft')}>
       <div className="min-w-0 flex-1">
-        <div className="tt font-medium">{h.name}</div>
+        <div className="tt font-medium">{now && <span className="mr-1.5 rounded-full bg-accent px-1.5 py-px align-[1px] text-[10.5px] font-bold text-on-accent">Now</span>}{h.name}</div>
         <div className="text-[12.5px] text-mute">
-          {[h.cue, h.min && 'Min: ' + h.min].filter(Boolean).join(' · ')}
-          {idn && <span className="text-accent">{h.cue || h.min ? ' · ' : ''}vote for {idn.name}</span>}
+          {[a && `after ${a.habit.name}${a.part ? ' (' + PART_NAME[a.part] + ')' : ''}`, h.cue, h.min && 'Min: ' + h.min].filter(Boolean).join(' · ')}
+          {idn && <span className="text-accent">{a || h.cue || h.min ? ' · ' : ''}vote for {idn.name}</span>}
         </div>
       </div>
-      {h.min && <button className={cn(pill, mn && 'border-accent bg-accent-soft text-accent')} onClick={() => logHabit(h.id, d, 'm')}>Min</button>}
-      <button className={cn(pill, k && !mn && 'border-accent bg-accent text-on-accent')} onClick={() => logHabit(h.id, d, 1)}>Done</button>
+      {h.twice ? (['am', 'pm'] as Part[]).map((p) => (
+        <button key={p} aria-pressed={parts.includes(p)} aria-label={`${h.name}, ${PART_NAME[p]}`} className={cn(pill, 'flex items-center gap-1', parts.includes(p) && 'border-accent bg-accent text-on-accent')} onClick={() => logPart(h.id, d, p)}>
+          {p === 'am' ? <Sun className="size-3.5" /> : <Moon className="size-3.5" />}{p.toUpperCase()}
+        </button>
+      )) : <>
+        {h.min && <button className={cn(pill, mn && 'border-accent bg-accent-soft text-accent')} onClick={() => logHabit(h.id, d, 'm')}>Min</button>}
+        <button className={cn(pill, k && !mn && 'border-accent bg-accent text-on-accent')} onClick={() => logHabit(h.id, d, 1)}>Done</button>
+      </>}
     </div>
   )
 }

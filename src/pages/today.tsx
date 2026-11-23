@@ -20,7 +20,7 @@ import { useS, update, undoable } from '@/lib/store'
 import { go, openDay } from '@/lib/ui'
 import { addD, diffD, fmt, mins, nowMins, t12, hourLabel, minsLabel, today, ym, type DateStr } from '@/lib/date'
 import {
-  eventsOn, workoutsOn, tasksOn, hDue, imLine, prevDue, sprigLook, kept, hRate, momentum, idById, votesOn, nextUp, lowEnergy, roughDay,
+  eventsOn, workoutsOn, tasksOn, hDue, imLine, prevDue, sprigLook, stackOrder, kept, hRate, momentum, idById, votesOn, nextUp, lowEnergy, roughDay,
   weekStart, weekOf, monthOf, periodKey, labColor, tint,
 } from '@/lib/logic'
 import { addTask, logHabit, markDone, setPrio, setWell, togglePrio, toggleWorkout, weekItem, monthTodo } from '@/lib/actions'
@@ -240,7 +240,7 @@ const CARDS: Record<string, CardFn> = {
   },
 
   habits: ({ d, s }) => {
-    const hs = s.habits.filter((h) => hDue(h, d))
+    const hs = stackOrder(s.habits).filter((h) => hDue(h, d))
     return <Card><CardHeader title="Habits" action={<Button variant="link" className="text-[12.5px]" onClick={() => go('habits')}>Tracker</Button>} />
       <SprigIntro s={s} />
       <div className="rows">{hs.length ? hs.map((h) => <HabitRow key={h.id} h={h} d={d} />) : !s.habits.length && s.settings.style === 'cute' && s.settings.pals !== false ? null : <Empty>{s.habits.length ? 'Rest day – nothing due.' : 'No habits yet.'}</Empty>}</div>
