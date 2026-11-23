@@ -159,11 +159,10 @@ const CARDS: Record<string, CardFn> = {
     const cls = 'hero border-0 bg-accent text-on-accent shadow-[0_10px_30px_color-mix(in_srgb,var(--accent)_35%,transparent)] in-data-[theme=dark]:border in-data-[theme=dark]:border-accent/45 in-data-[theme=dark]:bg-accent-soft in-data-[theme=dark]:text-ink in-data-[theme=dark]:shadow-none'
     // A dose that's due comes first – it's time-sensitive. Tasks show again once it's ticked, skipped or put off.
     const withMeds = (task: React.ReactNode) => <MedNextUp d={d} cls={cls} btn={btn0} fallback={task} />
-    if (!n) return withMeds(<Card className={cn(cls, 'hero-pad')}><MaybePal name="snoozy" size={84} className="hero-pal" /><span className="lbl opacity-85">Next up</span><h2 className="mt-1.5 text-[26px]">You're clear.</h2><div className="text-[13px] opacity-85">Everything for today is done. Rest counts too.</div></Card>)
+    if (!n) return withMeds(<Card className={cn(cls, 'hero-pad')}><span className="lbl opacity-85">Next up</span><h2 className="mt-1.5 text-[26px]">You're clear.</h2><div className="text-[13px] opacity-85">Everything for today is done. Rest counts too.</div></Card>)
     const btn = 'btn rounded-[10px] px-3.5 py-2 text-[13.5px] font-medium bg-on-accent/15 in-data-[theme=dark]:bg-soft'
     return withMeds(
       <Card className={cn(cls, 'hero-pad')}>
-        <MaybePal name={n.kind === 'habit' ? 'sprig' : 'twinkle'} size={80} className="hero-pal" />
         <span className="lbl opacity-85 in-data-[theme=dark]:text-accent">{n.eyebrow}</span>
         <h2 className="mt-1.5 mb-0.5 text-[26px] leading-tight">{n.title}</h2>
         {n.sub && <div className="text-[13px] opacity-85">{n.sub}</div>}
