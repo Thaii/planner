@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Check, ChevronLeft, Plus } from 'lucide-react'
+import { Check, ChevronLeft, Plus, X } from 'lucide-react'
 import { Button } from './ui/button'
 import { Input, Textarea } from './ui/field'
 import { closeSheet } from './sheet'
@@ -73,7 +73,7 @@ export function IdentityWizard({ id }: { id?: string }) {
   const [they, setThey] = React.useState(x?.they ?? startPreset?.they ?? '')
   const [proofs, setProofs] = React.useState<string[]>(x?.proofs ?? (x?.does ? [x.does] : []))
   const [own, setOwn] = React.useState('')
-  const [dont, setDont] = React.useState(x?.dont ?? '')
+  const [donts, setDonts] = React.useState<string[]>(x?.donts ?? (x?.dont ? [x.dont] : ['']))
   const [why, setWhy] = React.useState(x?.why ?? '')
   const [linked, setLinked] = React.useState<string[]>(s.habits.filter((h) => id && h.identity === id).map((h) => h.id))
   const [newHabits, setNewHabits] = React.useState<string[]>([])
@@ -92,7 +92,7 @@ export function IdentityWizard({ id }: { id?: string }) {
     if (!nm) { setStep(0); return }
     const iid = id || uid()
     update((d) => {
-      const rec = { name: nm, they: they.trim() || undefined, proofs, why: why.trim() || undefined, dont: dont.trim() || undefined, does: proofs.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join(', ') }
+      const rec = { name: nm, they: they.trim() || undefined, proofs, why: why.trim() || undefined, donts: donts.map((d) => d.trim().replace(/\.$/, '')).filter(Boolean), dont: donts.map((d) => d.trim()).find(Boolean) || undefined, does: proofs.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join(', ') }
       const i = d.identities.find((k) => k.id === iid)
       if (i) Object.assign(i, rec); else d.identities.push({ id: iid, ...rec })
       d.habits.forEach((h) => { if (linked.includes(h.id)) h.identity = iid; else if (h.identity === iid) h.identity = '' })
@@ -136,10 +136,30 @@ export function IdentityWizard({ id }: { id?: string }) {
         <span className="text-[14px] whitespace-nowrap">{they || 'I'}</span><Input value={own} placeholder="add your own, e.g. stretch while the kettle boils" onChange={(e) => setOwn(e.target.value)} />
         <Button type="submit" size="sm" aria-label="Add"><Plus className="size-4" /></Button>
       </form>
-      <div className="mt-4 text-[12px] font-semibold text-mute">One thing {they ? they.toLowerCase() : 'you'} don’t do (optional)</div>
+      <div className="mt-4 text-[12px] font-semibold text-mute">What {they ? they.toLowerCase() : 'you'} don’t do (optional)</div>
       <p className="mt-0.5 mb-1.5 text-[12px] text-mute">“I don’t” feels like a choice; “I can’t” feels like a rule someone gave you.</p>
-      <div className="flex items-center gap-2"><span className="text-[14px] whitespace-nowrap">I don’t</span><Input value={dont} placeholder={dontIdeas[0]} onChange={(e) => setDont(e.target.value)} /></div>
-      <div className="mt-1.5 flex flex-wrap gap-1.5">{dontIdeas.map((d) => <button key={d} type="button" className={cn(chip, dont === d && 'border-accent bg-accent-soft')} onClick={() => setDont(dont === d ? '' : d)}>{d}</button>)}</div>
+      <div className="flex flex-col gap-1.5">
+        {donts.map((d, n) => (
+          <div key={n} className="flex items-center gap-2">
+            <span className="text-[14px] whitespace-nowrap">I don’t</span>
+            <Input value={d} placeholder={n === 0 ? dontIdeas[0] : 'another one'} onChange={(e) => setDonts(donts.map((v, k) => (k === n ? e.target.value : v)))} />
+            {(donts.length > 1 || d) && <button type="button" aria-label="Remove" className="grid size-8 flex-none place-items-center rounded-full text-mute hover:bg-soft" onClick={() => setDonts(donts.length > 1 ? donts.filter((_, k) => k !== n) : [''])}><X className="size-4" /></button>}
+          </div>
+        ))}
+      </div>
+      {donts.length < 3 && donts[donts.length - 1]?.trim() && <button type="button" className="mt-1.5 text-[12.5px] font-semibold text-accent" onClick={() => setDonts([...donts, ''])}>+ Add another</button>}
+      {donts.filter((d) => d.trim()).length >= 2 && <p className="mt-1 mb-0 text-[12px] text-mute">Fewer rules are easier to keep – one or two is plenty. Today shows one each day.</p>}
+      <div className="mt-2 flex flex-wrap gap-1.5">{dontIdeas.map((d) => {
+        const on = donts.some((v) => v.trim() === d)
+        // Suggestions fill the first empty line (or a new one, up to three); tapping again removes it.
+        return <button key={d} type="button" className={cn(chip, on && 'border-accent bg-accent-soft')} onClick={() => {
+          if (on) { const left = donts.filter((v) => v.trim() !== d); setDonts(left.length ? left : ['']); return }
+          const empty = donts.findIndex((v) => !v.trim())
+          if (empty >= 0) setDonts(donts.map((v, k) => (k === empty ? d : v)))
+          else if (donts.length < 3) setDonts([...donts, d])
+          else toast('Three is the most – remove one first')
+        }}>{on ? '✓ ' : ''}{d}</button>
+      })}</div>
     </div>,
     // 3 · Why
     <div key="why">
@@ -172,7 +192,7 @@ export function IdentityWizard({ id }: { id?: string }) {
       <div className="mt-4 rounded-2xl bg-accent-soft px-3.5 py-3">
         <div className="text-[11.5px] font-bold tracking-wider text-mute uppercase">Your reminder on Today</div>
         <div className="mt-1 font-serif text-[19px] leading-tight">{imLine(name || '…')}</div>
-        {proofs[0] && <div className="text-[14px]">{say(they, proofs[0])}{dont ? ` I don’t ${dont.replace(/\.$/, '')}.` : ''}</div>}
+        {proofs[0] && <div className="text-[14px]">{say(they, proofs[0])}{donts.find((d) => d.trim()) ? ` I don’t ${donts.find((d) => d.trim())!.trim().replace(/\.$/, '')}.` : ''}</div>}
         {why && <div className="mt-1 text-[12.5px] text-mute italic">“{why.trim()}”</div>}
       </div>
     </div>,

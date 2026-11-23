@@ -165,7 +165,9 @@ export function idMantra(x: Identity, d: DateStr) {
   const ps = x.proofs?.length ? x.proofs : []
   if (!ps.length) return x.does ? x.does.charAt(0).toUpperCase() + x.does.slice(1) : ''
   const p = ps[Math.floor(new Date(d).getTime() / 864e5) % ps.length]
-  return `${x.they ? x.they : 'I'} ${p}.` + (x.dont ? ` I don’t ${x.dont.replace(/\.$/, '')}.` : '')
+  const ds = x.donts?.length ? x.donts : x.dont ? [x.dont] : [], day = Math.floor(new Date(d).getTime() / 864e5)
+  const dn = ds.length ? ds[day % ds.length] : ''
+  return `${x.they ? x.they : 'I'} ${p}.` + (dn ? ` I don’t ${dn.replace(/\.$/, '')}.` : '')
 }
 /** An identity as "I'm …" without doubling up when the name already starts with I'm / I am, and without a double full stop. */
 export const imLine = (name: string) => "I'm " + name.trim().replace(/^(i['’]?m|i am)\s+/i, '').replace(/[.!]+$/, '') + '.'

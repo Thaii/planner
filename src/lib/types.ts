@@ -30,8 +30,8 @@ export interface Identity {
   proofs?: string[]
   /** Why this matters to them, in their words. */
   why?: string
-  /** An "I don't …" rule, e.g. "skip two days in a row". */
-  dont?: string
+  /** "I don't …" rules (up to three), e.g. "skip two days in a row". `dont` is the first one, kept for older saves. */
+  dont?: string; donts?: string[]
 }
 export interface Goal { id: string; title: string; area?: string; pct?: number; target?: DateStr; why?: string; next?: string; done?: boolean; label?: string; obstacle?: string; plan?: string }
 export interface Project { id: string; name: string; label?: string; due?: DateStr; status?: 'active' | 'paused' | 'done'; notes?: string; tasks: { id: string; text: string; done: boolean }[] }
