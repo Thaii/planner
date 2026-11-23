@@ -9,6 +9,12 @@ export const ACCENTS: Record<string, [string, string]> = {
   blush: ['Blush', '#d4848f'], sage: ['Sage', '#7f9c7a'], cornflower: ['Cornflower', '#6f8fd6'], lilac: ['Lilac', '#9f88c8'], honey: ['Honey', '#cf9c3f'],
   peach: ['Peach', '#e0916b'], seafoam: ['Seafoam', '#55a39b'], mocha: ['Mocha', '#9a7b66'], graphite: ['Graphite', '#6b7280'],
 }
+/** Pastel colours for the Cute style, in the same dessert-and-drink family as its themes. */
+export const CUTE_ACCENTS: Record<string, [string, string]> = {
+  strawberry: ['Strawberry', '#ea95b4'], peachy: ['Peach', '#f0a07f'], lemon: ['Lemon', '#ecc95f'], matcha: ['Matcha', '#7cc5a0'], seasalt: ['Sea salt', '#74c9c2'],
+  blueberry: ['Blueberry', '#88a9e6'], taro: ['Taro', '#9d82db'], latte: ['Latte', '#c4a38a'], earlgrey: ['Earl grey', '#9aa3b5'],
+}
+export const ALL_ACCENTS = { ...ACCENTS, ...CUTE_ACCENTS }
 
 export interface Palette { n: string; d: string; bg: string; card: string; ink: string; mute: string; line: string; soft: string; field?: string; accent?: string; lockAccent?: boolean
   /** Part of the Cute style; `pure` keeps the accent exactly as given at night (no dimming). */

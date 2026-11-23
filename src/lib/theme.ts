@@ -1,5 +1,5 @@
 import type { Settings } from './types'
-import { ACCENTS, DAY_THEMES, NIGHT_THEMES } from './constants'
+import { ALL_ACCENTS as ACCENTS, DAY_THEMES, NIGHT_THEMES } from './constants'
 
 export function isNight(s: Settings) {
   if (s.theme === 'dark') return true

@@ -21,7 +21,7 @@ import { personaliseForm } from '@/components/personalise'
 import { exportBackup, getS, importBackup, replaceState, undoable, update, useS } from '@/lib/store'
 import { tint } from '@/lib/logic'
 import { defaults } from '@/lib/defaults'
-import { ACCENTS, CARDS_DEF, DAY_THEMES, NIGHT_THEMES, PAPERS, type Palette } from '@/lib/constants'
+import { ACCENTS, ALL_ACCENTS, CUTE_ACCENTS, CARDS_DEF, DAY_THEMES, NIGHT_THEMES, PAPERS, type Palette } from '@/lib/constants'
 import { accentColor, isNight } from '@/lib/theme'
 import { deviceUses24, hourLabel, today } from '@/lib/date'
 import { parseICS } from '@/lib/ics'
@@ -237,14 +237,14 @@ function Look() {
         <Check on={s.themeAccent} label="Use each theme's own colour" onClick={() => setS((st) => { st.themeAccent = !st.themeAccent })} />
         <div className="flex-1"><div className="tt">Use each theme's own colour</div><div className="text-[12.5px] text-mute">Off: the colour you pick below is used everywhere. Picking a colour turns this off. Lamp always keeps its amber.</div></div>
       </div>
-      <div className="lbl mt-3 mb-1.5 text-mute">Colour · {custom ? 'Your own ' + s.accent.toUpperCase() : (ACCENTS[s.accent] || ACCENTS.blush)[0]}</div>
+      <div className="lbl mt-3 mb-1.5 text-mute">Colour · {s.themeAccent ? 'from your theme' : custom ? 'Your own ' + s.accent.toUpperCase() : (ALL_ACCENTS[s.accent] || ACCENTS.blush)[0]}</div>
       <div className="mb-3.5 flex flex-wrap gap-2">
-        {Object.entries(ACCENTS).map(([k, [n, c]]) => (
-          <button key={k} aria-label={n} title={n} aria-pressed={s.accent === k} onClick={() => setS((st) => { st.accent = k; st.themeAccent = false })}
-            className={cn('size-8 rounded-full ring-offset-2 ring-offset-card', s.accent === k && 'ring-2 ring-ink')} style={{ background: c }} />
+        {Object.entries(s.style === 'cute' ? CUTE_ACCENTS : ACCENTS).map(([k, [n, c]]) => (
+          <button key={k} aria-label={n} title={n} aria-pressed={!s.themeAccent && s.accent === k} onClick={() => setS((st) => { st.accent = k; st.themeAccent = false })}
+            className={cn('size-8 rounded-full ring-offset-2 ring-offset-card', !s.themeAccent && s.accent === k && 'ring-2 ring-ink')} style={{ background: c }} />
         ))}
         {/* Any colour you like: the native colour picker, shown as a rainbow until a custom colour is chosen. */}
-        <label title="Pick any colour" className={cn('relative size-8 cursor-pointer overflow-hidden rounded-full ring-offset-2 ring-offset-card', custom && 'ring-2 ring-ink')}
+        <label title="Pick any colour" className={cn('relative size-8 cursor-pointer overflow-hidden rounded-full ring-offset-2 ring-offset-card', !s.themeAccent && custom && 'ring-2 ring-ink')}
           style={{ background: custom ? s.accent : 'conic-gradient(#e57373,#ffb74d,#fff176,#81c784,#64b5f6,#9575cd,#e57373)' }}>
           <span className="sr-only">Pick any colour</span>
           <input type="color" className="absolute inset-0 size-full cursor-pointer opacity-0" value={accentColor(s)}
