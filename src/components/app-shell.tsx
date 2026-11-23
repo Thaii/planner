@@ -1,4 +1,3 @@
-import { MaybePal } from './pals'
 import { Calendar, CalendarRange, Candy, FolderKanban, HeartPulse, House, LayoutDashboard, ListChecks, Mountain, NotebookPen, Plane, RotateCcw, Settings2, Sprout, Timer, Utensils } from 'lucide-react'
 /** An icon for each page, so the menu can be scanned at a glance. */
 const NAV_ICONS: Record<string, React.ElementType> = {
@@ -47,7 +46,6 @@ export function AppShell({ children, dark }: { children: React.ReactNode; dark: 
             })}
           </React.Fragment>
         ))}
-        <div className="mt-auto flex justify-center pt-4"><MaybePal name="snoozy" size={70} /></div>
       </nav>
       <main className="mx-auto w-full max-w-[1180px] min-w-0 flex-1 px-3.5 pt-[calc(14px+var(--sat))] pb-[calc(100px+var(--sab))] min-[900px]:px-7 min-[900px]:pt-6 min-[900px]:pb-15">
         <div className="mb-3.5 flex items-center gap-2">
