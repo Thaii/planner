@@ -12,4 +12,7 @@ Ideas we've agreed are good but parked for later.
 
 1. Google Cloud setup (Thai does the clicks).
 2. Google sign-in, Drive sync (private app folder), Google Calendar (read-only).
+   - On the back burner (23 Nov): sync across devices via each person's own Drive app-data folder – no server of ours in between.
+   - Merge item by item when two devices changed things offline (never last-save-wins).
+   - Optional passphrase so data is encrypted before it leaves the device (can't be recovered if forgotten).
 3. Apple / Outlook calendar links via a Cloudflare Worker.
