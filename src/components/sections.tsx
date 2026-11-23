@@ -134,6 +134,26 @@ function ArrangeCards({ items, order: start, hidden: startHidden, onSave, onRese
   )
 }
 
+/** Wide screens: full-width sections span both columns; the half-width ones between them stack in two
+ *  independent columns (1st left, 2nd right, 3rd left…), so a long card never leaves a hole beside a short one. */
+function Columns({ items }: { items: Sec[] }) {
+  const blocks: (Sec | Sec[])[] = []
+  for (const x of items) {
+    if (x.wide) blocks.push(x)
+    else if (Array.isArray(blocks.at(-1))) (blocks.at(-1) as Sec[]).push(x)
+    else blocks.push([x])
+  }
+  return (
+    <div className="flex flex-col gap-3">
+      {blocks.map((b) => Array.isArray(b) ? (
+        <div key={b[0].id} className="grid grid-cols-2 items-start gap-3">
+          {[0, 1].map((c) => <div key={c} className="flex min-w-0 flex-col gap-3">{b.filter((_, i) => i % 2 === c).map((x) => <div key={x.id} className="min-w-0">{x.node}</div>)}</div>)}
+        </div>
+      ) : <div key={b.id} className="min-w-0">{b.node}</div>)}
+    </div>
+  )
+}
+
 const useWide = () => {
   const q = '(min-width: 900px)'
   const [w, setW] = React.useState(() => matchMedia(q).matches)
@@ -158,8 +178,9 @@ export function Sections({ page, items, className }: { page: string; items: Sec[
       </div>
       {arranging && !wide && <Arrange items={items} order={order} hidden={hidden} onSave={save} onReset={reset} onDone={() => setArranging(false)} />}
       {arranging && wide ? <ArrangeCards items={items} order={order} hidden={hidden} onSave={save} onReset={reset} onDone={() => setArranging(false)} /> :
-      <div className="grid items-start gap-3 min-[900px]:grid-cols-2">
-        {shown.map((x) => <div key={x.id} className={cn('min-w-0', x.wide && 'min-[900px]:col-span-2')}>{x.node}</div>)}
+      wide ? <Columns items={shown} /> :
+      <div className="grid gap-3">
+        {shown.map((x) => <div key={x.id} className="min-w-0">{x.node}</div>)}
       </div>}
       {off.length > 0 && !arranging && (
         <section className="mt-4 rounded-card border border-dashed border-line px-4 py-3.5">
