@@ -10,6 +10,7 @@ import { ensureWeek, eventsOn, hRate, weekOf } from '@/lib/logic'
 import { dayLoad } from '@/lib/week'
 import { keyDates } from '@/lib/year'
 import { cn, uid } from '@/lib/utils'
+import { Chooser, weekCands } from './chooser'
 
 const STEPS = ['Look back', 'Tidy up', 'Look ahead', 'Set up']
 
@@ -27,6 +28,7 @@ function WeekReset({ ws }: { ws: DateStr }) {
   const [keep, setKeep] = React.useState<Record<string, boolean>>(() => Object.fromEntries(open.map((i) => [i.id, true])))
   const [prio, setPrio] = React.useState<string[]>(() => [0, 1, 2].map((i) => nw.prio[i] || ''))
   const [focus, setFocus] = React.useState(nw.focus || '')
+  const [choosing, setChoosing] = React.useState(false)
 
   const days = range(ws, 7), hr = hRate(s, days)
   const pDone = w.prio.filter((p, i) => p && w.pdone[i]).length, pSet = w.prio.filter(Boolean).length
@@ -98,10 +100,21 @@ function WeekReset({ ws }: { ws: DateStr }) {
         })}
       </>)}
 
-      {step === 3 && (<>
+      {step === 3 && choosing && (
+        <Chooser initial={weekCands(s, next)} scope="week" fullDays={nextDays.filter((d) => dayLoad(s, d).level === 3).map((d) => DOWN[dow(d)])}
+          onCancel={() => setChoosing(false)}
+          onDone={({ picks, win }) => {
+            setPrio([0, 1, 2].map((i) => picks[i] || ''))
+            if (win) update((d) => { const nk = ensureWeek(d, next); if (!nk.todo.some((x) => x.text === win)) nk.todo.unshift({ id: uid(), text: win, done: false }) })
+            setChoosing(false)
+          }} />
+      )}
+
+      {step === 3 && !choosing && (<>
         <label className="lbl mb-1 block text-mute" htmlFor="wr-focus">Next week's focus</label>
         <Input id="wr-focus" value={focus} onChange={(e) => setFocus(e.target.value)} placeholder="One line, e.g. Rest after a big week" />
-        <div className="lbl mt-3 mb-1 text-mute">Next week's top 3</div>
+        <div className="mt-3 mb-1 flex items-center gap-2"><span className="lbl flex-1 text-mute">Next week's top 3</span>
+          <Button size="sm" variant="primary" onClick={() => setChoosing(true)}>Help me choose</Button></div>
         {[0, 1, 2].map((i) => (
           <div key={i} className="mb-1.5 flex items-center gap-2">
             <span className="grid size-[22px] flex-none place-items-center rounded-full bg-accent-soft text-xs font-bold text-accent">{i + 1}</span>
@@ -111,13 +124,13 @@ function WeekReset({ ws }: { ws: DateStr }) {
         {hard && <p className="mt-2 mb-0 text-[12.5px] text-mute">You said <i>“{hard}”</i> got in the way – is there one small change that would help?</p>}
       </>)}
 
-      <div className="mt-4 flex items-center gap-2">
+      {!(step === 3 && choosing) && <div className="mt-4 flex items-center gap-2">
         {step > 0 && <Button onClick={() => go(step - 1)}>Back</Button>}
         <span className="flex-1" />
         {step < STEPS.length - 1
           ? <Button variant="primary" onClick={() => go(step + 1)}>Next</Button>
           : <Button variant="primary" onClick={() => { saveBack(); saveSetUp(); closeSheet(); toast('Next week is set up. Well done for pausing to plan.') }}>Finish</Button>}
-      </div>
+      </div>}
     </div>
   )
 }

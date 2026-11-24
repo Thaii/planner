@@ -1,4 +1,5 @@
 import { useViewportWidth } from '@/lib/use-width'
+import { chooseForDay } from '@/components/chooser'
 import { Ico } from '@/components/doodles'
 import { toast } from 'sonner'
 import { GrowingSprig, MaybePal, usePals } from '@/components/pals'
@@ -198,7 +199,7 @@ const CARDS: Record<string, CardFn> = {
   priorities: ({ d, s }) => {
     const p = s.prio[d] || { items: ['', '', ''], done: [] }
     return (
-      <Card><CardHeader title="Top 3 priorities" pal="twinkle" />
+      <Card><CardHeader title="Top 3 priorities" pal="twinkle" action={<Button size="sm" onClick={() => chooseForDay(d)}>Help me choose</Button>} />
         {[0, 1, 2].map((i) => (
           <div key={i} className={cn('flex items-center gap-2.5 py-1', p.done?.[i] && '[&_input]:text-mute [&_input]:line-through')}>
             <span className="grid size-[22px] flex-none place-items-center rounded-full bg-accent-soft text-xs font-bold text-accent">{i + 1}</span>

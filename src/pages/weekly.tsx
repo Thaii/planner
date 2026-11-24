@@ -11,6 +11,7 @@ import { addD, dow, DOWN, fmt, pd, range, t12, today, type DateStr } from '@/lib
 import { ensureWeek, eventsOn, labColor, tasksOn, tint, weekOf, weekStart, workoutsOn } from '@/lib/logic'
 import { dayPeek } from '@/components/day-peek'
 import { weekReset } from '@/components/week-reset'
+import { chooseForWeek } from '@/components/chooser'
 import { Ico } from '@/components/doodles'
 import { stickersOn } from './monthly'
 import { dayLoad } from '@/lib/week'
@@ -120,7 +121,7 @@ export function WeeklyPage() {
           { id: 'focus', title: "This week's focus", icon: '🧭', desc: "One line for the week, with its big dates", node: <WeekFocus s={s} ws={ws} /> },
           { id: 'reset', title: "Weekly reset", icon: '🔄', desc: "Close the week and set up the next", node: <ResetCard s={s} ws={ws} /> },
           { id: 'prio', title: "Top 3 priorities", icon: '⭐', desc: "The three things that matter most this week", node: (<>
-        <Card><CardHeader title="Top 3 priorities" />
+        <Card><CardHeader title="Top 3 priorities" action={<Button size="sm" onClick={() => chooseForWeek(ws)}>Help me choose</Button>} />
           {[0, 1, 2].map((i) => (
             <div key={i} className={cn('flex items-center gap-2.5 py-1', w.pdone[i] && '[&_input]:text-mute [&_input]:line-through')}>
               <span className="grid size-[22px] flex-none place-items-center rounded-full bg-accent-soft text-xs font-bold text-accent">{i + 1}</span>
