@@ -31,7 +31,7 @@ export function MonthGrid({ s, y, mo, mini, colorMode, stamp }: { s: State; y: n
         const d = ds(new Date(y, mo, i + 1)), ev = eventsOn(s, d)
         if (mini) {
           const bd = ev.some((e) => e.repeat === 'yearly')
-          return <button key={d} title={ev.map((e) => e.title).join(', ')} onClick={() => go('monthly', { monthRef: d })}
+          return <button key={d} title={ev.map((e) => e.title).join(', ')} onClick={() => dayPeek(d)}
             className={cn('rounded-[5px] py-0.5 text-center text-[10px]', ev.length && 'bg-accent-soft font-bold', bd && 'text-danger', d === t && 'bg-accent font-bold text-on-accent')}>{i + 1}</button>
         }
         const tk = tasksOn(s, d).filter((x) => !x.over), wo = workoutsOn(s, d), stk = stickersOn(s, d)

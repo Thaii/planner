@@ -43,6 +43,16 @@ export interface DopaItem { id: string; text: string; course: 'app' | 'main' | '
 export interface Wellness { mood?: number; energy?: number; water?: number; sleep?: number; e100?: 1 }
 export interface Meals { breakfast?: string; lunch?: string; dinner?: string; snacks?: string }
 export interface WeekPlan { prio: string[]; pdone: boolean[]; goals: Item[]; todo: Item[] }
+/** A year's plan. Fields after `review` were added Nov 2026 and are optional, so older saves read fine. */
+export interface YearPlan {
+  word?: string; review: Record<string, string>
+  /** Goal ids pinned as this year's big goals (goals with a target date in the year show too). */
+  goals?: string[]
+  /** Quarter '1'–'4': a focus line and milestones. */
+  quarters?: Record<string, { focus?: string; items: Item[] }>
+  /** Month '01'–'12': a one-line theme. */
+  themes?: Record<string, string>
+}
 export interface MonthPlan { todo: Item[]; refl: Record<string, string>; colors: Record<DateStr, string>; stickers?: Record<DateStr, string | string[]> }
 
 export interface Trip {
@@ -138,6 +148,6 @@ export interface State {
   trips: Trip[]; notes: { id: string; title: string; style: string; body: string; upd: number; imgs?: { id: string; img: string; cap: string }[] }[]
   daynotes: Record<DateStr, string>; focus: Record<DateStr, number>
   weeks: Record<DateStr, WeekPlan>; months: Record<string, MonthPlan>
-  years: Record<string, { word?: string; review: Record<string, string> }>
+  years: Record<string, YearPlan>
   vision: Record<string, { id: string; img: string; cap: string }[]>
 }
