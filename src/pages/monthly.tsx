@@ -8,13 +8,14 @@ import { Check } from '@/components/ui/check'
 import { AutoTextarea, InlineAdd } from '@/components/ui/field'
 import { PageHead } from '@/components/bits'
 import { useS, update, undoable } from '@/lib/store'
-import { go, openDay, useUI } from '@/lib/ui'
+import { go, useUI } from '@/lib/ui'
 import { ds, DOWN, fmt, pad, pd, today, weekOrder, ym, type DateStr } from '@/lib/date'
 import { ensureMonth, eventsOn, labColor, monthOf, tasksOn, workoutsOn, wsDay } from '@/lib/logic'
 import { monthTodo } from '@/lib/actions'
 import type { State } from '@/lib/types'
 import { cn, uid } from '@/lib/utils'
 import { Ico } from '@/components/doodles'
+import { dayPeek } from '@/components/day-peek'
 
 /** Little markers for what kind of day it is – quicker than colouring, and they don't clash with event colours. */
 export const DAY_STICKERS: [string, string][] = [['💰', 'Payday'], ['🌴', 'Holiday'], ['🛌', 'Rest day'], ['⭐', 'Big day'], ['🎂', 'Birthday'], ['🕒', 'Appointment']]
@@ -36,7 +37,7 @@ export function MonthGrid({ s, y, mo, mini, colorMode, stamp }: { s: State; y: n
         const tk = tasksOn(s, d).filter((x) => !x.over), wo = workoutsOn(s, d), stk = stickersOn(s, d)
         const items = ev.map((e) => [e.title, e.ro ? '#8a857d' : labColor(s, e.label) || 'var(--accent)'] as const).concat(wo.map((w) => [w.name, '#e0916b'] as const))
         return (
-          <button key={d} onClick={() => (colorMode ? stampDay(d, stamp ?? null) : openDay(d))} aria-label={[fmt(d, { weekday: 'long', day: 'numeric', month: 'long' }), ...stk.map((e) => DAY_STICKERS.find((x) => x[0] === e)?.[1] || e)].join(', ')}
+          <button key={d} onClick={() => (colorMode ? stampDay(d, stamp ?? null) : dayPeek(d))} aria-label={[fmt(d, { weekday: 'long', day: 'numeric', month: 'long' }), ...stk.map((e) => DAY_STICKERS.find((x) => x[0] === e)?.[1] || e)].join(', ')}
             className={cn('relative flex min-h-[60px] min-w-0 flex-col gap-0.5 overflow-hidden rounded-[9px] border border-line bg-soft p-[3px] text-left min-[600px]:min-h-[78px] min-[600px]:p-[5px]', d === t && 'border-accent bg-card shadow-[inset_0_0_0_1.5px_var(--accent)]')}
             >
             <b className="text-[13px] font-semibold">{i + 1}</b>
