@@ -6,13 +6,90 @@ import { Check } from '@/components/ui/check'
 import { CommitInput, InlineAdd } from '@/components/ui/field'
 import { PageHead, TaskRow, Drops, Moods } from '@/components/bits'
 import { useS, update, undoable } from '@/lib/store'
-import { go, openDay, useUI } from '@/lib/ui'
-import { addD, dow, DOWN, fmt, range, t12, today } from '@/lib/date'
+import { go, useUI } from '@/lib/ui'
+import { addD, dow, DOWN, fmt, pd, range, t12, today, type DateStr } from '@/lib/date'
 import { ensureWeek, eventsOn, labColor, tasksOn, tint, weekOf, weekStart, workoutsOn } from '@/lib/logic'
+import { dayPeek } from '@/components/day-peek'
+import { weekReset } from '@/components/week-reset'
+import { Ico } from '@/components/doodles'
+import { stickersOn } from './monthly'
+import { dayLoad } from '@/lib/week'
+import { keyDates, monthTheme } from '@/lib/year'
+import { useViewportWidth } from '@/lib/use-width'
+import type { State } from '@/lib/types'
 import { addTask, toggleWorkout, weekItem } from '@/lib/actions'
 import { eventForm } from '@/lib/forms'
 import { cn, uid } from '@/lib/utils'
 import type { Item } from '@/lib/types'
+
+/** Four little bars: free, light, steady, full. */
+function LoadMeter({ s, d }: { s: State; d: DateStr }) {
+  const ld = dayLoad(s, d)
+  return (
+    <span className="flex items-center gap-1" title={ld.label} aria-label={'How full: ' + ld.label}>
+      <span className="flex items-end gap-[2px]">{[1, 2, 3].map((i) => <i key={i} className={cn('block w-[4px] rounded-sm', i <= ld.level ? (ld.level === 3 ? 'bg-danger' : 'bg-accent') : 'bg-line')} style={{ height: 4 + i * 3 }} />)}</span>
+      <span className={cn('text-[10.5px]', ld.level === 3 ? 'font-semibold text-danger' : 'text-mute')}>{ld.label}</span>
+    </span>
+  )
+}
+
+/** One day of the spread. `row` = phone layout (full width, stacked). */
+function DayCol({ s, d, row }: { s: State; d: DateStr; row?: boolean }) {
+  const t = today(), ev = eventsOn(s, d), tk = tasksOn(s, d).filter((x) => d === t || !x.over), wo = workoutsOn(s, d), stk = stickersOn(s, d)
+  return (
+    <div className={cn('flex min-w-0 flex-col gap-1.5 rounded-xl border border-line bg-card px-2 py-2.5', row && 'px-3', d === t && 'border-accent shadow-[inset_0_0_0_1.5px_var(--accent)]', d < t && 'opacity-80')}>
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+        <button className="flex items-baseline gap-1.5 text-left" onClick={() => dayPeek(d)} aria-label={'Open ' + fmt(d, { weekday: 'long', day: 'numeric', month: 'long' })}>
+          <span className="lbl">{DOWN[dow(d)]}</span><b className="font-serif text-xl font-normal">{+d.slice(8)}</b>{d === t && <span className="text-[11px] font-semibold text-accent">today</span>}
+        </button>
+        {stk.length > 0 && <span className="flex gap-0.5">{stk.map((e) => <Ico key={e} e={e} className="size-[18px] text-[13px]" />)}</span>}
+        <span className={cn(row ? 'ml-auto' : 'basis-full')}><LoadMeter s={s} d={d} /></span>
+      </div>
+      {ev.map((e) => <button key={e.id} className="lamp-warm truncate rounded-md px-1.5 py-1 text-left text-[11.5px]" style={{ background: tint(e.ro ? '#8a857d' : labColor(s, e.label) || 'var(--accent)', 22) }} onClick={() => (e.ro ? dayPeek(d) : eventForm(e.id))}>{e.time ? t12(e.time) + ' ' : ''}{e.title}</button>)}
+      {wo.map((x) => <button key={x.id} className="truncate rounded-md px-1.5 py-1 text-left text-[11.5px]" style={{ background: tint('#e0916b', 22) }} onClick={() => toggleWorkout(x.id, d)}>{x.log?.[d] ? '✓ ' : ''}{x.time ? t12(x.time) + ' ' : ''}{x.name}</button>)}
+      <div className="rows">{tk.map((x) => <TaskRow key={x.k.id + x.occ} x={x} compact />)}</div>
+      <InlineAdd placeholder="Add a to-do" className="mt-0.5 [&_input]:py-1 [&_input]:text-[12.5px] [&_button]:size-6 [&_button]:text-sm" onAdd={(txt) => addTask(txt, d)} />
+      <div className={cn('mt-auto pt-1.5', row && 'flex flex-wrap items-center gap-3')}><Drops d={d} small /><div className={cn(!row && 'mt-1.5')}><Moods d={d} small /></div></div>
+    </div>
+  )
+}
+
+/** A one-line focus for the week, with the month theme, quarter focus and the week's big dates for context. */
+function WeekFocus({ s, ws }: { s: State; ws: DateStr }) {
+  const w = weekOf(s, ws), mid = pd(addD(ws, 3)), y = mid.getFullYear(), mo = mid.getMonth()
+  const theme = monthTheme(s, y, mo), qf = s.years[y]?.quarters?.[Math.floor(mo / 3) + 1]?.focus
+  const kd = keyDates(s, ws, addD(ws, 6))
+  return (
+    <Card><CardHeader title="This week's focus" />
+      <CommitInput value={w.focus || ''} placeholder="One line for the week, e.g. Rest after a big week" aria-label="This week's focus" className="px-3.5 py-2 font-serif text-[18px]"
+        onCommit={(v) => update((d) => { ensureWeek(d, ws).focus = v.trim() })} />
+      {(theme || qf) && <div className="mt-1.5 text-[12.5px] text-mute">{[theme && `${mid.toLocaleDateString('en-AU', { month: 'long' })}: ${theme}`, qf && `Q${Math.floor(mo / 3) + 1}: ${qf}`].filter(Boolean).join(' · ')}</div>}
+      {kd.length > 0 && <div className="mt-2 flex flex-wrap gap-1.5">{kd.map((k, i) => (
+        <button key={i} onClick={() => dayPeek(k.d)} className="flex items-center gap-1 rounded-full bg-tint-butter px-2.5 py-1 text-[12px]"><Ico e={k.e} className="size-[15px] text-[11px]" />{k.t} · {DOWN[dow(k.d)]}</button>
+      ))}</div>}
+    </Card>
+  )
+}
+
+/** Invites the weekly reset from Friday on (or for any past week not yet closed); shows the look-back once done. */
+function ResetCard({ s, ws }: { s: State; ws: DateStr }) {
+  const w = weekOf(s, ws), t = today(), r = w.review
+  const due = !r?.done && (addD(ws, 4) <= t)
+  return (
+    <Card className={cn(due && 'border-accent bg-accent-soft')}><CardHeader title="Weekly reset" />
+      {r?.done ? (<>
+        <div className="mb-2 text-[13px] text-mute">Done – next week is set up.</div>
+        {r.well && <div className="mb-1 text-[13.5px]"><b>Went well:</b> {r.well}</div>}
+        {r.hard && <div className="mb-1 text-[13.5px]"><b>Got in the way:</b> {r.hard}</div>}
+        <Button size="sm" className="mt-1" onClick={() => weekReset(ws)}>Go through it again</Button>
+      </>) : (<>
+        <p className="mt-0 mb-2.5 text-[13.5px]">{due ? 'About ten minutes to close this week and set up the next one: look back, tidy up, look ahead, pick your top 3.' : 'Best done on Friday or the weekend: look back, tidy up, look ahead and set up next week.'}</p>
+        <Button variant={due ? 'primary' : 'outline'} onClick={() => weekReset(ws)}>Start the reset</Button>
+      </>)}
+    </Card>
+  )
+}
+
 
 function ItemList({ items, onToggle, onDelete, empty }: { items: Item[]; onToggle: (id: string) => void; onDelete: (id: string) => void; empty: string }) {
   return <div className="rows">{items.length ? items.map((i) => (
@@ -25,6 +102,7 @@ export function WeeklyPage() {
   const s = useS()
   const ref = useUI((u) => u.weekRef)
   const ws = weekStart(s, ref), w = weekOf(s, ws), t = today(), days = range(ws, 7)
+  const narrow = useViewportWidth() < 760
   const carry = weekOf(s, addD(ws, -7)).todo.filter((i) => !i.done)
   const tog = (list: 'todo' | 'goals') => (id: string) => weekItem(ws, list, (l) => { const x = l.find((y) => y.id === id); if (x) x.done = !x.done })
   const rm = (list: 'todo' | 'goals') => (id: string) => undoable('Removed', (d) => { const wk = ensureWeek(d, ws); wk[list] = wk[list].filter((x) => x.id !== id) })
@@ -39,6 +117,8 @@ export function WeeklyPage() {
         <Button size="mono" onClick={() => go('monthly')}>Monthly</Button>
       </div>
         <Sections page="weekly" items={[
+          { id: 'focus', title: "This week's focus", icon: '🧭', desc: "One line for the week, with its big dates", node: <WeekFocus s={s} ws={ws} /> },
+          { id: 'reset', title: "Weekly reset", icon: '🔄', desc: "Close the week and set up the next", node: <ResetCard s={s} ws={ws} /> },
           { id: 'prio', title: "Top 3 priorities", icon: '⭐', desc: "The three things that matter most this week", node: (<>
         <Card><CardHeader title="Top 3 priorities" />
           {[0, 1, 2].map((i) => (
@@ -71,24 +151,12 @@ export function WeeklyPage() {
           </>) },
           { id: 'spread', title: "The 7-day spread", icon: '🗓️', desc: "Each day side by side", wide: true, node: (<>
       <h2 className="mt-4 mb-2 text-[21px]">The 7-day <em className="text-accent">spread</em></h2>
-      <div className="overflow-x-auto pb-1">
-        <div className="grid min-w-[1080px] grid-cols-7 gap-2">
-          {days.map((d) => {
-            const ev = eventsOn(s, d), tk = tasksOn(s, d).filter((x) => d === t || !x.over), wo = workoutsOn(s, d)
-            return (
-              <div key={d} className={cn('flex min-w-0 flex-col gap-1.5 rounded-xl border border-line bg-card px-2 py-2.5', d === t && 'border-accent shadow-[inset_0_0_0_1.5px_var(--accent)]')}>
-                <button className="flex items-baseline gap-1.5 text-left" onClick={() => openDay(d)}><span className="lbl">{DOWN[dow(d)]}</span><b className="font-serif text-xl font-normal">{+d.slice(8)}</b></button>
-                {ev.map((e) => <button key={e.id} className="lamp-warm truncate rounded-md px-1.5 py-1 text-left text-[11px]" style={{ background: tint(e.ro ? '#8a857d' : labColor(s, e.label) || 'var(--accent)', 22) }} onClick={() => !e.ro && eventForm(e.id)}>{e.time ? t12(e.time) + ' ' : ''}{e.title}</button>)}
-                {wo.map((x) => <button key={x.id} className="truncate rounded-md px-1.5 py-1 text-left text-[11px]" style={{ background: tint('#e0916b', 22) }} onClick={() => toggleWorkout(x.id, d)}>{x.log?.[d] ? '✓ ' : ''}{x.time ? t12(x.time) + ' ' : ''}{x.name}</button>)}
-                <div className="rows">{tk.map((x) => <TaskRow key={x.k.id + x.occ} x={x} compact />)}</div>
-                <InlineAdd placeholder="Add" className="mt-0.5 [&_input]:py-1 [&_input]:text-[12.5px] [&_button]:size-6 [&_button]:text-sm" onAdd={(t) => addTask(t, d)} />
-                <div className="mt-auto pt-1.5"><Drops d={d} small /><div className="mt-1.5"><Moods d={d} small /></div></div>
-              </div>
-            )
-          })}
+      {narrow ? <div className="flex flex-col gap-2">{days.map((d) => <DayCol key={d} s={s} d={d} row />)}</div> : (
+        <div className="overflow-x-auto pb-1">
+          <div className="grid min-w-[980px] grid-cols-7 gap-2">{days.map((d) => <DayCol key={d} s={s} d={d} />)}</div>
         </div>
-      </div>
-      <p className="mt-1.5 text-[12.5px] text-mute">Tap a day's name to open it. Drops log water, faces log mood. <Button variant="link" className="text-[12.5px]" onClick={() => eventForm(undefined, ws)}>Add an event</Button></p>
+      )}
+      <p className="mt-1.5 text-[12.5px] text-mute">Tap a day for what's on. The bars show how full a day is. Drops log water, faces log mood. <Button variant="link" className="text-[12.5px]" onClick={() => eventForm(undefined, ws)}>Add an event</Button></p>
           </>) },
         ]} />
     </div>

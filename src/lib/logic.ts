@@ -52,7 +52,7 @@ export function tasksOn(s: State, d: DateStr): TaskOcc[] {
 /* ---------- weeks & months (read without creating) ---------- */
 export const weekOf = (s: State, ws: DateStr): WeekPlan => {
   const w = s.weeks[ws]
-  return { prio: w?.prio || ['', '', ''], pdone: w?.pdone || [], goals: w?.goals || [], todo: w?.todo || [] }
+  return { prio: w?.prio || ['', '', ''], pdone: w?.pdone || [], goals: w?.goals || [], todo: w?.todo || [], ...(w?.focus ? { focus: w.focus } : {}), ...(w?.review ? { review: w.review } : {}) }
 }
 export const ensureWeek = (d: State, ws: DateStr) => (d.weeks[ws] = { ...weekOf(d, ws), ...(d.weeks[ws] || {}) })
 export const monthOf = (s: State, m: string): MonthPlan => {

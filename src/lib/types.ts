@@ -42,7 +42,12 @@ export interface SelfCare { id: string; text: string; tier: 'quick' | 'medium' |
 export interface DopaItem { id: string; text: string; course: 'app' | 'main' | 'side' | 'dessert' | 'special'; mins: number }
 export interface Wellness { mood?: number; energy?: number; water?: number; sleep?: number; e100?: 1 }
 export interface Meals { breakfast?: string; lunch?: string; dinner?: string; snacks?: string }
-export interface WeekPlan { prio: string[]; pdone: boolean[]; goals: Item[]; todo: Item[] }
+export interface WeekPlan {
+  prio: string[]; pdone: boolean[]; goals: Item[]; todo: Item[]
+  /** Added Nov 2026 (optional, older saves read fine): a one-line focus and the weekly reset's look-back. */
+  focus?: string
+  review?: { well?: string; hard?: string; done?: boolean; at?: number }
+}
 /** A year's plan. Fields after `review` were added Nov 2026 and are optional, so older saves read fine. */
 export interface YearPlan {
   word?: string; review: Record<string, string>
