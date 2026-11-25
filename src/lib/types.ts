@@ -42,6 +42,17 @@ export interface SelfCare { id: string; text: string; tier: 'quick' | 'medium' |
 export interface DopaItem { id: string; text: string; course: 'app' | 'main' | 'side' | 'dessert' | 'special'; mins: number }
 export interface Wellness { mood?: number; energy?: number; water?: number; sleep?: number; e100?: 1 }
 export interface Meals { breakfast?: string; lunch?: string; dinner?: string; snacks?: string }
+/** Today's tasks: the morning "Plan my day" answers (added Nov 2026). */
+export interface DayPlan {
+  energy?: 'low' | 'ok' | 'good'
+  /** Key of the task you're dreading ('p:0' for a priority, 't:<id>' for a to-do); it goes first. */
+  dread?: string; dreadStep?: string
+  /** "Today will feel like a win if…" */
+  win?: string; winDone?: boolean
+  /** Key chosen with "Do this now". */
+  now?: string
+  asked?: boolean; skipped?: boolean
+}
 export interface WeekPlan {
   prio: string[]; pdone: boolean[]; goals: Item[]; todo: Item[]
   /** Added Nov 2026 (optional, older saves read fine): a one-line focus and the weekly reset's look-back. */
@@ -154,5 +165,6 @@ export interface State {
   daynotes: Record<DateStr, string>; focus: Record<DateStr, number>
   weeks: Record<DateStr, WeekPlan>; months: Record<string, MonthPlan>
   years: Record<string, YearPlan>
+  dayPlan: Record<DateStr, DayPlan>
   vision: Record<string, { id: string; img: string; cap: string }[]>
 }

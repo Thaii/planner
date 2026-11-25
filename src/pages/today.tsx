@@ -214,7 +214,7 @@ const CARDS: Record<string, CardFn> = {
   tasks: ({ d, s }) => {
     const l = tasksOn(s, d)
     return (
-      <Card><CardHeader title="To-do list" action={<span className="text-[12.5px] text-mute">{l.filter((x) => x.done).length}/{l.length}</span>} />
+      <Card><CardHeader title="To-do list" action={<span className="flex items-center gap-2"><span className="text-[12.5px] text-mute">{l.filter((x) => x.done).length}/{l.length}</span>{d === today() && <Button variant="link" className="text-[12.5px]" onClick={() => go('tasks')}>One at a time</Button>}</span>} />
         <div className="rows">{l.length ? l.map((x) => <TaskRow key={x.k.id + x.occ} x={x} />) : <Empty>All clear.</Empty>}</div>
         <InlineAdd placeholder="Add a to-do" onAdd={(t) => addTask(t, d)} />
       </Card>

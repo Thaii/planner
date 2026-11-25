@@ -1,9 +1,9 @@
 import { SyncChip } from './sync-ui'
-import { Calendar, CalendarRange, Candy, FolderKanban, HeartPulse, House, LayoutDashboard, ListChecks, Mountain, NotebookPen, Plane, RotateCcw, Settings2, Sprout, Timer, Utensils } from 'lucide-react'
+import { Calendar, CalendarRange, Candy, FolderKanban, HeartPulse, House, ListTodo, LayoutDashboard, ListChecks, Mountain, NotebookPen, Plane, RotateCcw, Settings2, Sprout, Timer, Utensils } from 'lucide-react'
 /** An icon for each page, so the menu can be scanned at a glance. */
 const NAV_ICONS: Record<string, React.ElementType> = {
   today: LayoutDashboard, yearly: CalendarRange, monthly: CalendarDays, weekly: Calendar, goals: Mountain, projects: FolderKanban, habits: Sprout,
-  wellness: HeartPulse, dopamine: Candy, food: Utensils, home: House, lists: ListChecks, notes: NotebookPen, trips: Plane, reset: RotateCcw, focus: Timer, settings: Settings2,
+  tasks: ListTodo, wellness: HeartPulse, dopamine: Candy, food: Utensils, home: House, lists: ListChecks, notes: NotebookPen, trips: Plane, reset: RotateCcw, focus: Timer, settings: Settings2,
 }
 import { Welcome } from './welcome'
 import { InstallButton } from './install'

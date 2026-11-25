@@ -47,7 +47,7 @@ export function defaults(): State {
     meals: {}, recipes: [], grocery: [], pantry: [], chores: [],
     clean: { rooms: ['Kitchen', 'Bathroom', 'Living room', 'Bedrooms', 'Floors', 'Laundry'], log: {} },
     contacts: [], inventory: [], workouts: [], lists: {}, customLists: [], trips: [], notes: [], daynotes: {}, focus: {}, meds: [], medLog: {},
-    weeks: {}, months: {}, years: {}, vision: {},
+    weeks: {}, months: {}, years: {}, vision: {}, dayPlan: {},
   }
 }
 

@@ -69,7 +69,9 @@ export function pixelValue(s: State, d: DateStr, mode: PixelMode): number | null
     return r.due ? r.done / r.due : null
   }
   const v = s.well?.[d]?.[mode]
-  return typeof v === 'number' && v > 0 ? (v - 1) / 4 : null
+  if (typeof v !== 'number') return null
+  // Mood is 1–5 (faces); energy is a 0–100 slider.
+  return mode === 'energy' ? Math.max(0, Math.min(1, v / 100)) : v > 0 ? (v - 1) / 4 : null
 }
 
 /** Totals for one calendar year. */

@@ -8,6 +8,7 @@ import { today } from './lib/date'
 import { plannerTitle } from './lib/greeting'
 import { TodayPage } from './pages/today'
 import { WeeklyPage } from './pages/weekly'
+import { TasksPage } from './pages/tasks'
 import { MonthlyPage } from './pages/monthly'
 import { MorePage, ComingSoon } from './pages/more'
 import { YearlyPage } from './pages/yearly'
@@ -47,6 +48,7 @@ export default function App() {
   switch (view) {
     case 'today': page = <TodayPage d={today()} isToday />; break
     case 'day': page = <TodayPage d={date} />; break
+    case 'tasks': page = <TasksPage />; break
     case 'weekly': page = <WeeklyPage />; break
     case 'monthly': page = <MonthlyPage />; break
     case 'yearly': page = <YearlyPage />; break
