@@ -21,7 +21,7 @@ import { FiveTimer } from './five'
 import { quickAdd } from './quick-add'
 
 const BNAV: [View, string, React.ComponentType<{ className?: string }>][] = [
-  ['today', 'Today', Sun], ['weekly', 'Week', Rows3], ['monthly', 'Month', CalendarDays], ['habits', 'Habits', CheckCheck], ['more', 'More', Menu],
+  ['today', 'Today', Sun], ['weekly', 'Week', Rows3], ['tasks', 'Tasks', ListTodo], ['habits', 'Habits', CheckCheck], ['more', 'More', Menu],
 ]
 
 export function AppShell({ children, dark }: { children: React.ReactNode; dark: boolean }) {
